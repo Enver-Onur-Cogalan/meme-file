@@ -7,6 +7,15 @@ Tahmini süre: 45-60 dakika. Başlamadan önce **Discord açık** olsun ve bir t
 
 ---
 
+## v0.1.3 — senin bildirdiklerin
+
+Uygulama kuruluysa bu sürüm kendiliğinden gelir (başlık çubuğunda **"0.1.3 hazır · Yeniden başlat"**).
+
+- [ ] **A.1 İngilizce arayüz:** Ayarlar → **Dil** → English. Bütün ekranlar (menüler, sağ tık, pencereler, hızlı arama, sistem tepsisi menüsü) anında İngilizce oluyor mu? Türkçe ve Sistem seçenekleri de çalışıyor mu?
+- [ ] **A.2 Kaydırma:** Kütüphanede fare tekerleğiyle hızlıca aşağı yukarı kaydır. Takılma ya da gecikme kaldı mı?
+- [ ] **A.3 VE/VEYA:** İki chip seçip aradaki **VE** yazısına bas. Her tıklamada tek seferde değişiyor mu?
+- [ ] **A.4 Kırpma önizlemesi:** Sarı tutamaçları sürükle. Video durup tam tutamacın olduğu kareyi gösteriyor mu? Bırakınca seçili aralık oynuyor mu (bitiş tutamacında son 1.5 saniyeden)? Oynat/durdur ve ses düğmesi çalışıyor mu?
+
 ## 0. Kurulum ve güncelleme
 
 Otomatik güncellemeyi de deneyebilmek için **bilerek eski sürümü** kuruyoruz.

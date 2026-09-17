@@ -134,6 +134,12 @@ spring tabanlı hareket, `MotionConfig reducedMotion="user"` ile Windows'ta anim
 - Büyük kütüphane: sanal liste, 5.000 videoluk performans testi
 - Açık kaynak: MIT lisansı, portfolyo README'si, [Windows test rehberi](TEST-REHBERI.md)
 
+## Faz 5 — ilk Windows testi geri bildirimleri (v0.1.3) ✅
+- İngilizce arayüz: ortak tip güvenli sözlük (main + renderer), sistem diline göre seçim, Ayarlar'da dil
+- Kaydırma: kütüphane boştayken bile kendini sürekli yenileyen döngü düzeltildi; kaydırırken giriş animasyonu yok
+- VE/VEYA: eski yenilemenin ayarı geri yazması düzeltildi
+- Kırpma önizlemesi tutamaçları takip ediyor, oynat/durdur ve ses kontrolü var
+
 ## Açık sorular / riskler
 - Kod imzalama yok → ilk kurulumda SmartScreen uyarısı ("Yine de çalıştır"). Kişisel kullanım için sorun değil.
 - ffmpeg binary boyutu (~80 MB) → kurulum dosyası büyür; kabul edilebilir
