@@ -60,7 +60,7 @@ Thumbnail/sprite'lar: `%APPDATA%/meme-file/cache/<video_id>/`.
   4. Dosyayı panoya koyma (Ctrl+V ile Discord'a yapıştırma)
 - GitHub Actions Windows build → `.exe` artifact
 
-### Faz 1 — MVP (v1)
+### Faz 1 — MVP (v1) ✅
 - Klasör ekleme/çıkarma, ilk tarama, ffprobe metadata, thumbnail üretimi
 - Grid görünümü (sanallaştırılmış liste — yüzlerce/binlerce video için)
 - **Hover-scrub önizleme** (sprite sheet, fare konumuna göre kare)
@@ -72,16 +72,17 @@ Thumbnail/sprite'lar: `%APPDATA%/meme-file/cache/<video_id>/`.
 - **Discord'a gönderme:** karttan sürükle bırak + `Ctrl+C` kopyala
 - Karta ses var/yok ikonu, boyut; 10 MB üstüne uyarı rozeti
 
-### Faz 2 — v1.5
+### Faz 2 — v1.5 ✅
 - Klasör izleme (chokidar) + **Gelen Kutusu** (etiketsiz yeni videolar)
 - **Discord'a sığdır:** ffmpeg ile hedef boyuta (10 MB) göre iki geçişli sıkıştırma, kopya üretir
 - **Trim:** başlangıç/bitiş işaretle → yeni klip (orijinale dokunmaz)
 - Favoriler, "en çok gönderilen", "son gönderilen"
 - **Hızlı arama penceresi:** global kısayol (varsayılan `Ctrl+Shift+Space`), küçük çerçevesiz pencere, sonuçtan sürükle/kopyala
 - Sistem tepsisi (tray) ile arka planda çalışma, Windows ile başlat (opsiyonel)
+- Oynatıcıdan ve sağ tık menüsünden GIF dışa aktarma (Faz 3'ten öne alındı)
 
-### Faz 3 — v2
-- **Konuşmayla arama:** whisper.cpp ile yerel transkript → FTS'e eklenir (opsiyonel indirme, arka planda kuyruk)
+### Faz 3 — v2 (Whisper hariç ✅)
+- **Konuşmayla arama:** whisper.cpp ile yerel transkript → FTS'e eklenir (opsiyonel indirme, arka planda kuyruk) — *henüz yapılmadı: ~150 MB model indirmesi gerekir, "internete çıkmaz" ilkesiyle çeliştiği için ayrı karar*
 - GIF dışa aktarma
 - Aynı videoyu tespit (hash) ve birleştirme
 - Etiketleri JSON olarak yedekle / geri yükle
