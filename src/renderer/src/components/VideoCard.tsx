@@ -14,6 +14,7 @@ import { useStore } from '../lib/store'
 import type { Tag, Video } from '../../../shared/api'
 import { DISCORD_LIMIT_BYTES, formatDuration, formatSize, stripExtension } from '../lib/format'
 import { TagSticker } from './TagSticker'
+import { useT } from '../lib/i18n'
 
 const SPRITE_FRAMES = 10
 const MAX_CHIPS = 3
@@ -40,6 +41,7 @@ export const VideoCard = memo(function VideoCard({
   animateLayout,
   onAction
 }: Props): React.JSX.Element {
+  const t = useT()
   const [hover, setHover] = useState(false)
   const [scrub, setScrub] = useState(0)
   const [peeling, setPeeling] = useState(false)
@@ -131,7 +133,7 @@ export const VideoCard = memo(function VideoCard({
         ) : (
           <div className="flex size-full flex-col items-center justify-center gap-1 text-dim">
             <ImageOff size={26} />
-            <span className="text-[11px] font-semibold">Önizleme yok</span>
+            <span className="text-[11px] font-semibold">{t('card.noPreview')}</span>
           </div>
         )}
 
@@ -143,7 +145,7 @@ export const VideoCard = memo(function VideoCard({
             className="absolute top-2.5 left-2.5 flex h-[26px] items-center gap-1.5 rounded-full border-[1.5px] border-ink bg-text px-2.5 text-[11.5px] font-bold text-ink"
           >
             <Send size={13} strokeWidth={2.25} />
-            <span>Discord&apos;a sürükle</span>
+            <span>{t('card.dragToDiscord')}</span>
           </motion.div>
         )}
 
@@ -152,7 +154,7 @@ export const VideoCard = memo(function VideoCard({
         >
           {video.size > DISCORD_LIMIT_BYTES && (
             <div
-              title="Discord'un 10 MB limitini aşıyor"
+              title={t('card.overLimit')}
               className="flex h-6 items-center gap-1 rounded-l-full border-[1.5px] border-ink bg-sticker-red pr-2.5 pl-2 text-[11px] font-extrabold text-ink"
             >
               <AlertTriangle size={12} strokeWidth={2.25} />
@@ -164,20 +166,20 @@ export const VideoCard = memo(function VideoCard({
           )}
           {video.playback === 'error' && (
             <div
-              title="Bu video dönüştürülemedi; oynatıcıda açılmayabilir"
+              title={t('card.notPlayableTitle')}
               className="flex h-6 items-center gap-1 rounded-l-full border-[1.5px] border-ink bg-sticker-red pr-2.5 pl-2 text-[11px] font-extrabold text-ink"
             >
               <AlertTriangle size={11} strokeWidth={2.25} />
-              <span>oynatılamıyor</span>
+              <span>{t('card.notPlayable')}</span>
             </div>
           )}
           {video.hasDuplicate && (
             <div
-              title="Kütüphanede aynı videodan bir tane daha var"
+              title={t('card.duplicateTitle')}
               className="flex h-6 items-center gap-1 rounded-l-full border-[1.5px] border-ink bg-sticker-purple pr-2.5 pl-2 text-[11px] font-extrabold text-ink"
             >
               <Copy size={11} strokeWidth={2.25} />
-              <span>kopya</span>
+              <span>{t('card.duplicate')}</span>
             </div>
           )}
         </div>
@@ -187,7 +189,7 @@ export const VideoCard = memo(function VideoCard({
         >
           {video.hasAudio !== null && (
             <div
-              title={video.hasAudio ? 'Sesli' : 'Sessiz'}
+              title={video.hasAudio ? t('card.withSound') : t('card.silent')}
               className="flex h-[22px] items-center rounded-full bg-ink/80 px-[7px]"
             >
               {video.hasAudio ? (
@@ -257,9 +259,10 @@ export const VideoCard = memo(function VideoCard({
 /** HEVC gibi oynatılamayan videolar için uyumlu kopya hazırlanırken gösterilir. */
 function ConvertBadge({ videoId }: { videoId: number }): React.JSX.Element {
   const progress = useStore((s) => s.convertProgress[videoId])
+  const t = useT()
   return (
     <div
-      title="Bu video oynatılabilir bir formata çevriliyor. Orijinal dosyaya dokunulmaz."
+      title={t('card.convertingTitle')}
       className="relative flex h-6 items-center gap-1 overflow-hidden rounded-l-full border-[1.5px] border-ink bg-sticker-blue pr-2.5 pl-2 text-[11px] font-extrabold text-ink"
     >
       {progress !== undefined && (
@@ -270,7 +273,9 @@ function ConvertBadge({ videoId }: { videoId: number }): React.JSX.Element {
       )}
       <RefreshCw size={11} strokeWidth={2.5} className="relative animate-spin" />
       <span className="relative">
-        {progress !== undefined ? `çevriliyor %${Math.round(progress * 100)}` : 'çevrilecek'}
+        {progress !== undefined
+          ? t('card.converting', { percent: Math.round(progress * 100) })
+          : t('card.willConvert')}
       </span>
     </div>
   )

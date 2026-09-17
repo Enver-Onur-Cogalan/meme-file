@@ -26,6 +26,7 @@ import { TagInput } from './TagInput'
 import { TagSticker } from './TagSticker'
 import { Button, IconButton, Kbd, Label } from './ui'
 import { bouncy } from '../lib/motion'
+import { useT } from '../lib/i18n'
 
 export function PlayerModal({ video }: { video: Video | undefined }): React.JSX.Element {
   const { openPlayer, openClip, tags, folders } = useStore()
@@ -81,6 +82,7 @@ function PlayerBody({
 }): React.JSX.Element {
   const ref = useRef<HTMLVideoElement>(null)
   const barRef = useRef<HTMLDivElement>(null)
+  const t = useT()
   const [playing, setPlaying] = useState(true)
   const [time, setTime] = useState(0)
   const [duration, setDuration] = useState((video.durationMs ?? 0) / 1000)
@@ -179,7 +181,7 @@ function PlayerBody({
                   className="pointer-events-none absolute top-3 left-3 flex h-[26px] items-center gap-1.5 rounded-full bg-ink/80 px-2.5 text-xs font-semibold"
                 >
                   <Repeat size={13} strokeWidth={2.25} className="text-sticker-yellow" />
-                  Döngüde
+                  {t('player.looping')}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -225,7 +227,7 @@ function PlayerBody({
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={togglePlay}
-              aria-label={playing ? 'Duraklat' : 'Oynat'}
+              aria-label={playing ? t('common.pause') : t('common.play')}
               className="flex size-11 items-center justify-center rounded-full border-2 border-ink bg-sticker-yellow text-ink shadow-[2px_3px_0_var(--color-ink)]"
             >
               <AnimatePresence mode="wait" initial={false}>
@@ -249,7 +251,11 @@ function PlayerBody({
               <span className="text-dim">/ {formatDuration(duration * 1000)}</span>
             </span>
             <span className="grow" />
-            <button onClick={() => setMuted((m) => !m)} aria-label="Sessiz" className="text-text">
+            <button
+              onClick={() => setMuted((m) => !m)}
+              aria-label={t('player.mute')}
+              className="text-text"
+            >
               {muted || volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
             </button>
             <input
@@ -263,18 +269,18 @@ function PlayerBody({
                 setMuted(false)
               }}
               className="w-20 accent-[var(--color-text)]"
-              aria-label="Ses"
+              aria-label={t('player.sound')}
             />
             <IconButton
               icon={Repeat}
-              label="Döngü (L)"
+              label={t('player.loop')}
               active={loop}
               onClick={() => setLoop((l) => !l)}
               size={36}
             />
             <IconButton
               icon={Maximize}
-              label="Tam ekran"
+              label={t('player.fullscreen')}
               size={36}
               onClick={() => void ref.current?.requestFullscreen()}
             />
@@ -292,7 +298,11 @@ function PlayerBody({
                   formatDuration(video.durationMs),
                   formatSize(video.size),
                   video.width && `${video.width}×${video.height}`,
-                  video.hasAudio === null ? null : video.hasAudio ? 'sesli' : 'sessiz'
+                  video.hasAudio === null
+                    ? null
+                    : video.hasAudio
+                      ? t('player.metaSound')
+                      : t('player.metaSilent')
                 ]
                   .filter(Boolean)
                   .join(' · ')}
@@ -301,8 +311,8 @@ function PlayerBody({
             <motion.button
               whileTap={{ scale: 0.8, rotate: -30 }}
               onClick={() => void toggleFavorite([video])}
-              aria-label="Favori (F)"
-              title="Favori (F)"
+              aria-label={t('player.favorite')}
+              title={t('player.favorite')}
               className="pt-1"
             >
               <motion.svg
@@ -323,11 +333,11 @@ function PlayerBody({
                 />
               </motion.svg>
             </motion.button>
-            <IconButton icon={X} label="Kapat" onClick={onClose} size={30} />
+            <IconButton icon={X} label={t('common.close')} onClick={onClose} size={30} />
           </div>
 
           <div className="flex flex-col gap-2.5">
-            <Label>Chip&apos;ler</Label>
+            <Label>{t('player.chips')}</Label>
             <motion.div layout className="flex flex-wrap gap-1.5">
               <AnimatePresence mode="popLayout">
                 {videoTags.map((tag) => (
@@ -361,7 +371,7 @@ function PlayerBody({
           </div>
 
           <div className="flex flex-col gap-2.5">
-            <Label>Gönder</Label>
+            <Label>{t('player.send')}</Label>
             <motion.div
               draggable
               onDragStartCapture={(event: React.DragEvent) => {
@@ -382,26 +392,24 @@ function PlayerBody({
                 <Send size={22} className="text-sticker-blue" />
               )}
               <div className="flex flex-col">
-                <span className="text-[13.5px] font-bold">Buradan sürükle</span>
-                <span className="text-xs text-mute">
-                  Discord&apos;a veya herhangi bir sohbete bırak
-                </span>
+                <span className="text-[13.5px] font-bold">{t('player.dragHere')}</span>
+                <span className="text-xs text-mute">{t('player.dropAnywhere')}</span>
               </div>
             </motion.div>
             <Button variant="primary" icon={Copy} onClick={() => void copyVideos([video.id])}>
-              Kopyala
+              {t('common.copy')}
             </Button>
             <div className="grid grid-cols-3 gap-2">
               <Button icon={Scissors} onClick={() => onClip('trim')} className="px-2">
-                Kırp
+                {t('player.trim')}
               </Button>
               <Button
                 icon={Shrink}
                 onClick={() => onClip('fit')}
                 className="px-2"
-                title="Discord'a sığdır"
+                title={t('player.fitTitle')}
               >
-                Sığdır
+                {t('player.fit')}
               </Button>
               <Button icon={Film} onClick={() => onClip('gif')} className="px-2">
                 GIF
@@ -423,13 +431,13 @@ function PlayerBody({
             </button>
             <IconButton
               icon={PenLine}
-              label="Yeniden adlandır (F2)"
+              label={t('player.renameHint')}
               size={30}
               onClick={() => useStore.getState().openRename(video.id)}
             />
             <IconButton
               icon={Trash2}
-              label="Çöp kutusuna taşı"
+              label={t('player.trash')}
               size={30}
               className="hover:!text-sticker-red"
               onClick={() => void trashVideos([video])}
@@ -440,12 +448,12 @@ function PlayerBody({
 
       <div className="flex items-center gap-4 border-t-[1.5px] border-line px-[22px] py-2.5 text-xs text-dim">
         {[
-          ['Boşluk', 'oynat'],
-          ['← →', 'sar'],
-          ['M', 'sessiz'],
-          ['L', 'döngü'],
-          ['F', 'favori'],
-          ['Ctrl C', 'kopyala']
+          [t('player.keySpace'), t('player.keyPlay')],
+          ['← →', t('player.keySeek')],
+          ['M', t('player.keyMute')],
+          ['L', t('player.keyLoop')],
+          ['F', t('player.keyFavorite')],
+          ['Ctrl C', t('player.keyCopy')]
         ].map(([key, label]) => (
           <div key={key} className="flex items-center gap-1.5">
             <Kbd>{key}</Kbd>
@@ -455,7 +463,7 @@ function PlayerBody({
         <span className="grow" />
         <div className="flex items-center gap-1.5">
           <Kbd>Esc</Kbd>
-          <span>kapat</span>
+          <span>{t('player.keyClose')}</span>
         </div>
       </div>
     </>
@@ -464,6 +472,7 @@ function PlayerBody({
 
 function ConvertingOverlay({ videoId }: { videoId: number }): React.JSX.Element {
   const progress = useStore((s) => s.convertProgress[videoId]) ?? 0
+  const t = useT()
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[rgba(12,10,8,0.85)] text-center">
       <motion.div
@@ -474,12 +483,9 @@ function ConvertingOverlay({ videoId }: { videoId: number }): React.JSX.Element 
         <RefreshCw size={26} strokeWidth={2.25} />
       </motion.div>
       <div className="text-lg font-extrabold">
-        Oynatılabilir formata çevriliyor… %{Math.round(progress * 100)}
+        {t('player.convertingTitle', { percent: Math.round(progress * 100) })}
       </div>
-      <div className="max-w-sm text-sm text-mute">
-        Bu video (ör. HEVC / H.265) doğrudan oynatılamıyor. Uyumlu bir kopya hazırlanıyor; orijinal
-        dosyaya dokunulmaz. Discord&apos;a da bu kopya gönderilir.
-      </div>
+      <div className="max-w-sm text-sm text-mute">{t('player.convertingText')}</div>
       <div className="h-3 w-72 overflow-hidden rounded-full border-2 border-ink bg-surf">
         <motion.div animate={{ width: `${progress * 100}%` }} className="h-full bg-sticker-blue" />
       </div>

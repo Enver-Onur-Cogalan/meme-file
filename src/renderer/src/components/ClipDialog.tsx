@@ -6,6 +6,7 @@ import { errorMessage } from '../lib/actions'
 import { formatPreciseTime, formatSize, stripExtension } from '../lib/format'
 import { type ClipMode, useStore } from '../lib/store'
 import { Button, DialogHeader, Label, Modal, Segmented, Toggle } from './ui'
+import { useT } from '../lib/i18n'
 
 type Target = 'original' | 'discord' | 'large'
 const TARGET_BYTES: Record<Target, number | null> = {
@@ -52,6 +53,7 @@ function ClipBody({
   onBusy(busy: boolean): void
 }): React.JSX.Element {
   const showToast = useStore((s) => s.showToast)
+  const t = useT()
   const durationMs = video.durationMs ?? 0
   const [start, setStart] = useState(0)
   const [end, setEnd] = useState(durationMs)
@@ -60,7 +62,7 @@ function ClipBody({
   const [target, setTarget] = useState<Target>(mode === 'fit' ? 'discord' : 'original')
   const [mute, setMute] = useState(false)
   const [name, setName] = useState(
-    `${stripExtension(video.name)}${mode === 'fit' ? '-discord' : mode === 'gif' ? '' : '-kirpilmis'}`
+    `${stripExtension(video.name)}${mode === 'fit' ? `-${t('clip.suffixDiscord')}` : mode === 'gif' ? '' : `-${t('clip.suffixTrim')}`}`
   )
   const [progress, setProgress] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -208,13 +210,13 @@ function ClipBody({
         : await window.api.copyPath(result.path)
       showToast(
         copied
-          ? `Hazır (${formatSize(result.size)}) ve kopyalandı!`
-          : `Hazır: ${formatSize(result.size)}`
+          ? t('clip.readyCopied', { size: formatSize(result.size) })
+          : t('clip.ready', { size: formatSize(result.size) })
       )
       onBusy(false)
       onClose()
     } catch (e) {
-      setError(errorMessage(e, 'Oluşturulamadı'))
+      setError(errorMessage(e, t('clip.failed')))
       setProgress(null)
       onBusy(false)
     }
@@ -227,7 +229,7 @@ function ClipBody({
     <>
       <DialogHeader
         icon={Icon}
-        title="Klibi hazırla"
+        title={t('clip.title')}
         subtitle={`${video.name} · ${formatPreciseTime(durationMs)} · ${formatSize(video.size)}`}
         onClose={() => progress === null && onClose()}
       />
@@ -256,7 +258,7 @@ function ClipBody({
                   exit={{ opacity: 0 }}
                   className="absolute top-3 left-3 rounded-full border-[1.5px] border-ink bg-sticker-yellow px-3 py-1 text-xs font-extrabold text-ink"
                 >
-                  {dragging === 'start' ? 'Başlangıç' : 'Bitiş'} ·{' '}
+                  {dragging === 'start' ? t('clip.start') : t('clip.end')} ·{' '}
                   {formatPreciseTime(dragging === 'start' ? start : end)}
                 </motion.div>
               )}
@@ -267,7 +269,7 @@ function ClipBody({
               <motion.button
                 whileTap={{ scale: 0.9 }}
                 onClick={togglePlay}
-                aria-label={playing ? 'Duraklat' : 'Oynat'}
+                aria-label={playing ? t('common.pause') : t('common.play')}
                 className="flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-sticker-yellow text-ink shadow-[2px_2px_0_var(--color-ink)]"
               >
                 {playing ? (
@@ -278,7 +280,7 @@ function ClipBody({
               </motion.button>
               <button
                 onClick={() => setMuted((m) => !m)}
-                aria-label={muted ? 'Sesi aç' : 'Sesi kapat'}
+                aria-label={muted ? t('clip.unmute') : t('clip.mute')}
                 className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surf text-mute hover:text-text"
               >
                 {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
@@ -286,8 +288,11 @@ function ClipBody({
               <span className="font-mono text-xs text-mute">{formatPreciseTime(current)}</span>
               <span className="grow" />
               <span className="text-[13px] font-bold">
-                Seçim: {formatPreciseTime(start)} → {formatPreciseTime(end)} ·{' '}
-                {(selectedMs / 1000).toFixed(1)} sn
+                {t('clip.selection', {
+                  start: formatPreciseTime(start),
+                  end: formatPreciseTime(end),
+                  seconds: (selectedMs / 1000).toFixed(1)
+                })}
               </span>
             </div>
             <div
@@ -354,7 +359,7 @@ function ClipBody({
             </div>
             <div className="flex items-center justify-between font-mono text-xs text-dim">
               <span>0:00.0</span>
-              <span className="font-sans">Tutamaçları sürükle · videoya tıkla: oynat / durdur</span>
+              <span className="font-sans">{t('clip.dragHint')}</span>
               <span>{formatPreciseTime(durationMs)}</span>
             </div>
           </div>
@@ -362,14 +367,14 @@ function ClipBody({
 
         <div className="flex w-[360px] shrink-0 flex-col gap-5 px-[22px] py-5">
           <div className="flex flex-col gap-2">
-            <Label>Biçim</Label>
+            <Label>{t('clip.format')}</Label>
             <Segmented
               layoutId="clip-format"
               value={format}
               onChange={setFormat}
               color="var(--color-text)"
               options={[
-                { value: 'mp4', label: 'Video (MP4)' },
+                { value: 'mp4', label: t('clip.video') },
                 { value: 'gif', label: 'GIF' }
               ]}
             />
@@ -383,14 +388,14 @@ function ClipBody({
                 exit={{ opacity: 0, height: 0 }}
                 className="flex flex-col gap-2"
               >
-                <Label>Hedef boyut</Label>
+                <Label>{t('clip.targetSize')}</Label>
                 <Segmented
                   layoutId="clip-target"
                   value={target}
                   onChange={setTarget}
                   options={[
-                    { value: 'original', label: 'Orijinal' },
-                    { value: 'discord', label: '10 MB · Discord' },
+                    { value: 'original', label: t('clip.original') },
+                    { value: 'discord', label: t('clip.discord') },
                     { value: 'large', label: '50 MB' }
                   ]}
                 />
@@ -400,7 +405,7 @@ function ClipBody({
 
           <div className="flex flex-col gap-2.5 rounded-[14px] border-[1.5px] border-line p-3.5">
             <div className="flex items-baseline justify-between">
-              <span className="text-[13px] text-mute">Tahmini boyut</span>
+              <span className="text-[13px] text-mute">{t('clip.estimate')}</span>
               <motion.span
                 key={underLimit ? 'ok' : 'over'}
                 initial={{ scale: 1.25, rotate: underLimit ? -6 : 6 }}
@@ -424,23 +429,23 @@ function ClipBody({
             <div className="flex justify-between text-xs text-dim">
               <span>
                 {tooLong
-                  ? 'Klip bu boyut için çok uzun, kısalt'
+                  ? t('clip.tooLong')
                   : format === 'gif'
-                    ? '480px · 15 fps · sessiz'
+                    ? t('clip.gifInfo')
                     : targetBytes !== null && sourceBytes <= targetBytes
-                      ? 'Zaten sığıyor, kalite korunur'
-                      : 'Kalite otomatik ayarlanır'}
+                      ? t('clip.alreadyFits')
+                      : t('clip.autoQuality')}
               </span>
-              <span className="text-mute">Discord limiti 10 MB</span>
+              <span className="shrink-0 whitespace-nowrap text-mute">{t('clip.discordLimit')}</span>
             </div>
           </div>
 
           {format === 'mp4' && video.hasAudio !== false && (
-            <Toggle checked={mute} onChange={setMute} label="Sesi kaldır" />
+            <Toggle checked={mute} onChange={setMute} label={t('clip.removeSound')} />
           )}
 
           <div className="flex flex-col gap-2">
-            <Label>Yeni dosya adı</Label>
+            <Label>{t('clip.newName')}</Label>
             <div className="flex h-10 items-center rounded-xl border-[1.5px] border-line bg-surf px-3.5 text-[13.5px] focus-within:border-mute">
               <input
                 value={name}
@@ -465,8 +470,7 @@ function ClipBody({
             )}
           </AnimatePresence>
           <div className="text-[12.5px] text-mute">
-            Orijinal dosyaya dokunulmaz, yanına yeni bir kopya oluşturulur
-            {format === 'mp4' ? " ve chip'leri de aktarılır" : ''}.
+            {format === 'mp4' ? t('clip.untouchedWithChips') : t('clip.untouched')}
           </div>
         </div>
 
@@ -486,7 +490,7 @@ function ClipBody({
                 <Icon size={30} strokeWidth={2.25} />
               </motion.div>
               <div className="text-xl font-extrabold">
-                Hazırlanıyor… %{Math.round(progress * 100)}
+                {t('clip.preparing', { percent: Math.round(progress * 100) })}
               </div>
               <div className="h-4 w-[420px] overflow-hidden rounded-full border-2 border-ink bg-surf">
                 <motion.div
@@ -496,7 +500,7 @@ function ClipBody({
                 />
               </div>
               <Button icon={X} onClick={() => window.api.cancelClip()}>
-                Vazgeç
+                {t('common.giveUp')}
               </Button>
             </motion.div>
           )}
@@ -504,7 +508,7 @@ function ClipBody({
       </div>
       <div className="flex items-center justify-end gap-2.5 border-t-[1.5px] border-line px-[22px] py-4">
         <Button onClick={onClose} disabled={progress !== null}>
-          İptal
+          {t('common.cancel')}
         </Button>
         <Button
           variant="primary"
@@ -513,7 +517,7 @@ function ClipBody({
           disabled={progress !== null || tooLong || !name.trim()}
           onClick={() => void create()}
         >
-          Oluştur ve kopyala
+          {t('clip.createAndCopy')}
         </Button>
       </div>
     </>

@@ -4,6 +4,7 @@ import { createElement } from 'react'
 import type { Tag } from '../../../shared/api'
 import { LUCIDE_ICONS } from '../lib/icons'
 import { AnimatedNumber } from './ui'
+import { t } from '../lib/i18n'
 
 export function TagIcon({
   icon,
@@ -102,7 +103,7 @@ export function TagSticker({
       {onRemove && (
         <button
           type="button"
-          aria-label={`${tag.name} chip'ini kaldır`}
+          aria-label={t('tag.remove', { name: tag.name })}
           onClick={(event) => {
             event.stopPropagation()
             onRemove()

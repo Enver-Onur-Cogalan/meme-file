@@ -6,6 +6,7 @@ import { normalizeForSearch } from '../../../shared/search'
 import { SWATCHES } from '../lib/tags'
 import { TagSticker } from './TagSticker'
 import { Kbd } from './ui'
+import { useT } from '../lib/i18n'
 
 /** Yazarak chip ekleme: var olanları önerir, yoksa aynı adla yeni chip oluşturur. */
 export function TagInput({
@@ -19,6 +20,7 @@ export function TagInput({
   onPick(tagId: number): void
   autoFocus?: boolean
 }): React.JSX.Element {
+  const t = useT()
   const [query, setQuery] = useState('')
   const [active, setActive] = useState(0)
 
@@ -80,7 +82,7 @@ export function TagInput({
               else event.currentTarget.blur()
             }
           }}
-          placeholder="Chip ekle…"
+          placeholder={t('tag.inputPlaceholder')}
           className="min-w-0 grow bg-transparent text-[13.5px] outline-none placeholder:text-dim"
         />
       </div>
@@ -114,7 +116,7 @@ export function TagInput({
               >
                 <Plus size={13} />
                 <span className="grow truncate">
-                  &quot;{query.trim()}&quot; adında yeni chip oluştur
+                  {t('tag.createNamed', { name: query.trim() })}
                 </span>
                 {active === suggestions.length && <Kbd>Enter</Kbd>}
               </button>

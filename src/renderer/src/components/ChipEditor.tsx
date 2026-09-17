@@ -8,6 +8,7 @@ import { SWATCHES } from '../lib/tags'
 import { TagIcon, TagSticker } from './TagSticker'
 import { Button, DialogHeader, Label, Modal, Segmented } from './ui'
 import { bouncy, spring } from '../lib/motion'
+import { useT } from '../lib/i18n'
 
 export function ChipEditor(): React.JSX.Element {
   const editor = useStore((s) => s.chipEditor)
@@ -22,6 +23,7 @@ export function ChipEditor(): React.JSX.Element {
 function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
   const { chipEditor, tags, showToast } = useStore()
   const editing = chipEditor?.tag ?? null
+  const t = useT()
   const [name, setName] = useState(editing?.name ?? '')
   const [color, setColor] = useState(editing?.color ?? SWATCHES[tags.length % SWATCHES.length])
   const [icon, setIcon] = useState(editing?.icon ?? 'lucide:Tag')
@@ -52,10 +54,10 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
         : await window.api.createTag(input)
       if (chipEditor?.assignTo?.length)
         await window.api.addTagToVideos(chipEditor.assignTo, tag.id, true)
-      showToast(editing ? 'Chip güncellendi' : 'Chip oluşturuldu')
+      showToast(editing ? t('chipEditor.updated') : t('chipEditor.created'))
       onClose()
     } catch (e) {
-      setError(errorMessage(e, 'Kaydedilemedi'))
+      setError(errorMessage(e, t('chipEditor.saveFailed')))
     }
   }
 
@@ -67,7 +69,7 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
         setTab('custom')
       }
     } catch (e) {
-      setError(errorMessage(e, 'İkon yüklenemedi'))
+      setError(errorMessage(e, t('chipEditor.iconFailed')))
     }
   }
 
@@ -75,7 +77,7 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
     <>
       <DialogHeader
         icon={editing ? Check : Plus}
-        title={editing ? 'Chip düzenle' : 'Yeni chip'}
+        title={editing ? t('chipEditor.editTitle') : t('chipEditor.newTitle')}
         onClose={onClose}
       />
       <div className="flex min-h-0">
@@ -89,16 +91,21 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
               transition={{ type: 'spring', stiffness: 600, damping: 12 }}
             >
               <TagSticker
-                tag={{ name: name.trim() || 'chip adı', color, icon, count: editing?.count ?? 0 }}
+                tag={{
+                  name: name.trim() || t('chipEditor.previewName'),
+                  color,
+                  icon,
+                  count: editing?.count ?? 0
+                }}
                 size="lg"
                 count
                 className="shadow-[3px_4px_0_var(--color-ink)]"
               />
             </motion.div>
-            <span className="text-xs text-dim">önizleme</span>
+            <span className="text-xs text-dim">{t('chipEditor.preview')}</span>
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Ad</Label>
+            <Label>{t('chipEditor.name')}</Label>
             <input
               autoFocus
               value={name}
@@ -110,7 +117,7 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
               onKeyDown={(event) => {
                 if (event.key === 'Enter' && name.trim() && !duplicate) void save()
               }}
-              placeholder="ör. efsane"
+              placeholder={t('chipEditor.namePlaceholder')}
               className="h-[42px] rounded-xl border-2 border-line bg-surf px-3.5 text-[15px] font-semibold outline-none focus:border-text"
             />
             <AnimatePresence>
@@ -121,13 +128,13 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
                   exit={{ opacity: 0, height: 0 }}
                   className="text-xs font-semibold text-sticker-red"
                 >
-                  {duplicate ? 'Bu adda bir chip zaten var' : error}
+                  {duplicate ? t('chipEditor.duplicate') : error}
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Renk</Label>
+            <Label>{t('chipEditor.color')}</Label>
             <div className="flex flex-wrap gap-3">
               {SWATCHES.map((swatch) => (
                 <motion.button
@@ -161,7 +168,7 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
 
         <div className="flex min-w-0 grow flex-col gap-3.5 p-[22px]">
           <div className="flex items-center justify-between gap-3">
-            <Label>İkon</Label>
+            <Label>{t('chipEditor.icon')}</Label>
             <div className="w-[260px]">
               <Segmented
                 layoutId="icon-tab"
@@ -169,8 +176,8 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
                 onChange={setTab}
                 color="var(--color-text)"
                 options={[
-                  { value: 'lucide', label: 'Hazır ikonlar' },
-                  { value: 'custom', label: 'Kendi ikonlarım' }
+                  { value: 'lucide', label: t('chipEditor.builtIn') },
+                  { value: 'custom', label: t('chipEditor.custom') }
                 ]}
               />
             </div>
@@ -182,7 +189,7 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="İkon ara… (ateş, kedi, oyun)"
+                  placeholder={t('chipEditor.iconSearch')}
                   className="min-w-0 grow bg-transparent text-[13.5px] outline-none placeholder:text-dim"
                 />
               </label>
@@ -200,13 +207,11 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
                 <UploadTile onClick={() => void upload()} />
                 {results.length === 0 && (
                   <div className="col-span-7 self-center text-sm text-dim">
-                    Bu isimde ikon bulunamadı
+                    {t('chipEditor.iconNotFound')}
                   </div>
                 )}
               </div>
-              <div className="text-xs text-dim">
-                2000+ ikon · kendi SVG veya PNG dosyanı da yükleyebilirsin
-              </div>
+              <div className="text-xs text-dim">{t('chipEditor.iconHint')}</div>
             </>
           ) : (
             <div className="grid grid-cols-[repeat(8,minmax(0,1fr))] content-start gap-2">
@@ -222,7 +227,7 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
               <UploadTile onClick={() => void upload()} />
               {customIcons.length === 0 && (
                 <div className="col-span-7 self-center text-sm text-dim">
-                  SVG, PNG veya WebP yükle (en fazla 1 MB). Kare görseller en iyi sonucu verir.
+                  {t('chipEditor.customHint')}
                 </div>
               )}
             </div>
@@ -237,18 +242,18 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
             className="text-sticker-red hover:text-sticker-red"
             onClick={() => void confirmDeleteTag(editing).then((deleted) => deleted && onClose())}
           >
-            Sil
+            {t('common.delete')}
           </Button>
         )}
         <span className="grow" />
-        <Button onClick={onClose}>İptal</Button>
+        <Button onClick={onClose}>{t('common.cancel')}</Button>
         <Button
           variant="primary"
           icon={Check}
           disabled={!name.trim() || duplicate}
           onClick={() => void save()}
         >
-          {editing ? 'Kaydet' : 'Chip oluştur'}
+          {editing ? t('common.save') : t('chipEditor.create')}
         </Button>
       </div>
     </>
@@ -297,6 +302,7 @@ function IconTile({
 }
 
 function UploadTile({ onClick }: { onClick(): void }): React.JSX.Element {
+  const t = useT()
   return (
     <motion.button
       whileHover={{ scale: 1.08, rotate: -4 }}
@@ -305,7 +311,7 @@ function UploadTile({ onClick }: { onClick(): void }): React.JSX.Element {
       className="flex aspect-square flex-col items-center justify-center gap-0.5 rounded-xl border-[1.5px] border-dashed border-dim text-mute hover:text-text"
     >
       <Upload size={16} />
-      <span className="text-[9.5px] font-bold">yükle</span>
+      <span className="text-[9.5px] font-bold">{t('chipEditor.upload')}</span>
     </motion.button>
   )
 }

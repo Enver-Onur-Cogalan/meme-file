@@ -7,6 +7,7 @@ import { AnimatedNumber, Button, Kbd, Label } from '../components/ui'
 import { toggleFavorite } from '../lib/actions'
 import { folderName, formatDuration, formatSize, stripExtension } from '../lib/format'
 import { useStore } from '../lib/store'
+import { useCountParts, useT } from '../lib/i18n'
 
 /** Gelen Kutusu: yeni videolar tek tek önüne gelir, rakam tuşlarıyla chip verilir. */
 export function InboxView(): React.JSX.Element {
@@ -24,6 +25,8 @@ export function InboxView(): React.JSX.Element {
   )
   const current = queue[0]
   const quickTags = tags.slice(0, 9)
+  const t = useT()
+  const [waitingBefore, waitingAfter] = useCountParts('inbox.waiting', queue.length)
 
   const toggleTag = (tagId: number): void => {
     if (!current) return
@@ -49,14 +52,14 @@ export function InboxView(): React.JSX.Element {
 
   const reviewAll = async (): Promise<void> => {
     const ok = await useStore.getState().confirm({
-      title: `${queue.length} videonun hepsi kütüphaneye taşınsın mı?`,
-      text: 'Chip vermediklerin etiketsiz kalır, sonra istediğin zaman ekleyebilirsin.',
-      confirmLabel: 'Hepsini taşı'
+      title: t('confirm.reviewAllTitle', { count: queue.length }),
+      text: t('confirm.reviewAllText'),
+      confirmLabel: t('confirm.reviewAll')
     })
     if (!ok) return
     void window.api
       .markReviewed(queue.map((video) => video.id))
-      .then(() => showToast('Gelen kutusu boşaltıldı'))
+      .then(() => showToast(t('inbox.emptied')))
   }
 
   useEffect(() => {
@@ -89,7 +92,7 @@ export function InboxView(): React.JSX.Element {
     <main className="notebook flex min-w-0 grow flex-col gap-[18px] overflow-y-auto pt-[18px] pr-[26px] pb-5 pl-[38px]">
       <div className="flex items-center gap-4">
         <h1 className="m-0 text-[30px] leading-none font-extrabold tracking-[-0.02em]">
-          Gelen Kutusu
+          {t('inbox.title')}
         </h1>
         {queue.length > 0 && (
           <motion.div
@@ -99,7 +102,9 @@ export function InboxView(): React.JSX.Element {
             transition={{ type: 'spring', stiffness: 500, damping: 14 }}
             className="flex h-7 items-center gap-1.5 rounded-full border-[1.5px] border-ink bg-sticker-red px-3 text-[13px] font-extrabold text-ink"
           >
-            <AnimatedNumber value={queue.length} /> video etiket bekliyor
+            {waitingBefore}
+            <AnimatedNumber value={queue.length} />
+            {waitingAfter}
           </motion.div>
         )}
         <span className="grow" />
@@ -108,7 +113,7 @@ export function InboxView(): React.JSX.Element {
             onClick={() => void reviewAll()}
             className="text-[13px] font-semibold text-mute underline underline-offset-[3px] hover:text-text"
           >
-            Hepsini etiketsiz kütüphaneye at
+            {t('inbox.reviewAll')}
           </button>
         )}
       </div>
@@ -124,10 +129,8 @@ export function InboxView(): React.JSX.Element {
             <Inbox size={38} strokeWidth={2.25} />
           </motion.div>
           <div className="text-center">
-            <div className="text-2xl font-extrabold">Gelen kutun tertemiz</div>
-            <div className="mt-1 text-sm text-mute">
-              Klasörlerine yeni video gelince burada görünecek.
-            </div>
+            <div className="text-2xl font-extrabold">{t('library.inboxEmptyTitle')}</div>
+            <div className="mt-1 text-sm text-mute">{t('library.inboxEmptyText')}</div>
           </div>
         </div>
       ) : (
@@ -174,8 +177,8 @@ export function InboxView(): React.JSX.Element {
 
             <div className="flex w-[340px] shrink-0 flex-col gap-3.5 rounded-2xl border-[1.5px] border-line bg-bg p-[18px]">
               <div className="flex items-center justify-between">
-                <Label>Hızlı etiketle</Label>
-                <span className="text-xs text-dim">rakamla aç / kapat</span>
+                <Label>{t('inbox.quickTag')}</Label>
+                <span className="text-xs text-dim">{t('inbox.toggleHint')}</span>
               </div>
               <div className="flex flex-wrap gap-x-2 gap-y-2.5">
                 {quickTags.map((tag, i) => {
@@ -197,23 +200,23 @@ export function InboxView(): React.JSX.Element {
                   className="flex h-[30px] items-center gap-1 rounded-full border-[1.5px] border-dashed border-dim px-[11px] text-[13px] font-semibold text-mute hover:text-text"
                 >
                   <Plus size={14} />
-                  yeni
+                  {t('common.new')}
                 </button>
               </div>
               <span className="grow" />
               <Button variant="primary" icon={CornerDownLeft} size="lg" onClick={save}>
-                Kaydet, sonraki
+                {t('inbox.saveNext')}
               </Button>
               <div className="grid grid-cols-2 gap-2">
                 <Button icon={SkipForward} onClick={skip} disabled={queue.length < 2}>
-                  Atla <Kbd>S</Kbd>
+                  {t('inbox.skip')} <Kbd>S</Kbd>
                 </Button>
                 <Button
                   icon={Star}
                   onClick={() => void toggleFavorite([current])}
                   className={current.favorite ? 'text-sticker-yellow' : ''}
                 >
-                  Favori <Kbd>F</Kbd>
+                  {t('common.favorite')} <Kbd>F</Kbd>
                 </Button>
               </div>
             </div>
@@ -222,7 +225,7 @@ export function InboxView(): React.JSX.Element {
           {queue.length > 1 && (
             <div className="flex flex-col gap-2.5">
               <div className="flex items-center gap-2">
-                <Label>Sırada</Label>
+                <Label>{t('inbox.queue')}</Label>
                 <span className="font-mono text-[11px] text-dim">{queue.length - 1}</span>
               </div>
               <div className="grid grid-cols-[repeat(6,minmax(0,1fr))] gap-3">

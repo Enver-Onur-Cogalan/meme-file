@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { resolveLanguage, type Language } from '../../../shared/i18n'
 import type {
   LibraryFolder,
   LibraryStats,
@@ -54,6 +55,7 @@ interface State {
   convertProgress: Record<number, number>
   update: UpdateStatus
   appVersion: string
+  language: Language
 }
 
 interface Actions {
@@ -117,6 +119,7 @@ export const useStore = create<State & Actions>()((set, get) => ({
   convertProgress: {},
   update: { state: 'idle' },
   appVersion: '',
+  language: resolveLanguage('system', navigator.language),
 
   async refresh() {
     const seq = ++refreshSeq
@@ -149,7 +152,12 @@ export const useStore = create<State & Actions>()((set, get) => ({
       videos,
       // Ayarlar sadece ilk yüklemede okunur; sonrasında arayüz tek doğru kaynaktır.
       // (Aksi hâlde uçuştaki eski bir yenileme az önce değiştirilen ayarı geri alabiliyordu.)
-      ...(freshSettings && !get().settings ? { settings: freshSettings } : {}),
+      ...(freshSettings && !get().settings
+        ? {
+            settings: freshSettings,
+            language: resolveLanguage(freshSettings.language, navigator.language)
+          }
+        : {}),
       loaded: true,
       ...(validTagIds.length !== current.tagIds.length ? { tagIds: validTagIds } : {}),
       ...(validSelection.length !== current.selection.length ? { selection: validSelection } : {})
@@ -207,15 +215,15 @@ export const useStore = create<State & Actions>()((set, get) => ({
     set({ confirmRequest: null })
   },
   setSettings(settings) {
-    set({ settings })
+    set({ settings, language: resolveLanguage(settings.language, navigator.language) })
   },
   async updateSettings(patch) {
     const current = get().settings
-    if (current) set({ settings: { ...current, ...patch } })
+    if (current) get().setSettings({ ...current, ...patch })
     try {
-      set({ settings: await window.api.updateSettings(patch) })
+      get().setSettings(await window.api.updateSettings(patch))
     } catch {
-      if (current) set({ settings: current })
+      if (current) get().setSettings(current)
     }
   },
   showToast(text, tone = 'ok') {

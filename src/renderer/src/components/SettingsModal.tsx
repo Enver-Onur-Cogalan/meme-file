@@ -4,6 +4,8 @@ import type { Settings as SettingsType, UpdateState } from '../../../shared/api'
 import { errorMessage } from '../lib/actions'
 import { useStore } from '../lib/store'
 import { Button, DialogHeader, Kbd, Label, Modal, Segmented, Toggle } from './ui'
+import { useT } from '../lib/i18n'
+import type { MessageKey } from '../../../shared/i18n'
 
 const MODIFIER_KEYS = ['Control', 'Shift', 'Alt', 'Meta']
 
@@ -34,6 +36,7 @@ function prettyShortcut(accelerator: string): string {
 
 export function SettingsModal(): React.JSX.Element {
   const { settingsOpen, setSettingsOpen, settings, showToast } = useStore()
+  const t = useT()
   const [recording, setRecording] = useState(false)
   const [busy, setBusy] = useState(false)
   const close = (): void => {
@@ -58,11 +61,26 @@ export function SettingsModal(): React.JSX.Element {
 
   return (
     <Modal open={settingsOpen} onClose={close} width={560}>
-      <DialogHeader icon={Settings} title="Ayarlar" onClose={close} />
+      <DialogHeader icon={Settings} title={t('settings.title')} onClose={close} />
       {settings && (
         <div className="flex flex-col gap-6 overflow-y-auto px-[22px] py-5">
           <section className="flex flex-col gap-3">
-            <Label>Hızlı arama kısayolu</Label>
+            <Label>{t('settings.language')}</Label>
+            <Segmented
+              layoutId="settings-language"
+              value={settings.language}
+              onChange={(value) => void update({ language: value })}
+              color="var(--color-text)"
+              options={[
+                { value: 'system', label: t('settings.languageSystem') },
+                { value: 'tr', label: 'Türkçe' },
+                { value: 'en', label: 'English' }
+              ]}
+            />
+          </section>
+
+          <section className="flex flex-col gap-3">
+            <Label>{t('settings.shortcut')}</Label>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setRecording(true)}
@@ -83,41 +101,38 @@ export function SettingsModal(): React.JSX.Element {
               >
                 <Keyboard size={17} className="text-mute" />
                 {recording ? (
-                  <span className="text-sticker-yellow">Tuş kombinasyonuna bas… (Esc: vazgeç)</span>
+                  <span className="text-sticker-yellow">{t('settings.recording')}</span>
                 ) : (
                   <Kbd>{prettyShortcut(settings.quickSearchShortcut)}</Kbd>
                 )}
               </button>
             </div>
-            <div className="text-xs text-dim">
-              Oyundayken bile açılır. Windows&apos;un standart kısayol sistemini kullanır; oyunlara
-              ya da hile korumalarına dokunmaz.
-            </div>
+            <div className="text-xs text-dim">{t('settings.shortcutHint')}</div>
           </section>
 
           <section className="flex flex-col gap-3.5">
-            <Label>Uygulama</Label>
+            <Label>{t('settings.app')}</Label>
             <Toggle
               checked={settings.closeToTray}
               onChange={(value) => void update({ closeToTray: value })}
-              label="Kapatınca sistem tepsisinde çalışmaya devam et"
+              label={t('settings.closeToTray')}
             />
             <Toggle
               checked={settings.launchAtLogin}
               onChange={(value) => void update({ launchAtLogin: value })}
-              label="Windows açılınca arka planda başlat"
+              label={t('settings.launchAtLogin')}
             />
           </section>
 
           <section className="flex flex-col gap-3">
-            <Label>Birden fazla chip seçilince</Label>
+            <Label>{t('settings.tagMode')}</Label>
             <Segmented
               layoutId="settings-tag-mode"
               value={settings.tagMode}
               onChange={(value) => void update({ tagMode: value })}
               options={[
-                { value: 'and', label: 'Hepsini içerenler (VE)' },
-                { value: 'or', label: 'Herhangi birini (VEYA)' }
+                { value: 'and', label: t('settings.tagModeAnd') },
+                { value: 'or', label: t('settings.tagModeOr') }
               ]}
             />
           </section>
@@ -125,7 +140,7 @@ export function SettingsModal(): React.JSX.Element {
           <UpdateSection />
 
           <section className="flex flex-col gap-3">
-            <Label>Kütüphane</Label>
+            <Label>{t('settings.library')}</Label>
             <div className="flex flex-wrap gap-2">
               <Button
                 icon={Download}
@@ -133,11 +148,14 @@ export function SettingsModal(): React.JSX.Element {
                 onClick={() =>
                   void run(async () => {
                     const result = await window.api.exportBackup()
-                    if (result) showToast(`Yedeklendi: ${result.tags} chip, ${result.videos} video`)
+                    if (result)
+                      showToast(
+                        t('settings.backedUp', { tags: result.tags, videos: result.videos })
+                      )
                   })
                 }
               >
-                Yedekle
+                {t('settings.backup')}
               </Button>
               <Button
                 icon={Upload}
@@ -146,11 +164,13 @@ export function SettingsModal(): React.JSX.Element {
                   void run(async () => {
                     const result = await window.api.importBackup()
                     if (result)
-                      showToast(`Yüklendi: ${result.tags} chip, ${result.videos} video eşleşti`)
+                      showToast(
+                        t('settings.restored', { tags: result.tags, videos: result.videos })
+                      )
                   })
                 }
               >
-                Yedekten yükle
+                {t('settings.restore')}
               </Button>
               <Button
                 icon={RefreshCw}
@@ -158,17 +178,14 @@ export function SettingsModal(): React.JSX.Element {
                 onClick={() =>
                   void run(async () => {
                     await window.api.rescan()
-                    showToast('Klasörler yeniden tarandı', 'info')
+                    showToast(t('settings.rescanned'), 'info')
                   })
                 }
               >
-                Yeniden tara
+                {t('settings.rescan')}
               </Button>
             </div>
-            <div className="text-xs text-dim">
-              Yedek; chip&apos;leri, özel ikonları, favorileri ve hangi videoda hangi chip olduğunu
-              içerir. Videoların kendisi yedeğe girmez.
-            </div>
+            <div className="text-xs text-dim">{t('settings.backupHint')}</div>
           </section>
         </div>
       )}
@@ -176,28 +193,29 @@ export function SettingsModal(): React.JSX.Element {
   )
 }
 
-const UPDATE_TEXT: Record<UpdateState, string> = {
-  idle: 'Güncellemeler otomatik denetlenir.',
-  checking: 'Denetleniyor…',
-  downloading: 'Yeni sürüm indiriliyor…',
-  ready: 'Yeni sürüm hazır.',
-  latest: 'En güncel sürümü kullanıyorsun.',
-  error: 'Güncelleme denetlenemedi. İnternet bağlantını kontrol et.',
-  dev: 'Geliştirme sürümünde otomatik güncelleme kapalı.'
+const UPDATE_TEXT: Record<UpdateState, MessageKey> = {
+  idle: 'update.idle',
+  checking: 'update.checking',
+  downloading: 'update.downloading',
+  ready: 'update.ready',
+  latest: 'update.latest',
+  error: 'update.error',
+  dev: 'update.dev'
 }
 
 function UpdateSection(): React.JSX.Element {
   const { update, appVersion } = useStore()
+  const t = useT()
   return (
     <section className="flex flex-col gap-3">
-      <Label>Sürüm</Label>
+      <Label>{t('settings.version')}</Label>
       <div className="flex items-center gap-3">
         <span className="rounded-full border-[1.5px] border-ink bg-sticker-yellow px-2.5 py-0.5 font-mono text-xs font-medium text-ink">
           v{appVersion}
         </span>
         <span className="grow text-sm text-mute">
-          {UPDATE_TEXT[update.state]}
-          {update.state === 'downloading' && ` %${Math.round((update.percent ?? 0) * 100)}`}
+          {t(UPDATE_TEXT[update.state])}
+          {update.state === 'downloading' && ` ${Math.round((update.percent ?? 0) * 100)}%`}
         </span>
         {update.state === 'ready' ? (
           <Button
@@ -206,7 +224,7 @@ function UpdateSection(): React.JSX.Element {
             color="var(--color-sticker-green)"
             onClick={() => window.api.installUpdate()}
           >
-            {update.version} için yeniden başlat
+            {t('settings.restartFor', { version: update.version ?? '' })}
           </Button>
         ) : (
           <Button
@@ -218,7 +236,7 @@ function UpdateSection(): React.JSX.Element {
             }
             onClick={() => void window.api.checkForUpdates()}
           >
-            Denetle
+            {t('settings.check')}
           </Button>
         )}
       </div>

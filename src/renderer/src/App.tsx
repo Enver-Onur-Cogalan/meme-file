@@ -15,6 +15,7 @@ import { useStore } from './lib/store'
 import { InboxView } from './views/InboxView'
 import { LibraryView } from './views/LibraryView'
 import { QuickSearch } from './views/QuickSearch'
+import { t } from './lib/i18n'
 
 function App(): React.JSX.Element {
   return (
@@ -72,7 +73,7 @@ function MainWindow(): React.JSX.Element {
       const folder = await window.api.addFolder()
       if (folder) {
         useStore.getState().setView('library', folder.id)
-        useStore.getState().showToast(`${folder.videoCount} video eklendi`)
+        useStore.getState().showToast(t('folder.added', { count: folder.videoCount }))
       }
     } catch (e) {
       useStore.getState().showToast(errorMessage(e), 'error')

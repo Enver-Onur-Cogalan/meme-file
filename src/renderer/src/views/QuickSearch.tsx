@@ -5,12 +5,21 @@ import type { Tag, Video } from '../../../shared/api'
 import { TagSticker } from '../components/TagSticker'
 import { Kbd } from '../components/ui'
 import { formatDuration, stripExtension } from '../lib/format'
+import { useT } from '../lib/i18n'
+import { useStore } from '../lib/store'
 
 const RESULT_LIMIT = 6
 
 /** Global kısayolla açılan küçük pencere: ara, Enter ile kopyala ya da sürükle. */
 export function QuickSearch(): React.JSX.Element {
+  const t = useT()
   const [text, setText] = useState('')
+
+  // Bu pencerenin kendi store'u var; dil ayarı ana pencereden değişince buraya da yansır.
+  useEffect(() => {
+    void window.api.getSettings().then((settings) => useStore.getState().setSettings(settings))
+    return window.api.onSettingsChanged((settings) => useStore.getState().setSettings(settings))
+  }, [])
   const [videos, setVideos] = useState<Video[]>([])
   const [tags, setTags] = useState<Tag[]>([])
   const [active, setActive] = useState(0)
@@ -95,7 +104,7 @@ export function QuickSearch(): React.JSX.Element {
           autoFocus
           value={text}
           onChange={(event) => setText(event.target.value)}
-          placeholder="Hangi meme lazım?"
+          placeholder={t('library.searchPlaceholder')}
           style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
           className="min-w-0 grow bg-transparent text-[22px] font-bold outline-none placeholder:text-dim"
         />
@@ -104,7 +113,7 @@ export function QuickSearch(): React.JSX.Element {
       <div className="flex grow flex-col gap-0.5 overflow-hidden p-2">
         {!text && videos.length > 0 && (
           <div className="px-2 pt-1 pb-1.5 text-xs font-bold text-dim">
-            {videos.some((v) => v.sendCount > 0) ? 'En çok gönderdiklerin' : 'Son eklenenler'}
+            {videos.some((v) => v.sendCount > 0) ? t('quick.mostSent') : t('quick.recent')}
           </div>
         )}
         {videos.map((video, index) => {
@@ -164,7 +173,7 @@ export function QuickSearch(): React.JSX.Element {
                     transition={{ type: 'spring', stiffness: 520, damping: 18 }}
                     className="relative rounded-full border-[1.5px] border-ink bg-sticker-green px-3 py-1 text-xs font-extrabold text-ink"
                   >
-                    Kopyalandı!
+                    {t('common.copied')}
                   </motion.span>
                 ) : (
                   isActive && (
@@ -175,7 +184,7 @@ export function QuickSearch(): React.JSX.Element {
                       className="relative flex shrink-0 items-center gap-1.5 text-xs text-mute"
                     >
                       <Send size={13} />
-                      sürükle veya <Kbd>Enter</Kbd>
+                      {t('quick.dragOr')} <Kbd>Enter</Kbd>
                     </motion.div>
                   )
                 )}
@@ -185,24 +194,24 @@ export function QuickSearch(): React.JSX.Element {
         })}
         {videos.length === 0 && (
           <div className="flex grow items-center justify-center text-sm text-dim">
-            {text ? 'Böyle bir meme yok' : 'Kütüphane boş'}
+            {text ? t('library.noResultsTitle') : t('quick.empty')}
           </div>
         )}
       </div>
 
       <div className="flex items-center gap-3.5 border-t-[1.5px] border-line px-[18px] py-2.5 text-xs text-dim">
         <span className="flex items-center gap-1.5">
-          <Kbd>↑ ↓</Kbd> seç
+          <Kbd>↑ ↓</Kbd> {t('quick.keySelect')}
         </span>
         <span className="flex items-center gap-1.5">
-          <Kbd>Enter</Kbd> kopyala
+          <Kbd>Enter</Kbd> {t('player.keyCopy')}
         </span>
         <span className="flex items-center gap-1.5">
-          <Kbd>Ctrl Enter</Kbd> oynat
+          <Kbd>Ctrl Enter</Kbd> {t('player.keyPlay')}
         </span>
         <span className="grow" />
         <span className="flex items-center gap-1.5">
-          <Kbd>Esc</Kbd> kapat
+          <Kbd>Esc</Kbd> {t('player.keyClose')}
         </span>
       </div>
     </motion.div>

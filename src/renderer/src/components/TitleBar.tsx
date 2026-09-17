@@ -2,10 +2,12 @@ import { Download, RotateCw } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useStore } from '../lib/store'
 import { AppLogo } from './AppLogo'
+import { useT } from '../lib/i18n'
 
 export function TitleBar(): React.JSX.Element {
   const isMac = window.api.platform === 'darwin'
   const update = useStore((s) => s.update)
+  const t = useT()
   return (
     <div className="drag-region flex h-9 shrink-0 items-center bg-side">
       <div
@@ -24,10 +26,10 @@ export function TitleBar(): React.JSX.Element {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               className="flex h-6 items-center gap-1.5 text-xs font-semibold text-mute"
-              title={`Sürüm ${update.version} indiriliyor`}
+              title={t('update.downloadingTitle', { version: update.version ?? '' })}
             >
               <Download size={13} />
-              Güncelleme indiriliyor %{Math.round((update.percent ?? 0) * 100)}
+              {t('update.downloadingBadge', { percent: Math.round((update.percent ?? 0) * 100) })}
             </motion.div>
           )}
           {update.state === 'ready' && (
@@ -42,7 +44,7 @@ export function TitleBar(): React.JSX.Element {
               className="flex h-[26px] items-center gap-1.5 rounded-full border-[1.5px] border-ink bg-sticker-green px-3 text-xs font-extrabold text-ink shadow-[2px_2px_0_var(--color-ink)]"
             >
               <RotateCw size={13} strokeWidth={2.5} />
-              {update.version} hazır · Yeniden başlat
+              {t('update.readyBadge', { version: update.version ?? '' })}
             </motion.button>
           )}
         </AnimatePresence>

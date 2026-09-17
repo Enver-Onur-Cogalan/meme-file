@@ -23,22 +23,24 @@ import { copyVideos, toggleFavorite } from '../lib/actions'
 import { folderName } from '../lib/format'
 import { useShallow } from 'zustand/react/shallow'
 import { useStore } from '../lib/store'
+import { useCountParts, useT } from '../lib/i18n'
+import type { MessageKey } from '../../../shared/i18n'
 
-const TITLES: Record<View, string> = {
-  library: 'Kütüphane',
-  inbox: 'Gelen Kutusu',
-  favorites: 'Favoriler',
-  'most-sent': 'En çok gönderilen',
-  duplicates: 'Aynı videolar'
+const TITLES: Record<View, MessageKey> = {
+  library: 'nav.library',
+  inbox: 'nav.inbox',
+  favorites: 'nav.favorites',
+  'most-sent': 'nav.mostSent',
+  duplicates: 'nav.duplicates'
 }
 
-const SORTS: { value: SortOrder; label: string }[] = [
-  { value: 'newest', label: 'En yeni' },
-  { value: 'oldest', label: 'En eski' },
-  { value: 'name', label: 'İsim' },
-  { value: 'size', label: 'Boyut' },
-  { value: 'duration', label: 'Süre' },
-  { value: 'most-sent', label: 'En çok gönderilen' }
+const SORTS: { value: SortOrder; label: MessageKey }[] = [
+  { value: 'newest', label: 'sort.newest' },
+  { value: 'oldest', label: 'sort.oldest' },
+  { value: 'name', label: 'sort.name' },
+  { value: 'size', label: 'sort.size' },
+  { value: 'duration', label: 'sort.duration' },
+  { value: 'most-sent', label: 'sort.mostSent' }
 ]
 
 interface Props {
@@ -73,11 +75,13 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
   const { videos, tags, view, folderId, folders, text, tagIds, sort, selection, settings } = store
   const [sortOpen, setSortOpen] = useState(false)
   const gridRef = useRef<HTMLDivElement>(null)
+  const t = useT()
+  const [foundBefore, foundAfter] = useCountParts('library.found', videos.length)
 
   const title =
     folderId !== null
       ? folderName(folders.find((f) => f.id === folderId)?.path ?? '')
-      : TITLES[view]
+      : t(TITLES[view])
   const selectedVideos = useMemo(
     () => videos.filter((video) => selection.includes(video.id)),
     [videos, selection]
@@ -122,11 +126,11 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
                 event.currentTarget.blur()
               }
             }}
-            placeholder="Hangi meme lazım?"
+            placeholder={t('library.searchPlaceholder')}
             className="min-w-0 grow bg-transparent text-[14.5px] font-medium outline-none placeholder:text-[#6d6456]"
           />
           {text ? (
-            <button onClick={() => store.setText('')} aria-label="Aramayı temizle">
+            <button onClick={() => store.setText('')} aria-label={t('library.clearSearch')}>
               <X size={16} strokeWidth={2.5} />
             </button>
           ) : (
@@ -135,7 +139,7 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
         </label>
         <div className="relative">
           <Button icon={ArrowDownUp} onClick={() => setSortOpen((open) => !open)} className="h-11">
-            {SORTS.find((s) => s.value === sort)?.label}
+            {t(SORTS.find((s) => s.value === sort)?.label ?? 'sort.newest')}
           </Button>
           <AnimatePresence>
             {sortOpen && (
@@ -156,7 +160,7 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
                     }}
                     className="flex h-9 items-center justify-between rounded-[9px] px-2.5 text-left text-[13.5px] font-semibold hover:bg-surf"
                   >
-                    {option.label}
+                    {t(option.label)}
                     {option.value === sort && <Check size={15} className="text-sticker-yellow" />}
                   </button>
                 ))}
@@ -183,10 +187,10 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
                   onClick={() =>
                     void store.updateSettings({ tagMode: tagMode === 'and' ? 'or' : 'and' })
                   }
-                  title="VE: hepsini içeren · VEYA: herhangi birini içeren"
+                  title={t('library.tagModeHint')}
                   className="rounded-full bg-ink px-2 py-0.5 font-mono text-[11px] font-medium text-mute hover:text-text"
                 >
-                  {tagMode === 'and' ? 'VE' : 'VEYA'}
+                  {tagMode === 'and' ? t('library.and') : t('library.or')}
                 </button>
               )}
               <TagSticker
@@ -203,26 +207,28 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
             onClick={store.clearFilters}
             className="text-[13px] font-semibold text-mute underline underline-offset-[3px] hover:text-text"
           >
-            temizle
+            {t('common.clear')}
           </button>
         )}
         <span className="grow" />
         {store.stats.pendingMedia > 0 && (
           <span className="flex items-center gap-1.5 text-xs text-dim">
             <RefreshCw size={12} className="animate-spin" />
-            {store.stats.pendingMedia} önizleme hazırlanıyor
+            {t('library.pendingPreviews', { count: store.stats.pendingMedia })}
           </span>
         )}
         <span className="text-[13px] text-mute">
-          <AnimatedNumber value={videos.length} className="font-extrabold text-text" /> meme bulundu
+          {foundBefore}
+          <AnimatedNumber value={videos.length} className="font-extrabold text-text" />
+          {foundAfter}
         </span>
       </div>
 
       {folders.length === 0 && store.loaded ? (
         <EmptyState
           icon={FolderPlus}
-          title="Memelerin nerede?"
-          text="Video klasörünü ekle, gerisini biz hallederiz."
+          title={t('library.noFoldersTitle')}
+          text={t('library.noFoldersText')}
           action={
             <Button
               variant="primary"
@@ -231,7 +237,7 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
               size="lg"
               onClick={onAddFolder}
             >
-              Klasör ekle
+              {t('nav.addFolder')}
             </Button>
           }
         />
@@ -239,28 +245,24 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
         activeTags.length > 0 || text ? (
           <EmptyState
             icon={SearchX}
-            title="Böyle bir meme yok"
-            text="Aramayı ya da chip filtresini değiştirmeyi dene."
-            action={<Button onClick={store.clearFilters}>Filtreleri temizle</Button>}
+            title={t('library.noResultsTitle')}
+            text={t('library.noResultsText')}
+            action={<Button onClick={store.clearFilters}>{t('library.clearFilters')}</Button>}
           />
         ) : view === 'inbox' ? (
           <EmptyState
             icon={Inbox}
-            title="Gelen kutun tertemiz"
-            text="Klasörlerine yeni video gelince burada görünecek."
+            title={t('library.inboxEmptyTitle')}
+            text={t('library.inboxEmptyText')}
           />
         ) : view === 'favorites' ? (
           <EmptyState
             icon={Star}
-            title="Henüz favori yok"
-            text="Bir videonun üzerinde F'ye bas ya da sağ tıkla."
+            title={t('library.noFavoritesTitle')}
+            text={t('library.noFavoritesText')}
           />
         ) : (
-          <EmptyState
-            icon={Copy}
-            title="Burada henüz bir şey yok"
-            text="Videoları gönderdikçe burası dolacak."
-          />
+          <EmptyState icon={Copy} title={t('library.emptyTitle')} text={t('library.emptyText')} />
         )
       ) : (
         <VideoGrid videos={videos} tags={tags} scrollRef={gridRef} onMenu={onMenu} />
@@ -299,6 +301,8 @@ function BulkBar({
 }): React.JSX.Element {
   const tags = useStore((s) => s.tags)
   const [tagPicker, setTagPicker] = useState(false)
+  const t = useT()
+  const [selectedBefore, selectedAfter] = useCountParts('library.selected', count)
   return (
     <motion.div
       initial={{ y: 90, opacity: 0, rotate: 2 }}
@@ -332,16 +336,18 @@ function BulkBar({
       </AnimatePresence>
       <div className="flex items-center gap-2 rounded-full border-2 border-text bg-bg py-1.5 pr-1.5 pl-4 shadow-[5px_6px_0_var(--color-ink)]">
         <span className="pr-2 text-sm font-extrabold whitespace-nowrap">
-          <AnimatedNumber value={count} /> video seçili
+          {selectedBefore}
+          <AnimatedNumber value={count} />
+          {selectedAfter}
         </span>
         <Button icon={Tags} onClick={() => setTagPicker((open) => !open)}>
-          Chip
+          {t('common.chip')}
         </Button>
         <Button icon={Star} onClick={onFavorite}>
-          Favori
+          {t('common.favorite')}
         </Button>
         <Button variant="primary" icon={Copy} onClick={onCopy}>
-          Kopyala
+          {t('common.copy')}
         </Button>
         <button
           onClick={onClear}

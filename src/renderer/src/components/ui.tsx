@@ -3,6 +3,7 @@ import type { LucideIcon } from 'lucide-react'
 import { AnimatePresence, motion, type HTMLMotionProps } from 'motion/react'
 import { useEffect, type ReactNode } from 'react'
 import { bouncy, spring } from '../lib/motion'
+import { t } from '../lib/i18n'
 
 interface ButtonProps extends HTMLMotionProps<'button'> {
   icon?: LucideIcon
@@ -253,7 +254,7 @@ export function DialogHeader({
         <div className="text-xl font-extrabold tracking-[-0.01em]">{title}</div>
         {subtitle && <div className="truncate text-[12.5px] text-mute">{subtitle}</div>}
       </div>
-      <IconButton icon={X} label="Kapat" onClick={onClose} />
+      <IconButton icon={X} label={t('common.close')} onClick={onClose} />
     </div>
   )
 }

@@ -6,6 +6,7 @@ import { errorMessage } from '../lib/actions'
 import { stripExtension } from '../lib/format'
 import { useStore } from '../lib/store'
 import { Button, DialogHeader, Modal } from './ui'
+import { useT } from '../lib/i18n'
 
 export function RenameDialog(): React.JSX.Element {
   const renameId = useStore((s) => s.renameId)
@@ -19,6 +20,7 @@ export function RenameDialog(): React.JSX.Element {
 }
 
 function RenameBody({ video, onClose }: { video: Video; onClose(): void }): React.JSX.Element {
+  const t = useT()
   const [name, setName] = useState(stripExtension(video.name))
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
@@ -29,17 +31,17 @@ function RenameBody({ video, onClose }: { video: Video; onClose(): void }): Reac
     setSaving(true)
     try {
       await window.api.renameVideo(video.id, name)
-      useStore.getState().showToast('Yeniden adlandırıldı')
+      useStore.getState().showToast(t('rename.done'))
       onClose()
     } catch (e) {
-      setError(errorMessage(e, 'Yeniden adlandırılamadı'))
+      setError(errorMessage(e, t('rename.failed')))
       setSaving(false)
     }
   }
 
   return (
     <>
-      <DialogHeader icon={PenLine} title="Yeniden adlandır" onClose={onClose} />
+      <DialogHeader icon={PenLine} title={t('rename.title')} onClose={onClose} />
       <div className="flex flex-col gap-3 px-[22px] py-5">
         <div className="flex h-11 items-center rounded-xl border-2 border-text bg-surf px-3.5 text-[15px] font-semibold">
           <input
@@ -69,14 +71,12 @@ function RenameBody({ video, onClose }: { video: Video; onClose(): void }): Reac
             </motion.div>
           )}
         </AnimatePresence>
-        <div className="text-xs text-dim">
-          Dosya klasöründe de yeniden adlandırılır; chip&apos;leri korunur.
-        </div>
+        <div className="text-xs text-dim">{t('rename.hint')}</div>
       </div>
       <div className="flex justify-end gap-2.5 border-t-[1.5px] border-line px-[22px] py-4">
-        <Button onClick={onClose}>İptal</Button>
+        <Button onClick={onClose}>{t('common.cancel')}</Button>
         <Button variant="primary" disabled={!name.trim() || saving} onClick={() => void save()}>
-          Kaydet
+          {t('common.save')}
         </Button>
       </div>
     </>

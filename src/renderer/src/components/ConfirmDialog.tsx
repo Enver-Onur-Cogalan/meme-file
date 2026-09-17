@@ -2,10 +2,12 @@ import { AlertTriangle } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useStore } from '../lib/store'
 import { Button, Modal } from './ui'
+import { useT } from '../lib/i18n'
 
 export function ConfirmDialog(): React.JSX.Element {
   const request = useStore((s) => s.confirmRequest)
   const resolve = useStore((s) => s.resolveConfirm)
+  const t = useT()
   return (
     <Modal open={!!request} onClose={() => resolve(false)} width={440}>
       {request && (
@@ -32,7 +34,7 @@ export function ConfirmDialog(): React.JSX.Element {
             </div>
           </div>
           <div className="flex justify-end gap-2.5">
-            <Button onClick={() => resolve(false)}>Vazgeç</Button>
+            <Button onClick={() => resolve(false)}>{t('common.giveUp')}</Button>
             <Button
               autoFocus
               variant="primary"

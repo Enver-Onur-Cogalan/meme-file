@@ -22,6 +22,7 @@ import type { MenuState } from './ContextMenu'
 import { TagSticker } from './TagSticker'
 import { AnimatedNumber } from './ui'
 import { spring } from '../lib/motion'
+import { useT } from '../lib/i18n'
 
 interface Props {
   onAddFolder(): void
@@ -31,6 +32,7 @@ interface Props {
 export function Sidebar({ onAddFolder, onMenu }: Props): React.JSX.Element {
   const { folders, tags, stats, view, folderId, tagIds, setView, toggleTagFilter, openChipEditor } =
     useStore()
+  const t = useT()
 
   const navItem = (
     icon: LucideIcon,
@@ -52,9 +54,9 @@ export function Sidebar({ onAddFolder, onMenu }: Props): React.JSX.Element {
 
   const removeFolder = async (id: number, path: string): Promise<void> => {
     const ok = await useStore.getState().confirm({
-      title: `"${folderName(path)}" kütüphaneden kaldırılsın mı?`,
-      text: "Videolar silinmez, sadece listeden çıkar. Chip'leri de kaldırılır.",
-      confirmLabel: 'Kaldır',
+      title: t('folder.removeTitle', { name: folderName(path) }),
+      text: t('folder.removeText'),
+      confirmLabel: t('folder.remove'),
       danger: true
     })
     if (!ok) return
@@ -65,10 +67,10 @@ export function Sidebar({ onAddFolder, onMenu }: Props): React.JSX.Element {
   return (
     <aside className="flex w-60 shrink-0 flex-col gap-[22px] overflow-y-auto bg-side px-3 py-4">
       <div className="flex flex-col gap-[3px]">
-        {navItem(LayoutGrid, 'Kütüphane', 'library', stats.total)}
-        {navItem(Inbox, 'Gelen Kutusu', 'inbox', stats.inbox, stats.inbox > 0)}
-        {navItem(Star, 'Favoriler', 'favorites', stats.favorites)}
-        {navItem(Send, 'En çok gönderilen', 'most-sent')}
+        {navItem(LayoutGrid, t('nav.library'), 'library', stats.total)}
+        {navItem(Inbox, t('nav.inbox'), 'inbox', stats.inbox, stats.inbox > 0)}
+        {navItem(Star, t('nav.favorites'), 'favorites', stats.favorites)}
+        {navItem(Send, t('nav.mostSent'), 'most-sent')}
         <AnimatePresence initial={false}>
           {stats.duplicates > 0 && (
             <motion.div
@@ -76,7 +78,7 @@ export function Sidebar({ onAddFolder, onMenu }: Props): React.JSX.Element {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
             >
-              {navItem(Copy, 'Aynı videolar', 'duplicates', stats.duplicates)}
+              {navItem(Copy, t('nav.duplicates'), 'duplicates', stats.duplicates)}
             </motion.div>
           )}
         </AnimatePresence>
@@ -84,8 +86,8 @@ export function Sidebar({ onAddFolder, onMenu }: Props): React.JSX.Element {
 
       <div className="flex flex-col gap-[3px]">
         <div className="flex items-center justify-between px-3 pb-1 text-xs font-bold text-dim">
-          <span>Klasörler</span>
-          <button onClick={onAddFolder} title="Klasör ekle" className="hover:text-text">
+          <span>{t('nav.folders')}</span>
+          <button onClick={onAddFolder} title={t('nav.addFolder')} className="hover:text-text">
             <FolderPlus size={15} />
           </button>
         </div>
@@ -105,7 +107,7 @@ export function Sidebar({ onAddFolder, onMenu }: Props): React.JSX.Element {
                 y: event.clientY,
                 items: [
                   {
-                    label: 'Kütüphaneden kaldır',
+                    label: t('folder.removeMenu'),
                     icon: Trash2,
                     danger: true,
                     onSelect: () => void removeFolder(folder.id, folder.path)
@@ -121,13 +123,13 @@ export function Sidebar({ onAddFolder, onMenu }: Props): React.JSX.Element {
             className="mx-1 mt-1 flex h-9 items-center gap-2 rounded-full border-[1.5px] border-dashed border-dim px-3 text-[13px] font-semibold text-mute hover:text-text"
           >
             <FolderPlus size={15} />
-            Klasör ekle
+            {t('nav.addFolder')}
           </button>
         )}
       </div>
 
       <div className="flex flex-col gap-2.5 px-3">
-        <div className="text-xs font-bold text-dim">Chip&apos;ler</div>
+        <div className="text-xs font-bold text-dim">{t('nav.chips')}</div>
         <motion.div layout className="flex flex-wrap gap-x-1.5 gap-y-2">
           <AnimatePresence initial={false}>
             {tags.map((tag) => {
@@ -149,9 +151,13 @@ export function Sidebar({ onAddFolder, onMenu }: Props): React.JSX.Element {
                       x: event.clientX,
                       y: event.clientY,
                       items: [
-                        { label: 'Düzenle', icon: Pencil, onSelect: () => openChipEditor(tag) },
                         {
-                          label: 'Sil',
+                          label: t('common.edit'),
+                          icon: Pencil,
+                          onSelect: () => openChipEditor(tag)
+                        },
+                        {
+                          label: t('common.delete'),
                           icon: Trash2,
                           danger: true,
                           onSelect: () => void confirmDeleteTag(tag)
@@ -159,7 +165,7 @@ export function Sidebar({ onAddFolder, onMenu }: Props): React.JSX.Element {
                       ]
                     })
                   }}
-                  title="Filtrele · sağ tık: düzenle"
+                  title={t('nav.chipHint')}
                   className={`rounded-full ${active ? 'shadow-[2px_3px_0_var(--color-text)]' : ''}`}
                 >
                   <TagSticker tag={tag} size="md" count tilt={active ? 0 : tiltFor(tag.id)} />
@@ -175,7 +181,7 @@ export function Sidebar({ onAddFolder, onMenu }: Props): React.JSX.Element {
             className="flex h-[30px] items-center gap-1 rounded-full border-[1.5px] border-dashed border-dim px-[11px] text-[13px] font-semibold text-mute hover:text-text"
           >
             <Plus size={14} />
-            yeni
+            {t('common.new')}
           </motion.button>
         </motion.div>
       </div>
@@ -183,7 +189,7 @@ export function Sidebar({ onAddFolder, onMenu }: Props): React.JSX.Element {
       <span className="grow" />
       <NavButton
         icon={Settings}
-        label="Ayarlar"
+        label={t('nav.settings')}
         active={false}
         onClick={() => useStore.getState().setSettingsOpen(true)}
       />
