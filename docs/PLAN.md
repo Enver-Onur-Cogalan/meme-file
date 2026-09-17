@@ -81,8 +81,7 @@ Thumbnail/sprite'lar: `%APPDATA%/meme-file/cache/<video_id>/`.
 - Sistem tepsisi (tray) ile arka planda çalışma, Windows ile başlat (opsiyonel)
 - Oynatıcıdan ve sağ tık menüsünden GIF dışa aktarma (Faz 3'ten öne alındı)
 
-### Faz 3 — v2 (Whisper hariç ✅)
-- **Konuşmayla arama:** whisper.cpp ile yerel transkript → FTS'e eklenir (opsiyonel indirme, arka planda kuyruk) — *henüz yapılmadı: ~150 MB model indirmesi gerekir, "internete çıkmaz" ilkesiyle çeliştiği için ayrı karar*
+### Faz 3 — v2 ✅
 - GIF dışa aktarma
 - Aynı videoyu tespit (hash) ve birleştirme
 - Etiketleri JSON olarak yedekle / geri yükle
