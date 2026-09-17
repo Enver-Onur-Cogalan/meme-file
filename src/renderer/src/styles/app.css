@@ -72,6 +72,11 @@ body {
   overflow: hidden;
 }
 
+/* Hızlı arama penceresi saydam; köşeler ve gölge görünsün. */
+.quick-window body {
+  background: transparent;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
 }

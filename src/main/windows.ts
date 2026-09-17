@@ -105,17 +105,20 @@ export class AppWindows {
 
   createQuick(): void {
     const window = new BrowserWindow({
-      width: 680,
-      height: 460,
+      // Yuvarlak köşe ve çıkartma gölgesi için pencere saydam, kenarlarda gölge payı var.
+      width: 692,
+      height: 474,
       show: false,
       frame: false,
+      transparent: true,
+      hasShadow: false,
       resizable: false,
       maximizable: false,
       minimizable: false,
       fullscreenable: false,
       skipTaskbar: true,
       alwaysOnTop: true,
-      backgroundColor: BACKGROUND,
+      backgroundColor: '#00000000',
       title: 'Meme File hızlı arama',
       webPreferences: secureWebPreferences()
     })
