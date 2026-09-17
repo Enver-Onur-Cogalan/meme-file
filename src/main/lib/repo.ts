@@ -24,6 +24,9 @@ interface VideoRow {
   height: number | null
   has_audio: number | null
   media_status: Video['mediaStatus']
+  playback: Video['playback']
+  video_codec: string | null
+  converted_path: string | null
   status: Video['status']
   favorite: number
   send_count: number
@@ -33,7 +36,8 @@ interface VideoRow {
 }
 
 const VIDEO_COLUMNS = `v.id, v.folder_id, v.path, v.name, v.size, v.modified_at, v.added_at,
-  v.duration_ms, v.width, v.height, v.has_audio, v.media_status, v.status, v.favorite,
+  v.duration_ms, v.width, v.height, v.has_audio, v.media_status, v.playback, v.video_codec,
+  v.converted_path, v.status, v.favorite,
   v.send_count, v.last_sent_at,
   EXISTS (SELECT 1 FROM videos d WHERE d.quick_hash = v.quick_hash AND d.id <> v.id AND d.missing = 0) AS has_duplicate,
   (SELECT group_concat(tag_id) FROM video_tags WHERE video_id = v.id) AS tag_ids`
@@ -52,6 +56,9 @@ function toVideo(row: VideoRow): Video {
     height: row.height,
     hasAudio: row.has_audio === null ? null : row.has_audio === 1,
     mediaStatus: row.media_status,
+    playback: row.playback,
+    videoCodec: row.video_codec,
+    playbackPath: row.playback === 'ready' && row.converted_path ? row.converted_path : row.path,
     status: row.status,
     favorite: row.favorite === 1,
     sendCount: row.send_count,
@@ -269,12 +276,42 @@ export function syncFolder(
   })
 }
 
-export function pendingMedia(db: DatabaseSync): { id: number; path: string }[] {
+export function pendingMedia(db: DatabaseSync, limit: number): { id: number; path: string }[] {
   return db
     .prepare(
-      `SELECT id, path FROM videos WHERE media_status = 'pending' AND missing = 0 ORDER BY added_at DESC`
+      `SELECT id, path FROM videos WHERE media_status = 'pending' AND missing = 0 ORDER BY added_at DESC LIMIT ?`
     )
-    .all() as { id: number; path: string }[]
+    .all(limit) as { id: number; path: string }[]
+}
+
+export function nextConversion(
+  db: DatabaseSync,
+  exclude: number[]
+): { id: number; path: string; name: string; durationMs: number | null } | undefined {
+  return db
+    .prepare(
+      `SELECT id, path, name, duration_ms AS durationMs FROM videos
+       WHERE playback IN ('pending', 'converting') AND media_status = 'ready' AND missing = 0
+         AND id NOT IN (SELECT value FROM json_each(?))
+       ORDER BY added_at DESC LIMIT 1`
+    )
+    .get(JSON.stringify(exclude)) as
+    { id: number; path: string; name: string; durationMs: number | null } | undefined
+}
+
+export function setPlayback(
+  db: DatabaseSync,
+  videoId: number,
+  playback: Video['playback'],
+  convertedPath: string | null = null
+): void {
+  db.prepare(
+    'UPDATE videos SET playback = ?, converted_path = coalesce(?, converted_path) WHERE id = ?'
+  ).run(playback, convertedPath, videoId)
+}
+
+export function setConvertedPath(db: DatabaseSync, videoId: number, convertedPath: string): void {
+  db.prepare('UPDATE videos SET converted_path = ? WHERE id = ?').run(convertedPath, videoId)
 }
 
 export interface MediaInfo {
@@ -283,6 +320,9 @@ export interface MediaInfo {
   height: number | null
   hasAudio: boolean
   quickHash: string
+  videoCodec?: string | null
+  audioCodec?: string | null
+  playable?: boolean
 }
 
 export function saveMediaInfo(db: DatabaseSync, videoId: number, info: MediaInfo | null): void {
@@ -292,9 +332,21 @@ export function saveMediaInfo(db: DatabaseSync, videoId: number, info: MediaInfo
   }
   transaction(db, () => {
     db.prepare(
-      `UPDATE videos SET media_status = 'ready', duration_ms = ?, width = ?, height = ?, has_audio = ?, quick_hash = ?
+      `UPDATE videos SET media_status = 'ready', duration_ms = ?, width = ?, height = ?, has_audio = ?, quick_hash = ?,
+         video_codec = ?, audio_codec = ?,
+         playback = CASE WHEN ? THEN 'native' WHEN playback = 'ready' AND converted_path IS NOT NULL THEN 'ready' ELSE 'pending' END
        WHERE id = ?`
-    ).run(info.durationMs, info.width, info.height, info.hasAudio ? 1 : 0, info.quickHash, videoId)
+    ).run(
+      info.durationMs,
+      info.width,
+      info.height,
+      info.hasAudio ? 1 : 0,
+      info.quickHash,
+      info.videoCodec ?? null,
+      info.audioCodec ?? null,
+      info.playable === false ? 0 : 1,
+      videoId
+    )
     adoptMissingTwin(db, videoId, info.quickHash)
   })
 }

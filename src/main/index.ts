@@ -4,7 +4,7 @@ import { electronApp, optimizer } from '@electron-toolkit/utils'
 import type { Settings } from '../shared/api'
 import { ClipManager } from './lib/clips'
 import { openDatabase } from './lib/db'
-import { isLibraryVideo, LibraryWatcher } from './lib/library'
+import { isConvertedCopy, isLibraryVideo, LibraryWatcher } from './lib/library'
 import { MediaJobs } from './lib/media-jobs'
 import { handleMediaProtocol, registerMediaScheme } from './lib/media-protocol'
 import { getSettings } from './lib/repo'
@@ -41,7 +41,9 @@ async function start(): Promise<void> {
     }, 250)
   }
 
-  const media = new MediaJobs(db, cacheRoot, notifyChanged)
+  const media = new MediaJobs(db, cacheRoot, notifyChanged, (videoId, ratio) =>
+    windows.broadcast('convert:progress', { videoId, ratio })
+  )
   const library = new LibraryWatcher(db, () => {
     media.kick()
     notifyChanged()
@@ -65,7 +67,8 @@ async function start(): Promise<void> {
   }
 
   handleMediaProtocol({
-    isAllowedVideo: (filePath) => isLibraryVideo(db, filePath),
+    isAllowedVideo: (filePath) =>
+      isLibraryVideo(db, filePath) || isConvertedCopy(cacheRoot, filePath),
     cacheRoot,
     iconsRoot
   })

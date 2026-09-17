@@ -41,6 +41,16 @@ function MainWindow(): React.JSX.Element {
 
   useEffect(
     () =>
+      window.api.onConvertProgress(({ videoId, ratio }) =>
+        useStore.setState((state) => ({
+          convertProgress: { ...state.convertProgress, [videoId]: ratio }
+        }))
+      ),
+    []
+  )
+
+  useEffect(
+    () =>
       window.api.onOpenVideo((videoId) => {
         const state = useStore.getState()
         state.setView('library')

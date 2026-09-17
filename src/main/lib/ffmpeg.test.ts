@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('ffmpeg-static', () => ({ default: '/bin/ffmpeg' }))
 
-const { parseProbeOutput, planEncode } = await import('./ffmpeg')
+const { isPlayable, parseProbeOutput, planEncode } = await import('./ffmpeg')
 
 describe('parseProbeOutput', () => {
   it('süre, boyut ve ses bilgisini okur', () => {
@@ -15,7 +15,9 @@ describe('parseProbeOutput', () => {
       width: 1280,
       height: 720,
       hasAudio: true,
-      hasVideo: true
+      hasVideo: true,
+      videoCodec: 'h264',
+      audioCodec: 'aac'
     })
   })
 
@@ -49,5 +51,28 @@ describe('planEncode', () => {
 
   it('çok uzun klipte anlaşılır hata verir', () => {
     expect(() => planEncode(1200, 10 * 1024 * 1024, true, 1080)).toThrow(/kısaltmayı/)
+  })
+})
+
+describe('isPlayable', () => {
+  it('H.264/AAC mp4 ve VP9/Opus webm oynar', () => {
+    expect(isPlayable('.mp4', 'h264', 'aac')).toBe(true)
+    expect(isPlayable('.webm', 'vp9', 'opus')).toBe(true)
+    expect(isPlayable('.mov', 'h264', null)).toBe(true)
+  })
+
+  it('HEVC, ProRes, AC-3 ses ve H.264 mkv dönüştürülür', () => {
+    expect(isPlayable('.mp4', 'hevc', 'aac')).toBe(false)
+    expect(isPlayable('.mov', 'prores', 'pcm_s16le')).toBe(false)
+    expect(isPlayable('.mp4', 'h264', 'ac3')).toBe(false)
+    expect(isPlayable('.mkv', 'h264', 'aac')).toBe(false)
+    expect(isPlayable('.mkv', 'vp9', 'opus')).toBe(true)
+  })
+
+  it('probe çıktısından codec okur', () => {
+    const info = parseProbeOutput(`  Duration: 00:00:02.00
+  Stream #0:0[0x1](und): Video: hevc (Main 10) (hvc1 / 0x31637668), yuv420p10le(tv), 1920x1080, 30 fps
+  Stream #0:1[0x2](und): Audio: ac3 (ac-3 / 0x332D6361), 48000 Hz, stereo`)
+    expect([info.videoCodec, info.audioCodec]).toEqual(['hevc', 'ac3'])
   })
 })

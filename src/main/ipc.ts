@@ -8,7 +8,7 @@ import type { ClipRequest, Settings, TagInput, VideoQuery } from '../shared/api'
 import { exportBackup, importBackup } from './lib/backup'
 import { sanitizeFileName, type ClipManager } from './lib/clips'
 import type { LibraryWatcher } from './lib/library'
-import type { MediaJobs } from './lib/media-jobs'
+import { convertedPathFor, type MediaJobs } from './lib/media-jobs'
 import * as repo from './lib/repo'
 import { copyFilesToClipboard, startFileDrag } from './lib/share'
 import type { AppWindows } from './windows'
@@ -121,6 +121,11 @@ export function registerIpc(ctx: IpcContext): void {
     if (!sameFile && existsSync(target)) throw new Error('Bu klasörde aynı adda bir dosya var')
     await rename(video.path, target)
     repo.renameVideo(db, videoId, target, basename(target))
+    if (video.playback === 'ready' && video.playbackPath !== video.path) {
+      const convertedTarget = convertedPathFor(ctx.cacheRoot, videoId, basename(target))
+      await rename(video.playbackPath, convertedTarget).catch(() => undefined)
+      repo.setConvertedPath(db, videoId, convertedTarget)
+    }
     changed()
     return repo.getVideo(db, videoId)
   })
@@ -192,7 +197,7 @@ export function registerIpc(ctx: IpcContext): void {
     if (videos.length === 0) return
     startFileDrag(
       event.sender,
-      videos.map((video) => video.path),
+      videos.map((video) => video.playbackPath),
       join(ctx.cacheRoot, String(videos[0].id), 'thumb.jpg')
     )
     repo.markSent(
@@ -204,7 +209,7 @@ export function registerIpc(ctx: IpcContext): void {
 
   ipcMain.handle('share:copy', async (_event, videoIds: unknown) => {
     const videos = repo.getVideos(db, ids(videoIds))
-    const ok = await copyFilesToClipboard(videos.map((video) => video.path))
+    const ok = await copyFilesToClipboard(videos.map((video) => video.playbackPath))
     if (ok) {
       repo.markSent(
         db,

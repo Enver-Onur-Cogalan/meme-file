@@ -1,6 +1,16 @@
-import { AlertTriangle, Copy, Film, ImageOff, Send, Volume2, VolumeX } from 'lucide-react'
+import {
+  AlertTriangle,
+  Copy,
+  Film,
+  ImageOff,
+  RefreshCw,
+  Send,
+  Volume2,
+  VolumeX
+} from 'lucide-react'
 import { motion } from 'motion/react'
 import { memo, useState } from 'react'
+import { useStore } from '../lib/store'
 import type { Tag, Video } from '../../../shared/api'
 import { DISCORD_LIMIT_BYTES, formatDuration, formatSize, stripExtension } from '../lib/format'
 import { TagSticker } from './TagSticker'
@@ -146,6 +156,18 @@ export const VideoCard = memo(function VideoCard({
               <span>{formatSize(video.size)}</span>
             </div>
           )}
+          {(video.playback === 'pending' || video.playback === 'converting') && (
+            <ConvertBadge videoId={video.id} />
+          )}
+          {video.playback === 'error' && (
+            <div
+              title="Bu video dönüştürülemedi; oynatıcıda açılmayabilir"
+              className="flex h-6 items-center gap-1 rounded-l-full border-[1.5px] border-ink bg-sticker-red pr-2.5 pl-2 text-[11px] font-extrabold text-ink"
+            >
+              <AlertTriangle size={11} strokeWidth={2.25} />
+              <span>oynatılamıyor</span>
+            </div>
+          )}
           {video.hasDuplicate && (
             <div
               title="Kütüphanede aynı videodan bir tane daha var"
@@ -228,3 +250,25 @@ export const VideoCard = memo(function VideoCard({
     </motion.div>
   )
 })
+
+/** HEVC gibi oynatılamayan videolar için uyumlu kopya hazırlanırken gösterilir. */
+function ConvertBadge({ videoId }: { videoId: number }): React.JSX.Element {
+  const progress = useStore((s) => s.convertProgress[videoId])
+  return (
+    <div
+      title="Bu video oynatılabilir bir formata çevriliyor. Orijinal dosyaya dokunulmaz."
+      className="relative flex h-6 items-center gap-1 overflow-hidden rounded-l-full border-[1.5px] border-ink bg-sticker-blue pr-2.5 pl-2 text-[11px] font-extrabold text-ink"
+    >
+      {progress !== undefined && (
+        <div
+          className="absolute inset-y-0 left-0 bg-sticker-teal transition-[width]"
+          style={{ width: `${progress * 100}%` }}
+        />
+      )}
+      <RefreshCw size={11} strokeWidth={2.5} className="relative animate-spin" />
+      <span className="relative">
+        {progress !== undefined ? `çevriliyor %${Math.round(progress * 100)}` : 'çevrilecek'}
+      </span>
+    </div>
+  )
+}

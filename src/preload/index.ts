@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { ClipProgress, MemeApi } from '../shared/api'
+import type { ClipProgress, ConvertProgress, MemeApi } from '../shared/api'
 
 function subscribe<T extends unknown[]>(
   channel: string,
@@ -59,6 +59,7 @@ const api: MemeApi = {
 
   onLibraryChanged: (listener) => subscribe('library:changed', listener),
   onClipProgress: (listener) => subscribe<[ClipProgress]>('clip:progress', listener),
+  onConvertProgress: (listener) => subscribe<[ConvertProgress]>('convert:progress', listener),
   onOpenVideo: (listener) => subscribe<[number]>('video:open', listener),
   onQuickWindowShown: (listener) => subscribe('quick:shown', listener)
 }

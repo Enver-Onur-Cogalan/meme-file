@@ -23,6 +23,13 @@ export function isLibraryVideo(db: DatabaseSync, filePath: string): boolean {
   return listFolders(db).some((folder) => isInside(folder.path, filePath))
 }
 
+/** Uygulamanın ürettiği uyumlu kopya mı? (önbellek/<id>/converted/<ad>.mp4) */
+export function isConvertedCopy(cacheRoot: string, filePath: string): boolean {
+  if (!isAbsolute(filePath) || extname(filePath).toLowerCase() !== '.mp4') return false
+  const parts = relative(resolve(cacheRoot), resolve(filePath)).split(/[\\/]/)
+  return parts.length === 3 && /^\d+$/.test(parts[0]) && parts[1] === 'converted'
+}
+
 export async function scanFolder(folderPath: string): Promise<ScannedFile[]> {
   const entries = await readdir(folderPath, { recursive: true, withFileTypes: true })
   const files = await Promise.all(

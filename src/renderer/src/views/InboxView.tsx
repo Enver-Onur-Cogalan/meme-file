@@ -149,7 +149,7 @@ export function InboxView(): React.JSX.Element {
                 >
                   <div className="relative overflow-hidden rounded-2xl border-2 border-text bg-ink shadow-[6px_8px_0_var(--color-ink)]">
                     <video
-                      src={window.api.mediaUrl(current.path)}
+                      src={window.api.mediaUrl(current.playbackPath)}
                       autoPlay
                       loop
                       muted

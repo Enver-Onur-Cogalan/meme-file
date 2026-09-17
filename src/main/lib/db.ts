@@ -52,7 +52,13 @@ const MIGRATIONS = [
     ('efsane', '#f59a3d', 'lucide:Flame', 3),
     ('cringe', '#b69cf2', 'lucide:Skull', 4),
     ('oyun', '#f2665a', 'lucide:Gamepad2', 5),
-    ('müzikli', '#7fd47f', 'lucide:Music', 6)`
+    ('müzikli', '#7fd47f', 'lucide:Music', 6)`,
+  // playback: native | pending | converting | ready | error. Mevcut videolar codec bilgisi için yeniden taranır.
+  `ALTER TABLE videos ADD COLUMN video_codec TEXT;
+  ALTER TABLE videos ADD COLUMN audio_codec TEXT;
+  ALTER TABLE videos ADD COLUMN playback TEXT NOT NULL DEFAULT 'native';
+  ALTER TABLE videos ADD COLUMN converted_path TEXT;
+  UPDATE videos SET media_status = 'pending' WHERE missing = 0;`
 ]
 
 export function openDatabase(file: string): DatabaseSync {

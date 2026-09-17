@@ -55,6 +55,8 @@ export interface ProbeResult {
   height: number | null
   hasAudio: boolean
   hasVideo: boolean
+  videoCodec: string | null
+  audioCodec: string | null
 }
 
 /** ffprobe ayrıca paketlenmesin diye ffmpeg'in "-i" çıktısı okunur. */
@@ -77,13 +79,89 @@ export function parseProbeOutput(stderr: string): ProbeResult {
     width,
     height,
     hasAudio: /Stream #.*: Audio:/.test(stderr),
-    hasVideo: !!videoLine
+    hasVideo: !!videoLine,
+    videoCodec: /Video: (\w+)/.exec(videoLine ?? '')?.[1]?.toLowerCase() ?? null,
+    audioCodec: /Stream #.*: Audio: (\w+)/.exec(stderr)?.[1]?.toLowerCase() ?? null
   }
 }
 
 export async function probe(filePath: string): Promise<ProbeResult> {
   const { stderr } = await runFfmpeg(['-i', filePath])
   return parseProbeOutput(stderr)
+}
+
+/** Chromium'un (Electron) ek codec olmadan oynatabildikleri. */
+const PLAYABLE_VIDEO = ['h264', 'vp8', 'vp9', 'av1']
+const PLAYABLE_AUDIO = ['aac', 'mp3', 'opus', 'vorbis', 'flac']
+const WEBM_VIDEO = ['vp8', 'vp9', 'av1']
+const WEBM_AUDIO = ['opus', 'vorbis']
+
+/**
+ * Video uygulamada ve Discord'da sorunsuz oynar mı? HEVC (H.265), ProRes, AC-3 ses gibi
+ * durumlarda false döner ve uyumlu bir kopya üretilir.
+ */
+export function isPlayable(
+  extension: string,
+  videoCodec: string | null,
+  audioCodec: string | null
+): boolean {
+  if (!videoCodec || !PLAYABLE_VIDEO.includes(videoCodec)) return false
+  if (audioCodec && !PLAYABLE_AUDIO.includes(audioCodec)) return false
+  // Matroska (.mkv) Chromium'da sadece WebM uyumlu codec'lerle güvenilir oynar.
+  if (extension.toLowerCase() === '.mkv') {
+    return WEBM_VIDEO.includes(videoCodec) && (!audioCodec || WEBM_AUDIO.includes(audioCodec))
+  }
+  return true
+}
+
+/** Oynatılamayan videonun H.264 + AAC kopyasını üretir. */
+export async function convertToCompatible(
+  input: string,
+  output: string,
+  durationMs: number | null,
+  onProgress: (ratio: number) => void
+): Promise<void> {
+  await mkdir(dirname(output), { recursive: true })
+  const tmp = `${output}.part.mp4`
+  try {
+    const { code, stderr } = await runFfmpeg(
+      [
+        '-y',
+        '-i',
+        input,
+        '-map',
+        '0:v:0',
+        '-map',
+        '0:a:0?',
+        '-c:v',
+        'libx264',
+        '-preset',
+        'veryfast',
+        '-crf',
+        '20',
+        '-pix_fmt',
+        'yuv420p',
+        '-c:a',
+        'aac',
+        '-b:a',
+        '160k',
+        '-movflags',
+        '+faststart',
+        '-progress',
+        'pipe:1',
+        '-nostats',
+        tmp
+      ],
+      {
+        onProgress: (seconds) =>
+          durationMs && onProgress(Math.min(seconds / (durationMs / 1000), 1))
+      }
+    )
+    if (code !== 0) throw new Error(`Dönüştürülemedi: ${stderr.slice(-300)}`)
+    await rename(tmp, output)
+  } finally {
+    await rm(tmp, { force: true })
+  }
 }
 
 /** Kapak resmi: videonun %10'undan (en fazla 1. saniyeden) bir kare. */

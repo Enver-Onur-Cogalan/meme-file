@@ -149,7 +149,7 @@ function ClipBody({
         <div className="flex min-w-0 grow flex-col gap-4 bg-side px-[22px] py-5">
           <video
             ref={videoRef}
-            src={window.api.mediaUrl(video.path)}
+            src={window.api.mediaUrl(video.playbackPath)}
             autoPlay
             muted
             onTimeUpdate={(event) => {

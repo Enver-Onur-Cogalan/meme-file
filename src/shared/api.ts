@@ -14,6 +14,8 @@ export interface LibraryFolder {
 
 export type VideoStatus = 'inbox' | 'library'
 export type MediaStatus = 'pending' | 'ready' | 'error'
+/** native: olduğu gibi oynar · pending/converting: uyumlu kopya hazırlanıyor · ready: kopya hazır */
+export type PlaybackStatus = 'native' | 'pending' | 'converting' | 'ready' | 'error'
 
 export interface Video {
   id: number
@@ -28,6 +30,10 @@ export interface Video {
   height: number | null
   hasAudio: boolean | null
   mediaStatus: MediaStatus
+  playback: PlaybackStatus
+  videoCodec: string | null
+  /** Oynatma ve gönderme için kullanılacak dosya: uyumlu kopya hazırsa o, değilse orijinal. */
+  playbackPath: string
   status: VideoStatus
   favorite: boolean
   sendCount: number
@@ -85,6 +91,11 @@ export interface ClipRequest {
   mute: boolean
   format: 'mp4' | 'gif'
   outputName: string
+}
+
+export interface ConvertProgress {
+  videoId: number
+  ratio: number
 }
 
 export interface ClipProgress {
@@ -154,6 +165,7 @@ export interface MemeApi {
 
   onLibraryChanged(listener: () => void): () => void
   onClipProgress(listener: (progress: ClipProgress) => void): () => void
+  onConvertProgress(listener: (progress: ConvertProgress) => void): () => void
   onOpenVideo(listener: (videoId: number) => void): () => void
   onQuickWindowShown(listener: () => void): () => void
 }

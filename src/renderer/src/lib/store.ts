@@ -49,6 +49,8 @@ interface State {
   renameId: number | null
   confirmRequest: ConfirmRequest | null
   toast: ToastMessage | null
+  /** Uyumlu kopyası hazırlanan videoların ilerlemesi (0-1) */
+  convertProgress: Record<number, number>
 }
 
 interface Actions {
@@ -107,6 +109,7 @@ export const useStore = create<State & Actions>()((set, get) => ({
   renameId: null,
   confirmRequest: null,
   toast: null,
+  convertProgress: {},
 
   async refresh() {
     const seq = ++refreshSeq

@@ -6,6 +6,7 @@ import {
   Pause,
   PenLine,
   Play,
+  RefreshCw,
   Repeat,
   Scissors,
   Send,
@@ -152,7 +153,7 @@ function PlayerBody({
           <div className="relative overflow-hidden rounded-xl border-2 border-ink bg-ink">
             <video
               ref={ref}
-              src={window.api.mediaUrl(video.path)}
+              src={window.api.mediaUrl(video.playbackPath)}
               autoPlay
               loop={loop}
               muted={muted}
@@ -166,6 +167,9 @@ function PlayerBody({
               }}
               className="aspect-video max-h-[62vh] w-full cursor-pointer object-contain"
             />
+            {(video.playback === 'pending' || video.playback === 'converting') && (
+              <ConvertingOverlay videoId={video.id} />
+            )}
             <AnimatePresence>
               {loop && (
                 <motion.div
@@ -455,5 +459,30 @@ function PlayerBody({
         </div>
       </div>
     </>
+  )
+}
+
+function ConvertingOverlay({ videoId }: { videoId: number }): React.JSX.Element {
+  const progress = useStore((s) => s.convertProgress[videoId]) ?? 0
+  return (
+    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[rgba(12,10,8,0.85)] text-center">
+      <motion.div
+        animate={{ rotate: [-6, 6, -6] }}
+        transition={{ repeat: Infinity, duration: 1.2, ease: 'easeInOut' }}
+        className="flex size-14 items-center justify-center rounded-2xl border-2 border-ink bg-sticker-blue text-ink shadow-[3px_4px_0_var(--color-ink)]"
+      >
+        <RefreshCw size={26} strokeWidth={2.25} />
+      </motion.div>
+      <div className="text-lg font-extrabold">
+        Oynatılabilir formata çevriliyor… %{Math.round(progress * 100)}
+      </div>
+      <div className="max-w-sm text-sm text-mute">
+        Bu video (ör. HEVC / H.265) doğrudan oynatılamıyor. Uyumlu bir kopya hazırlanıyor; orijinal
+        dosyaya dokunulmaz. Discord&apos;a da bu kopya gönderilir.
+      </div>
+      <div className="h-3 w-72 overflow-hidden rounded-full border-2 border-ink bg-surf">
+        <motion.div animate={{ width: `${progress * 100}%` }} className="h-full bg-sticker-blue" />
+      </div>
+    </div>
   )
 }
