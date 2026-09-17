@@ -1,0 +1,124 @@
+{
+  "pages": [
+    {
+      "id": "page-1",
+      "name": "Sticker Duvarı"
+    },
+    {
+      "id": "page-2",
+      "name": "Diğer yönler"
+    }
+  ],
+  "artboards": [
+    {
+      "file": "SessizKontrol.dc.html",
+      "title": "A · Sessiz Kontrol",
+      "x": 0,
+      "y": 0,
+      "w": 1280,
+      "h": 800,
+      "page": "page-2"
+    },
+    {
+      "file": "ArcadeGece.dc.html",
+      "title": "B · Arcade Gece",
+      "x": 1400,
+      "y": 0,
+      "w": 1280,
+      "h": 800,
+      "page": "page-2"
+    },
+    {
+      "file": "Main.dc.html",
+      "title": "1 · Kütüphane",
+      "x": 0,
+      "y": 0,
+      "w": 1280,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "Oynatici.dc.html",
+      "title": "2 · Oynatıcı",
+      "x": 1400,
+      "y": 0,
+      "w": 1280,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "ChipOlustur.dc.html",
+      "title": "3 · Chip oluştur",
+      "x": 2800,
+      "y": 0,
+      "w": 1280,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "GelenKutusu.dc.html",
+      "title": "4 · Gelen Kutusu",
+      "x": 0,
+      "y": 920,
+      "w": 1280,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "KlibiHazirla.dc.html",
+      "title": "5 · Kırp / Discord'a sığdır",
+      "x": 1400,
+      "y": 920,
+      "w": 1280,
+      "h": 800,
+      "page": "page-1"
+    },
+    {
+      "file": "HizliArama.dc.html",
+      "title": "6 · Hızlı arama penceresi",
+      "x": 2800,
+      "y": 920,
+      "w": 760,
+      "h": 540,
+      "page": "page-1"
+    }
+  ],
+  "annotations": [
+    {
+      "id": "dir-a",
+      "x": 0,
+      "y": -150,
+      "w": 560,
+      "page": "page-2",
+      "text": "A · Sessiz Kontrol (seçilmedi)"
+    },
+    {
+      "id": "dir-b",
+      "x": 1400,
+      "y": -150,
+      "w": 560,
+      "page": "page-2",
+      "text": "B · Arcade Gece (seçilmedi)"
+    },
+    {
+      "id": "dir-c",
+      "x": 0,
+      "y": -150,
+      "w": 620,
+      "page": "page-1",
+      "text": "Sticker Duvarı · tüm ekranlar\nKütüphane: çizgili defter zemini, chip sayıları."
+    },
+    {
+      "id": "note-quick",
+      "x": 3600,
+      "y": 920,
+      "w": 360,
+      "page": "page-1",
+      "text": "Hızlı arama: oyundayken bile Ctrl+Shift+Space ile açılan küçük pencere. Uygulamayı açmadan ara → sürükle veya Enter ile kopyala."
+    }
+  ],
+  "launch": {
+    "view": "canvas",
+    "page": "page-1"
+  }
+}
