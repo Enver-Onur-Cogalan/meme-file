@@ -18,9 +18,10 @@ import type { MenuState } from '../components/ContextMenu'
 import { TagSticker } from '../components/TagSticker'
 import { AnimatedNumber, Button, Kbd } from '../components/ui'
 import { spring } from '../lib/motion'
-import { VideoCard } from '../components/VideoCard'
-import { copyVideos, dragVideos, toggleFavorite, videoMenu } from '../lib/actions'
+import { VideoGrid } from '../components/VideoGrid'
+import { copyVideos, toggleFavorite } from '../lib/actions'
 import { folderName } from '../lib/format'
+import { useShallow } from 'zustand/react/shallow'
 import { useStore } from '../lib/store'
 
 const TITLES: Record<View, string> = {
@@ -40,9 +41,6 @@ const SORTS: { value: SortOrder; label: string }[] = [
   { value: 'most-sent', label: 'En çok gönderilen' }
 ]
 
-/** Çok sayıda kartta konum animasyonu kasma yapar; bu sınırın üstünde kapatılır. */
-const LAYOUT_ANIMATION_LIMIT = 120
-
 interface Props {
   onAddFolder(): void
   onMenu(menu: MenuState): void
@@ -50,7 +48,28 @@ interface Props {
 }
 
 export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JSX.Element {
-  const store = useStore()
+  const store = useStore(
+    useShallow((s) => ({
+      videos: s.videos,
+      tags: s.tags,
+      view: s.view,
+      folderId: s.folderId,
+      folders: s.folders,
+      text: s.text,
+      tagIds: s.tagIds,
+      sort: s.sort,
+      selection: s.selection,
+      settings: s.settings,
+      stats: s.stats,
+      loaded: s.loaded,
+      setText: s.setText,
+      setSort: s.setSort,
+      setSettings: s.setSettings,
+      toggleTagFilter: s.toggleTagFilter,
+      clearFilters: s.clearFilters,
+      select: s.select
+    }))
+  )
   const { videos, tags, view, folderId, folders, text, tagIds, sort, selection, settings } = store
   const [sortOpen, setSortOpen] = useState(false)
   const gridRef = useRef<HTMLDivElement>(null)
@@ -65,35 +84,10 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
   )
   const activeTags = tagIds.map((id) => tags.find((tag) => tag.id === id)).filter((t) => !!t)
   const tagMode = settings?.tagMode ?? 'and'
-  const animateLayout = videos.length <= LAYOUT_ANIMATION_LIMIT
 
   useEffect(() => {
     gridRef.current?.scrollTo({ top: 0 })
   }, [view, folderId])
-
-  const handleClick = (video: Video, event: React.MouseEvent): void => {
-    if (event.shiftKey && store.anchorId !== null) {
-      const from = videos.findIndex((v) => v.id === store.anchorId)
-      const to = videos.findIndex((v) => v.id === video.id)
-      const [a, b] = from < to ? [from, to] : [to, from]
-      store.select(
-        videos.slice(a, b + 1).map((v) => v.id),
-        store.anchorId
-      )
-    } else if (event.ctrlKey || event.metaKey) {
-      store.select(
-        selection.includes(video.id)
-          ? selection.filter((id) => id !== video.id)
-          : [...selection, video.id],
-        video.id
-      )
-    } else {
-      store.select([video.id], video.id)
-    }
-  }
-
-  const dragTargets = (video: Video): number[] =>
-    selection.includes(video.id) ? selection : [video.id]
 
   return (
     <main
@@ -271,32 +265,7 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
           />
         )
       ) : (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] content-start gap-[18px]">
-          <AnimatePresence mode="popLayout">
-            {videos.map((video, index) => (
-              <VideoCard
-                key={video.id}
-                video={video}
-                tags={tags}
-                index={index}
-                selected={selection.includes(video.id)}
-                animateLayout={animateLayout}
-                onClick={(event) => handleClick(video, event)}
-                onOpen={() => store.openPlayer(video.id)}
-                onDragStart={() => dragVideos(dragTargets(video))}
-                onContextMenu={(event) => {
-                  event.preventDefault()
-                  if (!selection.includes(video.id)) store.select([video.id], video.id)
-                  onMenu({
-                    x: event.clientX,
-                    y: event.clientY,
-                    items: videoMenu(video, selection.includes(video.id) ? selectedVideos : [video])
-                  })
-                }}
-              />
-            ))}
-          </AnimatePresence>
-        </div>
+        <VideoGrid videos={videos} tags={tags} scrollRef={gridRef} onMenu={onMenu} />
       )}
 
       <AnimatePresence>

@@ -18,28 +18,24 @@ import { TagSticker } from './TagSticker'
 const SPRITE_FRAMES = 10
 const MAX_CHIPS = 3
 
+export type CardAction = 'click' | 'open' | 'drag' | 'menu'
+
 interface Props {
   video: Video
   tags: Tag[]
-  index: number
+  delay: number
   selected: boolean
   animateLayout: boolean
-  onClick(event: React.MouseEvent): void
-  onOpen(): void
-  onDragStart(): void
-  onContextMenu(event: React.MouseEvent): void
+  onAction(action: CardAction, video: Video, event?: React.MouseEvent): void
 }
 
 export const VideoCard = memo(function VideoCard({
   video,
   tags,
-  index,
+  delay,
   selected,
   animateLayout,
-  onClick,
-  onOpen,
-  onDragStart,
-  onContextMenu
+  onAction
 }: Props): React.JSX.Element {
   const [hover, setHover] = useState(false)
   const [scrub, setScrub] = useState(0)
@@ -67,22 +63,22 @@ export const VideoCard = memo(function VideoCard({
         type: 'spring',
         stiffness: 380,
         damping: 26,
-        delay: animateLayout ? 0 : Math.min(index, 16) * 0.025
+        delay
       }}
       onHoverStart={() => setHover(true)}
       onHoverEnd={() => {
         setHover(false)
         setScrub(0)
       }}
-      onClick={onClick}
-      onDoubleClick={onOpen}
-      onContextMenu={onContextMenu}
+      onClick={(event) => onAction('click', video, event)}
+      onDoubleClick={() => onAction('open', video)}
+      onContextMenu={(event) => onAction('menu', video, event)}
       draggable
       onDragStartCapture={(event: React.DragEvent) => {
         event.preventDefault()
         setPeeling(true)
         setTimeout(() => setPeeling(false), 450)
-        onDragStart()
+        onAction('drag', video)
       }}
       style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 260px' }}
       className={`flex cursor-grab flex-col overflow-hidden rounded-[14px] border-2 bg-surf active:cursor-grabbing ${
@@ -107,6 +103,7 @@ export const VideoCard = memo(function VideoCard({
               alt=""
               draggable={false}
               loading="lazy"
+              decoding="async"
               onError={() => setThumbFailed(true)}
               className="size-full object-cover"
             />
