@@ -1,7 +1,7 @@
 import { protocol } from 'electron'
 import { createReadStream } from 'node:fs'
 import { stat } from 'node:fs/promises'
-import { extname } from 'node:path'
+import { basename, extname, join } from 'node:path'
 import { Readable } from 'node:stream'
 
 export const MEDIA_SCHEME = 'media'
@@ -11,7 +11,12 @@ const MIME_TYPES: Record<string, string> = {
   '.m4v': 'video/mp4',
   '.webm': 'video/webm',
   '.mov': 'video/quicktime',
-  '.mkv': 'video/x-matroska'
+  '.mkv': 'video/x-matroska',
+  '.gif': 'image/gif',
+  '.jpg': 'image/jpeg',
+  '.png': 'image/png',
+  '.svg': 'image/svg+xml',
+  '.webp': 'image/webp'
 }
 
 /** app "ready" olmadan önce çağrılmalı. */
@@ -24,38 +29,67 @@ export function registerMediaScheme(): void {
   ])
 }
 
-/** URL biçimi: media://local/<encodeURIComponent(mutlak yol)> */
-export function handleMediaProtocol(isAllowed: (filePath: string) => boolean): void {
+export interface MediaRoutes {
+  /** Kütüphanedeki bir video mu? */
+  isAllowedVideo(filePath: string): boolean
+  cacheRoot: string
+  iconsRoot: string
+}
+
+/**
+ * URL biçimleri:
+ *   media://local/<encodeURIComponent(mutlak yol)>   kütüphanedeki video
+ *   media://thumb/<videoId>                           kapak resmi
+ *   media://sprite/<videoId>                          önizleme şeridi
+ *   media://icon/<dosya adı>                          kullanıcının yüklediği chip ikonu
+ */
+export function handleMediaProtocol(routes: MediaRoutes): void {
   protocol.handle(MEDIA_SCHEME, async (request) => {
-    const filePath = decodeURIComponent(new URL(request.url).pathname.slice(1))
-    if (!isAllowed(filePath)) return new Response(null, { status: 403 })
+    const url = new URL(request.url)
+    const segment = decodeURIComponent(url.pathname.slice(1))
+    let filePath: string | null = null
 
-    let size: number
-    try {
-      size = (await stat(filePath)).size
-    } catch {
-      return new Response(null, { status: 404 })
+    if (url.host === 'local' && routes.isAllowedVideo(segment)) filePath = segment
+    if ((url.host === 'thumb' || url.host === 'sprite') && /^\d+$/.test(segment)) {
+      filePath = join(routes.cacheRoot, segment, `${url.host}.jpg`)
     }
-
-    const headers = new Headers({
-      'Accept-Ranges': 'bytes',
-      'Content-Type': MIME_TYPES[extname(filePath).toLowerCase()] ?? 'application/octet-stream'
-    })
-
-    // <video> ileri sarmak için Range isteği gönderir; net.fetch(file://) bunu desteklemediği için kendimiz yanıtlıyoruz.
-    const range = parseRange(request.headers.get('Range'), size)
-    if (range === 'invalid') {
-      headers.set('Content-Range', `bytes */${size}`)
-      return new Response(null, { status: 416, headers })
+    if (url.host === 'icon' && segment === basename(segment) && !segment.startsWith('.')) {
+      filePath = join(routes.iconsRoot, segment)
     }
+    if (!filePath) return new Response(null, { status: 403 })
 
-    const { start, end } = range ?? { start: 0, end: size - 1 }
-    headers.set('Content-Length', String(end - start + 1))
-    if (range) headers.set('Content-Range', `bytes ${start}-${end}/${size}`)
-
-    const body = Readable.toWeb(createReadStream(filePath, { start, end })) as ReadableStream
-    return new Response(body, { status: range ? 206 : 200, headers })
+    return serveFile(filePath, request.headers.get('Range'))
   })
+}
+
+async function serveFile(filePath: string, rangeHeader: string | null): Promise<Response> {
+  let size: number
+  try {
+    size = (await stat(filePath)).size
+  } catch {
+    return new Response(null, { status: 404 })
+  }
+
+  const headers = new Headers({
+    'Accept-Ranges': 'bytes',
+    'Content-Type': MIME_TYPES[extname(filePath).toLowerCase()] ?? 'application/octet-stream',
+    'Cache-Control': 'no-cache'
+  })
+
+  // <video> ileri sarmak için Range isteği gönderir; net.fetch(file://) bunu desteklemediği için kendimiz yanıtlıyoruz.
+  const range = parseRange(rangeHeader, size)
+  if (range === 'invalid') {
+    headers.set('Content-Range', `bytes */${size}`)
+    return new Response(null, { status: 416, headers })
+  }
+
+  const { start, end } = range ?? { start: 0, end: size - 1 }
+  headers.set('Content-Length', String(end - start + 1))
+  if (range) headers.set('Content-Range', `bytes ${start}-${end}/${size}`)
+
+  if (size === 0) return new Response(null, { status: 200, headers })
+  const body = Readable.toWeb(createReadStream(filePath, { start, end })) as ReadableStream
+  return new Response(body, { status: range ? 206 : 200, headers })
 }
 
 export function parseRange(
