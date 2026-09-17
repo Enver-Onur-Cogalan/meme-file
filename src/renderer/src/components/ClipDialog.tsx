@@ -1,4 +1,4 @@
-import { Check, Film, Scissors, Shrink, X } from 'lucide-react'
+import { Check, Film, Pause, Play, Scissors, Shrink, Volume2, VolumeX, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 import { DISCORD_LIMIT_BYTES, DISCORD_TARGET_BYTES, type Video } from '../../../shared/api'
@@ -66,16 +66,71 @@ function ClipBody({
   const [error, setError] = useState<string | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
-  const dragging = useRef<'start' | 'end' | 'seek' | null>(null)
+  const playheadRef = useRef<HTMLDivElement>(null)
+  const [dragging, setDragging] = useState<'start' | 'end' | 'seek' | null>(null)
+  const [playing, setPlaying] = useState(true)
+  const [muted, setMuted] = useState(true)
+  // Oynatma döngüsü her karede okur; state yerine ref ile güncel tutulur.
+  const range = useRef({ start, end, dragging })
+  const playingRef = useRef(playing)
+  useEffect(() => {
+    range.current = { start, end, dragging }
+    playingRef.current = playing
+  })
 
   useEffect(() => window.api.onClipProgress(({ ratio }) => setProgress(ratio)), [])
 
-  // Seçili aralık döngüde oynar.
+  // Seçili aralık döngüde oynar. timeupdate saniyede ~4 kez geldiği için bitiş sınırı
+  // her karede kontrol edilir; böylece önizleme seçimin sonunu taşmaz.
   useEffect(() => {
+    let frame = 0
+    const tick = (): void => {
+      const el = videoRef.current
+      const { start: s, end: e, dragging: d } = range.current
+      if (el && !d) {
+        const ms = el.currentTime * 1000
+        if (ms >= e || ms < s - 50) {
+          el.currentTime = s / 1000
+          if (el.paused && playingRef.current) void el.play()
+        }
+        movePlayhead(el.currentTime * 1000)
+      }
+      frame = requestAnimationFrame(tick)
+    }
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+    // Döngü bir kez kurulur; değişen değerleri range/playingRef üzerinden okur.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Oynatma çizgisi her karede doğrudan DOM'da taşınır; saat yazısı saniyede ~10 kez güncellenir.
+  // Böylece önizleme oynarken bütün pencere saniyede 60 kez yeniden çizilmez.
+  const lastLabel = useRef(0)
+  function movePlayhead(ms: number): void {
+    if (playheadRef.current) {
+      playheadRef.current.style.left = `${(ms / Math.max(durationMs, 1)) * 100}%`
+    }
+    if (Math.abs(ms - lastLabel.current) >= 100) {
+      lastLabel.current = ms
+      setCurrent(ms)
+    }
+  }
+
+  const seekPreview = (ms: number): void => {
     const el = videoRef.current
-    if (el && (el.currentTime * 1000 < start || el.currentTime * 1000 > end))
-      el.currentTime = start / 1000
-  }, [start, end])
+    if (!el) return
+    el.currentTime = Math.min(Math.max(ms, 0), durationMs) / 1000
+    movePlayhead(ms)
+  }
+
+  const togglePlay = (): void => {
+    const el = videoRef.current
+    if (!el) return
+    if (el.paused) {
+      if (el.currentTime * 1000 >= end - 50) el.currentTime = start / 1000
+      void el.play()
+    } else el.pause()
+  }
 
   const selectedMs = end - start
   const sourceBytes = (video.size * selectedMs) / Math.max(durationMs, 1)
@@ -94,13 +149,44 @@ function ClipBody({
     return Math.round(Math.min(Math.max((clientX - rect.left) / rect.width, 0), 1) * durationMs)
   }
 
-  const onPointerMove = (event: React.PointerEvent): void => {
-    if (!dragging.current) return
+  const onPointerDown = (event: React.PointerEvent): void => {
+    event.currentTarget.setPointerCapture(event.pointerId)
+    const handle = (event.target as HTMLElement).closest<HTMLElement>('[data-handle]')?.dataset
+      .handle as 'start' | 'end' | undefined
+    const mode = handle ?? 'seek'
+    setDragging(mode)
+    range.current.dragging = mode
+    // Sürüklerken video durur ve tutamacın bulunduğu kareyi gösterir.
+    videoRef.current?.pause()
+    onPointerMove(event, mode)
+  }
+
+  const onPointerMove = (event: React.PointerEvent, mode = dragging): void => {
+    if (!mode) return
     const ms = pointerToMs(event.clientX)
-    if (dragging.current === 'start') setStart(Math.min(ms, end - MIN_CLIP_MS))
-    else if (dragging.current === 'end') setEnd(Math.max(ms, start + MIN_CLIP_MS))
-    else if (videoRef.current)
-      videoRef.current.currentTime = Math.min(Math.max(ms, start), end) / 1000
+    if (mode === 'start') {
+      const next = Math.min(ms, end - MIN_CLIP_MS)
+      setStart(next)
+      seekPreview(next)
+    } else if (mode === 'end') {
+      const next = Math.max(ms, start + MIN_CLIP_MS)
+      setEnd(next)
+      seekPreview(next)
+    } else {
+      seekPreview(Math.min(Math.max(ms, start), end))
+    }
+  }
+
+  const onPointerUp = (): void => {
+    const mode = dragging
+    setDragging(null)
+    range.current.dragging = null
+    const el = videoRef.current
+    if (!el) return
+    // Başlangıç bırakılınca oradan, bitiş bırakılınca son 1.5 saniyeden oynat ki kesim noktası görülsün.
+    if (mode === 'start') el.currentTime = start / 1000
+    if (mode === 'end') el.currentTime = Math.max(start, end - 1500) / 1000
+    if (playing) void el.play()
   }
 
   const create = async (): Promise<void> => {
@@ -147,35 +233,70 @@ function ClipBody({
       />
       <div className="relative flex min-h-0">
         <div className="flex min-w-0 grow flex-col gap-4 bg-side px-[22px] py-5">
-          <video
-            ref={videoRef}
-            src={window.api.mediaUrl(video.playbackPath)}
-            autoPlay
-            muted
-            onTimeUpdate={(event) => {
-              const el = event.currentTarget
-              if (el.currentTime * 1000 >= end) el.currentTime = start / 1000
-              setCurrent(el.currentTime * 1000)
-            }}
-            onEnded={(event) => {
-              event.currentTarget.currentTime = start / 1000
-              void event.currentTarget.play()
-            }}
-            className="aspect-video w-full rounded-[14px] border-2 border-ink bg-ink object-contain"
-          />
+          <div className="group relative overflow-hidden rounded-[14px] border-2 border-ink bg-ink">
+            <video
+              ref={videoRef}
+              src={window.api.mediaUrl(video.playbackPath)}
+              autoPlay
+              muted={muted}
+              onClick={togglePlay}
+              onPlay={() => setPlaying(true)}
+              onPause={() => !range.current.dragging && setPlaying(false)}
+              onEnded={(event) => {
+                event.currentTarget.currentTime = start / 1000
+                void event.currentTarget.play()
+              }}
+              className="aspect-video w-full cursor-pointer object-contain"
+            />
+            <AnimatePresence>
+              {dragging && dragging !== 'seek' && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute top-3 left-3 rounded-full border-[1.5px] border-ink bg-sticker-yellow px-3 py-1 text-xs font-extrabold text-ink"
+                >
+                  {dragging === 'start' ? 'Başlangıç' : 'Bitiş'} ·{' '}
+                  {formatPreciseTime(dragging === 'start' ? start : end)}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
           <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2.5">
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={togglePlay}
+                aria-label={playing ? 'Duraklat' : 'Oynat'}
+                className="flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-sticker-yellow text-ink shadow-[2px_2px_0_var(--color-ink)]"
+              >
+                {playing ? (
+                  <Pause size={15} strokeWidth={2.5} />
+                ) : (
+                  <Play size={15} strokeWidth={2.5} />
+                )}
+              </motion.button>
+              <button
+                onClick={() => setMuted((m) => !m)}
+                aria-label={muted ? 'Sesi aç' : 'Sesi kapat'}
+                className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surf text-mute hover:text-text"
+              >
+                {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+              </button>
+              <span className="font-mono text-xs text-mute">{formatPreciseTime(current)}</span>
+              <span className="grow" />
+              <span className="text-[13px] font-bold">
+                Seçim: {formatPreciseTime(start)} → {formatPreciseTime(end)} ·{' '}
+                {(selectedMs / 1000).toFixed(1)} sn
+              </span>
+            </div>
             <div
               ref={trackRef}
-              onPointerDown={(event) => {
-                event.currentTarget.setPointerCapture(event.pointerId)
-                const target = (event.target as HTMLElement).dataset.handle as
-                  'start' | 'end' | undefined
-                dragging.current = target ?? 'seek'
-                onPointerMove(event)
-              }}
-              onPointerMove={onPointerMove}
-              onPointerUp={() => (dragging.current = null)}
-              className="relative h-14 cursor-pointer touch-none overflow-hidden rounded-[10px] border-[1.5px] border-ink bg-surf select-none"
+              onPointerDown={onPointerDown}
+              onPointerMove={(event) => onPointerMove(event)}
+              onPointerUp={onPointerUp}
+              onPointerCancel={onPointerUp}
+              className="relative mt-5 h-14 cursor-pointer touch-none rounded-[10px] border-[1.5px] border-ink bg-surf select-none"
               style={
                 video.mediaStatus === 'ready'
                   ? {
@@ -186,41 +307,54 @@ function ClipBody({
               }
             >
               <div
-                className="absolute inset-y-0 left-0 bg-[rgba(12,10,8,0.72)]"
+                className="absolute inset-y-0 left-0 rounded-l-[9px] bg-[rgba(12,10,8,0.72)]"
                 style={{ width: pct(start) }}
               />
               <div
-                className="absolute inset-y-0 right-0 bg-[rgba(12,10,8,0.72)]"
+                className="absolute inset-y-0 right-0 rounded-r-[9px] bg-[rgba(12,10,8,0.72)]"
                 style={{ left: pct(end) }}
               />
               <div
                 className="pointer-events-none absolute inset-y-0 border-y-[3px] border-sticker-yellow"
                 style={{ left: pct(start), right: `calc(100% - ${pct(end)})` }}
               />
-              {(['start', 'end'] as const).map((handle) => (
-                <motion.div
-                  key={handle}
-                  data-handle={handle}
-                  whileHover={{ scaleX: 1.3 }}
-                  className={`absolute inset-y-0 flex w-3.5 cursor-ew-resize items-center justify-center bg-sticker-yellow ${
-                    handle === 'start' ? 'rounded-l-md' : 'rounded-r-md'
-                  }`}
-                  style={{ left: `calc(${pct(handle === 'start' ? start : end)} - 7px)` }}
-                >
-                  <div data-handle={handle} className="h-[18px] w-0.5 rounded-sm bg-ink" />
-                </motion.div>
-              ))}
               <div
-                className="pointer-events-none absolute -inset-y-0.5 w-0.5 bg-text"
-                style={{ left: pct(current) }}
+                ref={playheadRef}
+                className="pointer-events-none absolute -inset-y-1 w-0.5 rounded-full bg-text shadow-[0_0_0_1px_var(--color-ink)]"
               />
+              {(['start', 'end'] as const).map((handle) => {
+                const value = handle === 'start' ? start : end
+                const active = dragging === handle
+                return (
+                  <div
+                    key={handle}
+                    data-handle={handle}
+                    // Geniş, görünmez tutma alanı: ince tutamacı yakalamak kolay olsun.
+                    className="absolute inset-y-0 z-10 flex w-6 cursor-ew-resize justify-center"
+                    style={{ left: `calc(${pct(value)} - 12px)` }}
+                  >
+                    <motion.div
+                      animate={{ scaleX: active ? 1.35 : 1 }}
+                      className={`flex h-full w-3.5 items-center justify-center bg-sticker-yellow ${
+                        handle === 'start' ? 'rounded-l-md' : 'rounded-r-md'
+                      }`}
+                    >
+                      <div className="h-[18px] w-0.5 rounded-sm bg-ink" />
+                    </motion.div>
+                    <div
+                      className={`pointer-events-none absolute -top-6 rounded-full border-[1.5px] border-ink px-1.5 font-mono text-[10.5px] whitespace-nowrap text-ink transition-colors ${
+                        active ? 'bg-sticker-yellow' : 'bg-text'
+                      }`}
+                    >
+                      {formatPreciseTime(value)}
+                    </div>
+                  </div>
+                )
+              })}
             </div>
-            <div className="flex items-center justify-between font-mono text-xs text-mute">
+            <div className="flex items-center justify-between font-mono text-xs text-dim">
               <span>0:00.0</span>
-              <span className="font-sans text-[13px] font-bold text-text">
-                Seçim: {formatPreciseTime(start)} → {formatPreciseTime(end)} ·{' '}
-                {(selectedMs / 1000).toFixed(1)} sn
-              </span>
+              <span className="font-sans">Tutamaçları sürükle · videoya tıkla: oynat / durdur</span>
               <span>{formatPreciseTime(durationMs)}</span>
             </div>
           </div>
