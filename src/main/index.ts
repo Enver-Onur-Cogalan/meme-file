@@ -1,65 +1,100 @@
-import { app, BrowserWindow, shell } from 'electron'
+import { app, globalShortcut } from 'electron'
 import { join } from 'node:path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import { electronApp, optimizer } from '@electron-toolkit/utils'
+import type { Settings } from '../shared/api'
+import { ClipManager } from './lib/clips'
 import { openDatabase } from './lib/db'
-import { isLibraryVideo } from './lib/library'
+import { isLibraryVideo, LibraryWatcher } from './lib/library'
+import { MediaJobs } from './lib/media-jobs'
 import { handleMediaProtocol, registerMediaScheme } from './lib/media-protocol'
+import { getSettings } from './lib/repo'
 import { registerIpc } from './ipc'
+import { AppWindows } from './windows'
 
 registerMediaScheme()
 
-function createWindow(): void {
-  const mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 800,
-    minWidth: 960,
-    minHeight: 600,
-    show: false,
-    backgroundColor: '#1b1814',
-    titleBarStyle: 'hidden',
-    // Windows'ta küçült/büyüt/kapat butonları native kalır, sadece renkleri temaya uyar.
-    ...(process.platform === 'darwin'
-      ? { trafficLightPosition: { x: 14, y: 11 } }
-      : { titleBarOverlay: { color: '#15130f', symbolColor: '#a89d8a', height: 36 } }),
-    webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
-      sandbox: true,
-      contextIsolation: true,
-      nodeIntegration: false
-    }
-  })
-
-  mainWindow.on('ready-to-show', () => mainWindow.show())
-
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
-    return { action: 'deny' }
-  })
-
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
-  } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
-  }
+if (!app.requestSingleInstanceLock()) {
+  app.quit()
+} else {
+  void app.whenReady().then(start)
 }
 
-app.whenReady().then(() => {
+async function start(): Promise<void> {
   electronApp.setAppUserModelId('com.enveronur.memefile')
+  app.on('browser-window-created', (_, window) => optimizer.watchWindowShortcuts(window))
 
-  app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window)
+  const userData = app.getPath('userData')
+  const cacheRoot = join(userData, 'cache')
+  const iconsRoot = join(userData, 'icons')
+  const db = openDatabase(join(userData, 'library.db'))
+  let settings = getSettings(db)
+
+  const windows = new AppWindows(() => settings.closeToTray)
+
+  // Çok sayıda dosya aynı anda işlenirken arayüzü boğmamak için bildirimleri seyrekleştir.
+  let notifyTimer: ReturnType<typeof setTimeout> | null = null
+  const notifyChanged = (): void => {
+    if (notifyTimer) return
+    notifyTimer = setTimeout(() => {
+      notifyTimer = null
+      windows.broadcast('library:changed')
+    }, 250)
+  }
+
+  const media = new MediaJobs(db, cacheRoot, notifyChanged)
+  const library = new LibraryWatcher(db, () => {
+    media.kick()
+    notifyChanged()
+  })
+  const clips = new ClipManager(
+    db,
+    (jobId, ratio) => windows.broadcast('clip:progress', { jobId, ratio }),
+    () => {
+      media.kick()
+      notifyChanged()
+    }
+  )
+
+  const applySettings = (next: Settings): void => {
+    settings = next
+    windows.registerQuickShortcut(next.quickSearchShortcut)
+    if (process.platform !== 'linux') {
+      app.setLoginItemSettings({ openAtLogin: next.launchAtLogin, args: ['--hidden'] })
+    }
+  }
+
+  handleMediaProtocol({
+    isAllowedVideo: (filePath) => isLibraryVideo(db, filePath),
+    cacheRoot,
+    iconsRoot
+  })
+  registerIpc({
+    db,
+    windows,
+    library,
+    media,
+    clips,
+    cacheRoot,
+    iconsRoot,
+    notifyChanged,
+    applySettings
   })
 
-  const db = openDatabase(join(app.getPath('userData'), 'library.db'))
-  handleMediaProtocol((filePath) => isLibraryVideo(db, filePath))
-  registerIpc(db)
+  windows.createTray()
+  windows.createMain(!process.argv.includes('--hidden'))
+  windows.createQuick()
+  applySettings(settings)
 
-  createWindow()
-
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  app.on('second-instance', () => windows.showMain())
+  app.on('activate', () => windows.showMain())
+  app.on('will-quit', () => {
+    globalShortcut.unregisterAll()
+    library.close()
   })
-})
+
+  await library.syncAll()
+  media.kick()
+}
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
