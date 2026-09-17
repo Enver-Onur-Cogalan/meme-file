@@ -58,7 +58,8 @@ async function start(): Promise<void> {
   const applySettings = (next: Settings): void => {
     settings = next
     windows.registerQuickShortcut(next.quickSearchShortcut)
-    if (process.platform !== 'linux') {
+    // Geliştirme sırasında (imzasız uygulama) oturum açılış öğesi ayarlanamaz.
+    if (app.isPackaged && process.platform !== 'linux') {
       app.setLoginItemSettings({ openAtLogin: next.launchAtLogin, args: ['--hidden'] })
     }
   }

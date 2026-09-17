@@ -44,7 +44,15 @@ const MIGRATIONS = [
   );
   CREATE INDEX video_tags_tag ON video_tags(tag_id);
   CREATE TABLE settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
-  CREATE VIRTUAL TABLE videos_fts USING fts5(text, tokenize = 'unicode61 remove_diacritics 2');`
+  CREATE VIRTUAL TABLE videos_fts USING fts5(text, tokenize = 'unicode61 remove_diacritics 2');`,
+  // İlk açılışta boş görünmesin diye başlangıç chip'leri; kullanıcı silebilir/düzenleyebilir.
+  `INSERT OR IGNORE INTO tags (name, color, icon, created_at) VALUES
+    ('komik', '#f5c542', 'lucide:Laugh', 1),
+    ('tepki', '#5cc3e8', 'lucide:Zap', 2),
+    ('efsane', '#f59a3d', 'lucide:Flame', 3),
+    ('cringe', '#b69cf2', 'lucide:Skull', 4),
+    ('oyun', '#f2665a', 'lucide:Gamepad2', 5),
+    ('müzikli', '#7fd47f', 'lucide:Music', 6)`
 ]
 
 export function openDatabase(file: string): DatabaseSync {

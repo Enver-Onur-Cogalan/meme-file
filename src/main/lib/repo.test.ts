@@ -17,6 +17,7 @@ beforeEach(() => {
   db = new DatabaseSync(':memory:')
   db.exec('PRAGMA foreign_keys = ON')
   migrate(db)
+  db.exec('DELETE FROM tags')
   folderId = repo.insertFolder(db, '/memeler').id
 })
 

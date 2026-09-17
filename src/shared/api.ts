@@ -3,6 +3,9 @@ export const VIDEO_EXTENSIONS = ['.mp4', '.m4v', '.webm', '.mov', '.mkv'] as con
 /** Discord'un ücretsiz hesaplar için dosya limiti. */
 export const DISCORD_LIMIT_BYTES = 10 * 1024 * 1024
 
+/** Sığdırırken limitin biraz altı hedeflenir; MB/MiB farkı ve Discord'un yuvarlaması sorun olmasın. */
+export const DISCORD_TARGET_BYTES = Math.floor(9.5 * 1024 * 1024)
+
 export interface LibraryFolder {
   id: number
   path: string

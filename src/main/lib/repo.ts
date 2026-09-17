@@ -333,7 +333,7 @@ export function insertCreatedVideo(
       .prepare(
         `INSERT INTO videos (folder_id, path, name, size, modified_at, added_at, status)
          VALUES (?, ?, ?, ?, ?, ?, 'library')
-         ON CONFLICT(path) DO UPDATE SET size = excluded.size, modified_at = excluded.modified_at,
+         ON CONFLICT(path) DO UPDATE SET size = excluded.size, modified_at = excluded.modified_at, status = 'library',
            missing = 0, media_status = 'pending', quick_hash = NULL
          RETURNING id`
       )
