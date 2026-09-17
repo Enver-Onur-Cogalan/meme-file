@@ -32,4 +32,8 @@ mac:
 dmg:
   artifactName: MemeFile-${version}.${ext}
 npmRebuild: false
-publish: null
+publish:
+  provider: github
+  owner: Enver-Onur-Cogalan
+  repo: meme-file
+  releaseType: release

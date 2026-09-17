@@ -9,6 +9,7 @@ import { MediaJobs } from './lib/media-jobs'
 import { handleMediaProtocol, registerMediaScheme } from './lib/media-protocol'
 import { getSettings } from './lib/repo'
 import { registerIpc } from './ipc'
+import { setupUpdater } from './updater'
 import { AppWindows } from './windows'
 
 registerMediaScheme()
@@ -83,6 +84,11 @@ async function start(): Promise<void> {
     notifyChanged,
     applySettings
   })
+
+  setupUpdater(
+    (status) => windows.broadcast('update:status', status),
+    () => windows.prepareForQuit()
+  )
 
   windows.createTray()
   windows.createMain(!process.argv.includes('--hidden'))

@@ -1,6 +1,6 @@
-import { Download, Keyboard, RefreshCw, Settings, Upload } from 'lucide-react'
+import { Download, Keyboard, RefreshCw, RotateCw, Settings, Upload } from 'lucide-react'
 import { useState } from 'react'
-import type { Settings as SettingsType } from '../../../shared/api'
+import type { Settings as SettingsType, UpdateState } from '../../../shared/api'
 import { errorMessage } from '../lib/actions'
 import { useStore } from '../lib/store'
 import { Button, DialogHeader, Kbd, Label, Modal, Segmented, Toggle } from './ui'
@@ -122,6 +122,8 @@ export function SettingsModal(): React.JSX.Element {
             />
           </section>
 
+          <UpdateSection />
+
           <section className="flex flex-col gap-3">
             <Label>Kütüphane</Label>
             <div className="flex flex-wrap gap-2">
@@ -171,5 +173,55 @@ export function SettingsModal(): React.JSX.Element {
         </div>
       )}
     </Modal>
+  )
+}
+
+const UPDATE_TEXT: Record<UpdateState, string> = {
+  idle: 'Güncellemeler otomatik denetlenir.',
+  checking: 'Denetleniyor…',
+  downloading: 'Yeni sürüm indiriliyor…',
+  ready: 'Yeni sürüm hazır.',
+  latest: 'En güncel sürümü kullanıyorsun.',
+  error: 'Güncelleme denetlenemedi. İnternet bağlantını kontrol et.',
+  dev: 'Geliştirme sürümünde otomatik güncelleme kapalı.'
+}
+
+function UpdateSection(): React.JSX.Element {
+  const { update, appVersion } = useStore()
+  return (
+    <section className="flex flex-col gap-3">
+      <Label>Sürüm</Label>
+      <div className="flex items-center gap-3">
+        <span className="rounded-full border-[1.5px] border-ink bg-sticker-yellow px-2.5 py-0.5 font-mono text-xs font-medium text-ink">
+          v{appVersion}
+        </span>
+        <span className="grow text-sm text-mute">
+          {UPDATE_TEXT[update.state]}
+          {update.state === 'downloading' && ` %${Math.round((update.percent ?? 0) * 100)}`}
+        </span>
+        {update.state === 'ready' ? (
+          <Button
+            variant="primary"
+            icon={RotateCw}
+            color="var(--color-sticker-green)"
+            onClick={() => window.api.installUpdate()}
+          >
+            {update.version} için yeniden başlat
+          </Button>
+        ) : (
+          <Button
+            icon={RefreshCw}
+            disabled={
+              update.state === 'checking' ||
+              update.state === 'downloading' ||
+              update.state === 'dev'
+            }
+            onClick={() => void window.api.checkForUpdates()}
+          >
+            Denetle
+          </Button>
+        )}
+      </div>
+    </section>
   )
 }

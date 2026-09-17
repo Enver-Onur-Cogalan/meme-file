@@ -110,6 +110,15 @@ export interface ClipResult {
   videoId: number | null
 }
 
+export type UpdateState = 'idle' | 'checking' | 'downloading' | 'ready' | 'latest' | 'error' | 'dev'
+
+export interface UpdateStatus {
+  state: UpdateState
+  version?: string
+  percent?: number
+  message?: string
+}
+
 export interface BackupResult {
   tags: number
   videos: number
@@ -160,6 +169,11 @@ export interface MemeApi {
   exportBackup(): Promise<BackupResult | null>
   importBackup(): Promise<BackupResult | null>
 
+  getAppVersion(): Promise<string>
+  getUpdateStatus(): Promise<UpdateStatus>
+  checkForUpdates(): Promise<void>
+  installUpdate(): void
+
   hideQuickWindow(): void
   openInMainWindow(videoId: number): void
 
@@ -168,4 +182,5 @@ export interface MemeApi {
   onConvertProgress(listener: (progress: ConvertProgress) => void): () => void
   onOpenVideo(listener: (videoId: number) => void): () => void
   onQuickWindowShown(listener: () => void): () => void
+  onUpdateStatus(listener: (status: UpdateStatus) => void): () => void
 }

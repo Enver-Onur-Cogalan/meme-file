@@ -52,6 +52,11 @@ export class AppWindows {
     })
   }
 
+  /** Güncelleme kurulumu gibi durumlarda pencereler tepsiye gizlenmek yerine kapanabilsin. */
+  prepareForQuit(): void {
+    this.quitting = true
+  }
+
   all(): BrowserWindow[] {
     return [this.main, this.quick].filter((w): w is BrowserWindow => !!w && !w.isDestroyed())
   }

@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { ClipProgress, ConvertProgress, MemeApi } from '../shared/api'
+import type { ClipProgress, ConvertProgress, MemeApi, UpdateStatus } from '../shared/api'
 
 function subscribe<T extends unknown[]>(
   channel: string,
@@ -54,6 +54,11 @@ const api: MemeApi = {
   exportBackup: () => ipcRenderer.invoke('backup:export'),
   importBackup: () => ipcRenderer.invoke('backup:import'),
 
+  getAppVersion: () => ipcRenderer.invoke('app:version'),
+  getUpdateStatus: () => ipcRenderer.invoke('update:status'),
+  checkForUpdates: () => ipcRenderer.invoke('update:check'),
+  installUpdate: () => ipcRenderer.send('update:install'),
+
   hideQuickWindow: () => ipcRenderer.send('quick:hide'),
   openInMainWindow: (videoId) => ipcRenderer.send('quick:open-in-main', videoId),
 
@@ -61,7 +66,8 @@ const api: MemeApi = {
   onClipProgress: (listener) => subscribe<[ClipProgress]>('clip:progress', listener),
   onConvertProgress: (listener) => subscribe<[ConvertProgress]>('convert:progress', listener),
   onOpenVideo: (listener) => subscribe<[number]>('video:open', listener),
-  onQuickWindowShown: (listener) => subscribe('quick:shown', listener)
+  onQuickWindowShown: (listener) => subscribe('quick:shown', listener),
+  onUpdateStatus: (listener) => subscribe<[UpdateStatus]>('update:status', listener)
 }
 
 contextBridge.exposeInMainWorld('api', api)

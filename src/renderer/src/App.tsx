@@ -39,6 +39,13 @@ function MainWindow(): React.JSX.Element {
 
   useEffect(() => window.api.onLibraryChanged(() => void refresh()), [refresh])
 
+  useEffect(() => {
+    void Promise.all([window.api.getAppVersion(), window.api.getUpdateStatus()]).then(
+      ([appVersion, update]) => useStore.setState({ appVersion, update })
+    )
+    return window.api.onUpdateStatus((update) => useStore.setState({ update }))
+  }, [])
+
   useEffect(
     () =>
       window.api.onConvertProgress(({ videoId, ratio }) =>
