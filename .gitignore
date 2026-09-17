@@ -1,0 +1,9 @@
+node_modules
+dist
+out
+.DS_Store
+.eslintcache
+*.log*
+# Tasarım tuvalinin derlenmiş hâli (kaynakları design/*.dc.html)
+design/*.html
+!design/*.dc.html
