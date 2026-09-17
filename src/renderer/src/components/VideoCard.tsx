@@ -24,6 +24,8 @@ interface Props {
   video: Video
   tags: Tag[]
   delay: number
+  /** false: kart animasyonsuz belirir (ör. kaydırırken ekrana giren satırlar) */
+  entry: boolean
   selected: boolean
   animateLayout: boolean
   onAction(action: CardAction, video: Video, event?: React.MouseEvent): void
@@ -33,6 +35,7 @@ export const VideoCard = memo(function VideoCard({
   video,
   tags,
   delay,
+  entry,
   selected,
   animateLayout,
   onAction
@@ -40,6 +43,7 @@ export const VideoCard = memo(function VideoCard({
   const [hover, setHover] = useState(false)
   const [scrub, setScrub] = useState(0)
   const [peeling, setPeeling] = useState(false)
+  const [entered, setEntered] = useState(!entry)
   const [thumbFailed, setThumbFailed] = useState(false)
 
   const videoTags = video.tagIds
@@ -51,7 +55,7 @@ export const VideoCard = memo(function VideoCard({
   return (
     <motion.div
       layout={animateLayout ? 'position' : false}
-      initial={{ opacity: 0, y: 18, rotate: -1.5, scale: 0.97 }}
+      initial={entry ? { opacity: 0, y: 18, rotate: -1.5, scale: 0.97 } : false}
       animate={{
         opacity: 1,
         y: hover ? -4 : 0,
@@ -63,8 +67,10 @@ export const VideoCard = memo(function VideoCard({
         type: 'spring',
         stiffness: 380,
         damping: 26,
-        delay
+        // Gecikme sadece giriş animasyonunda; üzerine gelme tepkisi anında olmalı.
+        delay: entered ? 0 : delay
       }}
+      onAnimationComplete={() => setEntered(true)}
       onHoverStart={() => setHover(true)}
       onHoverEnd={() => {
         setHover(false)

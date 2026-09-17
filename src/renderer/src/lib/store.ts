@@ -137,7 +137,11 @@ export const useStore = create<State & Actions>()((set, get) => ({
     ])
     // Daha yeni bir istek başladıysa eski sonucu yazma.
     if (seq !== refreshSeq) return
-    const validTagIds = get().tagIds.filter((id) => tags.some((tag) => tag.id === id))
+    // Diziler sadece gerçekten değiştiyse yeniden yazılır. Yeni bir dizi (aynı içerikle bile)
+    // filtre değişti sanılıp tekrar yenilemeyi tetikliyor ve sonsuz bir döngüye giriyordu.
+    const current = get()
+    const validTagIds = current.tagIds.filter((id) => tags.some((tag) => tag.id === id))
+    const validSelection = current.selection.filter((id) => videos.some((video) => video.id === id))
     set({
       folders,
       tags,
@@ -147,8 +151,8 @@ export const useStore = create<State & Actions>()((set, get) => ({
       // (Aksi hâlde uçuştaki eski bir yenileme az önce değiştirilen ayarı geri alabiliyordu.)
       ...(freshSettings && !get().settings ? { settings: freshSettings } : {}),
       loaded: true,
-      tagIds: validTagIds,
-      selection: get().selection.filter((id) => videos.some((video) => video.id === id))
+      ...(validTagIds.length !== current.tagIds.length ? { tagIds: validTagIds } : {}),
+      ...(validSelection.length !== current.selection.length ? { selection: validSelection } : {})
     })
   },
 

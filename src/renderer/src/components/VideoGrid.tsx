@@ -1,6 +1,6 @@
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { AnimatePresence } from 'motion/react'
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { Tag, Video } from '../../../shared/api'
 import { dragVideos, videoMenu } from '../lib/actions'
 import { useStore } from '../lib/store'
@@ -72,6 +72,7 @@ export function VideoGrid({ videos, tags, scrollRef, onMenu }: Props): React.JSX
               video={video}
               tags={tags}
               delay={Math.min(index, 16) * 0.025}
+              entry
               selected={selected.has(video.id)}
               animateLayout
               onAction={onAction}
@@ -108,6 +109,13 @@ function VirtualGrid({
 }): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null)
   const [width, setWidth] = useState(0)
+  // İlk açılışta kartlar sırayla süzülür; sonra kaydırırken ekrana giren satırlar animasyonsuz gelir
+  // (her satırda animasyon oynatmak kaydırmayı ağırlaştırıyordu).
+  const [animateEntry, setAnimateEntry] = useState(true)
+  useEffect(() => {
+    const timer = setTimeout(() => setAnimateEntry(false), 900)
+    return () => clearTimeout(timer)
+  }, [])
   const [offsetTop, setOffsetTop] = useState(0)
 
   useLayoutEffect(() => {
@@ -132,7 +140,7 @@ function VirtualGrid({
     getScrollElement: () => scrollRef.current,
     // Kapak (16:10) + başlık + bir satır chip; gerçek yükseklik çizildikten sonra ölçülür.
     estimateSize: () => cardWidth * (10 / 16) + 86 + GAP,
-    overscan: 3,
+    overscan: 4,
     scrollMargin: offsetTop
   })
 
@@ -160,7 +168,8 @@ function VirtualGrid({
               key={video.id}
               video={video}
               tags={tags}
-              delay={column * 0.03}
+              delay={(row.index * columns + column) * 0.02}
+              entry={animateEntry}
               selected={selected.has(video.id)}
               animateLayout={false}
               onAction={onAction}
