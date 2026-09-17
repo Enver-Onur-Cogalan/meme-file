@@ -57,6 +57,8 @@ export function InboxView(): React.JSX.Element {
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent): void => {
+      const { chipEditor, playerId, settingsOpen, clip } = useStore.getState()
+      if (chipEditor || playerId !== null || settingsOpen || clip) return
       if (
         event.target instanceof HTMLInputElement ||
         event.ctrlKey ||
