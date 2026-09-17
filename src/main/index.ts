@@ -1,4 +1,5 @@
 import { app, globalShortcut } from 'electron'
+import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import type { Settings } from '../shared/api'
@@ -7,7 +8,8 @@ import { openDatabase } from './lib/db'
 import { isConvertedCopy, isLibraryVideo, LibraryWatcher } from './lib/library'
 import { MediaJobs } from './lib/media-jobs'
 import { handleMediaProtocol, registerMediaScheme } from './lib/media-protocol'
-import { getSettings } from './lib/repo'
+import { getSettings, localizeStarterTags } from './lib/repo'
+import { setLanguage, t } from './i18n'
 import { registerIpc } from './ipc'
 import { setupUpdater } from './updater'
 import { AppWindows } from './windows'
@@ -27,8 +29,12 @@ async function start(): Promise<void> {
   const userData = app.getPath('userData')
   const cacheRoot = join(userData, 'cache')
   const iconsRoot = join(userData, 'icons')
-  const db = openDatabase(join(userData, 'library.db'))
+  const dbPath = join(userData, 'library.db')
+  const freshInstall = !existsSync(dbPath)
+  const db = openDatabase(dbPath)
   let settings = getSettings(db)
+  setLanguage(settings.language, app.getLocale())
+  if (freshInstall) localizeStarterTags(db, t)
 
   const windows = new AppWindows(() => settings.closeToTray)
 
@@ -59,7 +65,11 @@ async function start(): Promise<void> {
   )
 
   const applySettings = (next: Settings): void => {
+    const languageChanged = next.language !== settings.language
     settings = next
+    setLanguage(next.language, app.getLocale())
+    if (languageChanged) windows.updateTrayMenu()
+    windows.broadcast('settings:changed', next)
     windows.registerQuickShortcut(next.quickSearchShortcut)
     // Geliştirme sırasında (imzasız uygulama) oturum açılış öğesi ayarlanamaz.
     if (app.isPackaged && process.platform !== 'linux') {

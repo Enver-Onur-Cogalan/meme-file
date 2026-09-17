@@ -5,6 +5,7 @@ import { existsSync } from 'node:fs'
 import { copyFile, mkdir, rename, stat } from 'node:fs/promises'
 import { basename, dirname, extname, join } from 'node:path'
 import type { ClipRequest, Settings, TagInput, VideoQuery } from '../shared/api'
+import { t } from './i18n'
 import { exportBackup, importBackup } from './lib/backup'
 import { sanitizeFileName, type ClipManager } from './lib/clips'
 import type { LibraryWatcher } from './lib/library'
@@ -36,9 +37,9 @@ function ids(value: unknown): number[] {
 
 function validTag(input: TagInput): TagInput {
   const name = String(input?.name ?? '').trim()
-  if (!name || name.length > 40) throw new Error('Chip adı 1-40 karakter olmalı')
-  if (!TAG_COLOR.test(input.color)) throw new Error('Geçersiz renk')
-  if (!TAG_ICON.test(input.icon)) throw new Error('Geçersiz ikon')
+  if (!name || name.length > 40) throw new Error(t('main.chipNameLength'))
+  if (!TAG_COLOR.test(input.color)) throw new Error(t('main.invalidColor'))
+  if (!TAG_ICON.test(input.icon)) throw new Error(t('main.invalidIcon'))
   return { name, color: input.color, icon: input.icon }
 }
 
@@ -55,7 +56,7 @@ export function registerIpc(ctx: IpcContext): void {
 
   ipcMain.handle('folders:add', async (event) => {
     const options: Electron.OpenDialogOptions = {
-      title: 'Video klasörü seç',
+      title: t('main.pickFolder'),
       properties: ['openDirectory']
     }
     const window = parentWindow(event)
@@ -111,14 +112,14 @@ export function registerIpc(ctx: IpcContext): void {
 
   ipcMain.handle('videos:rename', async (_event, videoId: number, name: string) => {
     const video = repo.getVideo(db, videoId)
-    if (!video) throw new Error('Video bulunamadı')
+    if (!video) throw new Error(t('main.videoNotFound'))
     const ext = extname(video.path)
     const base = sanitizeFileName(String(name ?? '').replace(new RegExp(`\\${ext}$`, 'i'), ''))
     const target = join(dirname(video.path), `${base}${ext}`)
     if (target === video.path) return video
     // Windows'ta büyük/küçük harf değişikliği aynı dosyadır; başka bir dosyanın üzerine yazma.
     const sameFile = target.toLowerCase() === video.path.toLowerCase()
-    if (!sameFile && existsSync(target)) throw new Error('Bu klasörde aynı adda bir dosya var')
+    if (!sameFile && existsSync(target)) throw new Error(t('main.fileExists'))
     await rename(video.path, target)
     repo.renameVideo(db, videoId, target, basename(target))
     if (video.playback === 'ready' && video.playbackPath !== video.path) {
@@ -172,9 +173,11 @@ export function registerIpc(ctx: IpcContext): void {
 
   ipcMain.handle('tags:import-icon', async (event) => {
     const options: Electron.OpenDialogOptions = {
-      title: 'İkon seç',
+      title: t('main.pickIcon'),
       properties: ['openFile'],
-      filters: [{ name: 'Görsel', extensions: ICON_EXTENSIONS.map((ext) => ext.slice(1)) }]
+      filters: [
+        { name: t('main.imageFilter'), extensions: ICON_EXTENSIONS.map((ext) => ext.slice(1)) }
+      ]
     }
     const window = parentWindow(event)
     const result = window
@@ -183,8 +186,8 @@ export function registerIpc(ctx: IpcContext): void {
     const source = result.filePaths[0]
     if (result.canceled || !source) return null
     const ext = extname(source).toLowerCase()
-    if (!ICON_EXTENSIONS.includes(ext)) throw new Error('Desteklenmeyen dosya türü')
-    if ((await stat(source)).size > 1024 * 1024) throw new Error("İkon 1 MB'tan küçük olmalı")
+    if (!ICON_EXTENSIONS.includes(ext)) throw new Error(t('main.unsupportedType'))
+    if ((await stat(source)).size > 1024 * 1024) throw new Error(t('main.iconTooLarge'))
     await mkdir(ctx.iconsRoot, { recursive: true })
     const fileName = `${randomUUID()}${ext}`
     await copyFile(source, join(ctx.iconsRoot, fileName))
@@ -238,12 +241,12 @@ export function registerIpc(ctx: IpcContext): void {
 
   ipcMain.handle('backup:export', async (event) => {
     const options: Electron.SaveDialogOptions = {
-      title: 'Yedeği kaydet',
+      title: t('main.saveBackup'),
       defaultPath: join(
         app.getPath('documents'),
-        `meme-file-yedek-${new Date().toISOString().slice(0, 10)}.json`
+        `${t('main.backupFileName')}-${new Date().toISOString().slice(0, 10)}.json`
       ),
-      filters: [{ name: 'Meme File yedeği', extensions: ['json'] }]
+      filters: [{ name: t('main.backupFilter'), extensions: ['json'] }]
     }
     const window = parentWindow(event)
     const result = window
@@ -255,9 +258,9 @@ export function registerIpc(ctx: IpcContext): void {
 
   ipcMain.handle('backup:import', async (event) => {
     const options: Electron.OpenDialogOptions = {
-      title: 'Yedeği yükle',
+      title: t('main.loadBackup'),
       properties: ['openFile'],
-      filters: [{ name: 'Meme File yedeği', extensions: ['json'] }]
+      filters: [{ name: t('main.backupFilter'), extensions: ['json'] }]
     }
     const window = parentWindow(event)
     const result = window

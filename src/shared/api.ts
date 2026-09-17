@@ -1,3 +1,5 @@
+import type { LanguageSetting } from './i18n'
+
 export const VIDEO_EXTENSIONS = ['.mp4', '.m4v', '.webm', '.mov', '.mkv'] as const
 
 /** Discord'un ücretsiz hesaplar için dosya limiti. */
@@ -76,6 +78,7 @@ export interface LibraryStats {
 }
 
 export interface Settings {
+  language: LanguageSetting
   closeToTray: boolean
   launchAtLogin: boolean
   quickSearchShortcut: string
@@ -183,4 +186,5 @@ export interface MemeApi {
   onOpenVideo(listener: (videoId: number) => void): () => void
   onQuickWindowShown(listener: () => void): () => void
   onUpdateStatus(listener: (status: UpdateStatus) => void): () => void
+  onSettingsChanged(listener: (settings: Settings) => void): () => void
 }

@@ -11,6 +11,7 @@ import {
 import { join } from 'node:path'
 import { is } from '@electron-toolkit/utils'
 import iconPath from '../../resources/icon.png?asset'
+import { t } from './i18n'
 
 const BACKGROUND = '#1b1814'
 
@@ -124,7 +125,7 @@ export class AppWindows {
       skipTaskbar: true,
       alwaysOnTop: true,
       backgroundColor: '#00000000',
-      title: 'Meme File hızlı arama',
+      title: t('main.quickTitle'),
       webPreferences: secureWebPreferences()
     })
     denyNavigation(window)
@@ -186,14 +187,20 @@ export class AppWindows {
       .resize({ width: process.platform === 'darwin' ? 18 : 16 })
     this.tray = new Tray(image)
     this.tray.setToolTip('Meme File')
-    this.tray.setContextMenu(
+    this.tray.on('click', () => this.showMain())
+    this.updateTrayMenu()
+  }
+
+  /** Dil değişince tepsi menüsü yeniden kurulur. */
+  updateTrayMenu(): void {
+    this.tray?.setContextMenu(
       Menu.buildFromTemplate([
-        { label: "Meme File'ı aç", click: () => this.showMain() },
-        { label: 'Hızlı arama', click: () => this.toggleQuick() },
+        { label: t('main.trayOpen'), click: () => this.showMain() },
+        { label: t('main.trayQuick'), click: () => this.toggleQuick() },
         { type: 'separator' },
-        { label: 'Çıkış', click: () => app.quit() }
+        { label: t('main.trayQuit'), click: () => app.quit() }
       ])
     )
-    this.tray.on('click', () => this.showMain())
+    this.quick?.setTitle(t('main.quickTitle'))
   }
 }

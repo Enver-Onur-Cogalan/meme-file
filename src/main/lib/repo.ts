@@ -537,9 +537,33 @@ function reindexTagVideos(db: DatabaseSync, tagId: number): void {
   for (const videoId of tagVideoIds(db, tagId)) refreshSearchIndex(db, videoId)
 }
 
+type StarterKey =
+  'seed.funny' | 'seed.reaction' | 'seed.legendary' | 'seed.cringe' | 'seed.gaming' | 'seed.music'
+
+/** İlk kurulumda başlangıç chip'leri uygulamanın diline çevrilir. */
+export function localizeStarterTags(
+  db: DatabaseSync,
+  translateKey: (key: StarterKey) => string
+): void {
+  const seeds: Record<string, StarterKey> = {
+    komik: 'seed.funny',
+    tepki: 'seed.reaction',
+    efsane: 'seed.legendary',
+    cringe: 'seed.cringe',
+    oyun: 'seed.gaming',
+    müzikli: 'seed.music'
+  }
+  transaction(db, () => {
+    for (const [name, key] of Object.entries(seeds)) {
+      db.prepare('UPDATE OR IGNORE tags SET name = ? WHERE name = ?').run(translateKey(key), name)
+    }
+  })
+}
+
 /* ---------------- ayarlar ---------------- */
 
 export const DEFAULT_SETTINGS: Settings = {
+  language: 'system',
   closeToTray: true,
   launchAtLogin: false,
   quickSearchShortcut: 'CommandOrControl+Shift+Space',

@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto'
 import { mkdir, open, rename, rm, stat } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import ffmpegStaticPath from 'ffmpeg-static'
+import { t } from '../i18n'
 
 /** Paketlenmiş uygulamada binary asar arşivinin dışına açılır (electron-builder asarUnpack). */
 export const FFMPEG_PATH = (ffmpegStaticPath ?? 'ffmpeg').replace('app.asar', 'app.asar.unpacked')
@@ -43,7 +44,7 @@ function runFfmpeg(
     child.on('error', reject)
     child.on('close', (code) => {
       options.signal?.removeEventListener('abort', abort)
-      if (options.signal?.aborted) reject(new Error('İptal edildi'))
+      if (options.signal?.aborted) reject(new Error(t('main.cancelled')))
       else resolve({ code: code ?? 1, stderr })
     })
   })
@@ -280,7 +281,7 @@ export function planEncode(
   const audioKbps = withAudio ? Math.min(AUDIO_KBPS, Math.max(32, totalKbps * 0.15)) : null
   const videoKbps = Math.floor(totalKbps - (audioKbps ?? 0))
   if (videoKbps < 120) {
-    throw new Error('Bu süre hedef boyuta sığmıyor. Klibi kısaltmayı dene.')
+    throw new Error(t('main.tooLongForTarget'))
   }
   const cap = (height: number): number => (sourceHeight ? Math.min(sourceHeight, height) : height)
   const maxHeight =
@@ -325,7 +326,7 @@ export async function encodeClip(options: EncodeOptions): Promise<void> {
         ],
         { onProgress, signal: options.signal }
       )
-      if (code !== 0) throw new Error(`GIF oluşturulamadı: ${stderr.slice(-300)}`)
+      if (code !== 0) throw new Error(`${t('main.gifFailed')}: ${stderr.slice(-300)}`)
       await rename(tmp, options.output)
       return
     }
@@ -378,7 +379,7 @@ export async function encodeClip(options: EncodeOptions): Promise<void> {
         ],
         { onProgress, signal: options.signal }
       )
-      if (code !== 0) throw new Error(`Video oluşturulamadı: ${stderr.slice(-300)}`)
+      if (code !== 0) throw new Error(`${t('main.encodeFailed')}: ${stderr.slice(-300)}`)
       const { size } = await stat(tmp)
       if (options.targetBytes === null || size <= options.targetBytes) {
         await rename(tmp, options.output)
@@ -387,7 +388,7 @@ export async function encodeClip(options: EncodeOptions): Promise<void> {
       // Kodlayıcı hedefi aştıysa daha düşük bit hızıyla tekrar dene.
       safety *= (options.targetBytes / size) * 0.95
     }
-    throw new Error('Hedef boyuta sığdırılamadı. Klibi kısaltmayı dene.')
+    throw new Error(t('main.tooLongForTarget'))
   } finally {
     await rm(tmp, { force: true })
   }

@@ -2,6 +2,7 @@ import type { DatabaseSync } from 'node:sqlite'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { basename, join } from 'node:path'
 import type { BackupResult } from '../../shared/api'
+import { t } from '../i18n'
 import { transaction } from './db'
 import { refreshSearchIndex } from './repo'
 
@@ -81,7 +82,7 @@ export async function importBackup(
 ): Promise<BackupResult> {
   const backup = JSON.parse(await readFile(file, 'utf8')) as BackupFile
   if (backup.app !== 'meme-file' || backup.version !== 1) {
-    throw new Error('Bu bir Meme File yedeği değil')
+    throw new Error(t('main.notBackup'))
   }
 
   await mkdir(iconsRoot, { recursive: true })
