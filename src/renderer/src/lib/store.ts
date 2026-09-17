@@ -74,6 +74,8 @@ interface Actions {
   confirm(request: Omit<ConfirmRequest, 'resolve'>): Promise<boolean>
   resolveConfirm(ok: boolean): void
   setSettings(settings: Settings): void
+  /** Önce arayüzde anında değiştirir, sonra kaydeder. */
+  updateSettings(patch: Partial<Settings>): Promise<void>
   showToast(text: string, tone?: ToastMessage['tone']): void
 }
 
@@ -131,7 +133,7 @@ export const useStore = create<State & Actions>()((set, get) => ({
         sort,
         tagMode: settings?.tagMode ?? 'and'
       }),
-      settings ? Promise.resolve(settings) : window.api.getSettings()
+      settings ? Promise.resolve(null) : window.api.getSettings()
     ])
     // Daha yeni bir istek başladıysa eski sonucu yazma.
     if (seq !== refreshSeq) return
@@ -141,7 +143,9 @@ export const useStore = create<State & Actions>()((set, get) => ({
       tags,
       stats,
       videos,
-      settings: freshSettings,
+      // Ayarlar sadece ilk yüklemede okunur; sonrasında arayüz tek doğru kaynaktır.
+      // (Aksi hâlde uçuştaki eski bir yenileme az önce değiştirilen ayarı geri alabiliyordu.)
+      ...(freshSettings && !get().settings ? { settings: freshSettings } : {}),
       loaded: true,
       tagIds: validTagIds,
       selection: get().selection.filter((id) => videos.some((video) => video.id === id))
@@ -200,6 +204,15 @@ export const useStore = create<State & Actions>()((set, get) => ({
   },
   setSettings(settings) {
     set({ settings })
+  },
+  async updateSettings(patch) {
+    const current = get().settings
+    if (current) set({ settings: { ...current, ...patch } })
+    try {
+      set({ settings: await window.api.updateSettings(patch) })
+    } catch {
+      if (current) set({ settings: current })
+    }
   },
   showToast(text, tone = 'ok') {
     clearTimeout(toastTimer)

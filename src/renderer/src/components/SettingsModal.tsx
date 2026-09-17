@@ -33,7 +33,7 @@ function prettyShortcut(accelerator: string): string {
 }
 
 export function SettingsModal(): React.JSX.Element {
-  const { settingsOpen, setSettingsOpen, settings, setSettings, showToast } = useStore()
+  const { settingsOpen, setSettingsOpen, settings, showToast } = useStore()
   const [recording, setRecording] = useState(false)
   const [busy, setBusy] = useState(false)
   const close = (): void => {
@@ -42,7 +42,7 @@ export function SettingsModal(): React.JSX.Element {
   }
 
   const update = async (patch: Partial<SettingsType>): Promise<void> => {
-    setSettings(await window.api.updateSettings(patch))
+    await useStore.getState().updateSettings(patch)
   }
 
   const run = async (task: () => Promise<void>): Promise<void> => {

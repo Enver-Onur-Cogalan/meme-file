@@ -64,7 +64,7 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
       loaded: s.loaded,
       setText: s.setText,
       setSort: s.setSort,
-      setSettings: s.setSettings,
+      updateSettings: s.updateSettings,
       toggleTagFilter: s.toggleTagFilter,
       clearFilters: s.clearFilters,
       select: s.select
@@ -181,9 +181,7 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
               {i > 0 && (
                 <button
                   onClick={() =>
-                    void window.api
-                      .updateSettings({ tagMode: tagMode === 'and' ? 'or' : 'and' })
-                      .then(store.setSettings)
+                    void store.updateSettings({ tagMode: tagMode === 'and' ? 'or' : 'and' })
                   }
                   title="VE: hepsini içeren · VEYA: herhangi birini içeren"
                   className="rounded-full bg-ink px-2 py-0.5 font-mono text-[11px] font-medium text-mute hover:text-text"
