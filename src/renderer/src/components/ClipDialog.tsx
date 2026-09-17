@@ -293,7 +293,9 @@ function ClipBody({
                   ? 'Klip bu boyut için çok uzun, kısalt'
                   : format === 'gif'
                     ? '480px · 15 fps · sessiz'
-                    : 'Kalite otomatik ayarlanır'}
+                    : targetBytes !== null && sourceBytes <= targetBytes
+                      ? 'Zaten sığıyor, kalite korunur'
+                      : 'Kalite otomatik ayarlanır'}
               </span>
               <span className="text-mute">Discord limiti 10 MB</span>
             </div>

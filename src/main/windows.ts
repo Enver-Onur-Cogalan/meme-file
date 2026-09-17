@@ -112,7 +112,7 @@ export class AppWindows {
     const window = new BrowserWindow({
       // Yuvarlak köşe ve çıkartma gölgesi için pencere saydam, kenarlarda gölge payı var.
       width: 692,
-      height: 474,
+      height: 590,
       show: false,
       frame: false,
       transparent: true,

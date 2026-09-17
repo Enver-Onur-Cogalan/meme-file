@@ -9,7 +9,7 @@ Discord'a sürükle bırak / kopyala-yapıştır ile gönder.
   üstüne metadata katmanı (SQLite) tutar. Silme/taşıma yalnızca açık kullanıcı eylemiyle.
 - **Anti-cheat dostu.** Oyun process'lerine erişim, DLL injection, overlay, kernel driver,
   low-level input hook YOK. Global kısayol sadece `globalShortcut` (Windows'ta `RegisterHotKey`).
-- **Offline.** İnternete çıkmaz, telemetri yok.
+- **Offline.** Telemetri yok; internete sadece GitHub Releases'tan güncelleme denetimi için çıkar.
 
 ## Teknoloji
 
@@ -126,6 +126,13 @@ spring tabanlı hareket, `MotionConfig reducedMotion="user"` ile Windows'ta anim
 - Electron 44'te pano API'si değişti (`writeBuffer` kalktı) → dosya kopyalama işletim sisteminin kendi komutuyla:
   Windows `Set-Clipboard -LiteralPath`, Mac `osascript`. Mac'te doğrulandı, **Windows'ta kullanıcı testi bekliyor**
 - Sürükle bırak (`startDrag`) otomatik test edilemiyor → Discord'a sürükleme elle denenecek
+
+## Faz 4 — yayına hazırlık ✅
+- Uygulama ikonu (Sticker Duvarı), otomatik güncelleme (GitHub Releases + electron-updater)
+- Oynatılamayan formatlar için arka planda uyumlu kopya (HEVC, ProRes, AC-3, mkv)
+- Yeniden adlandırma, Geri Dönüşüm Kutusu'na taşıma, uygulama içi onay pencereleri
+- Büyük kütüphane: sanal liste, 5.000 videoluk performans testi
+- Açık kaynak: MIT lisansı, portfolyo README'si, [Windows test rehberi](TEST-REHBERI.md)
 
 ## Açık sorular / riskler
 - Kod imzalama yok → ilk kurulumda SmartScreen uyarısı ("Yine de çalıştır"). Kişisel kullanım için sorun değil.

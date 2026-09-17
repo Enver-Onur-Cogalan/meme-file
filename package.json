@@ -56,5 +56,10 @@
     "vitest": "^4.1.11",
     "zustand": "^5.0.15"
   },
-  "productName": "Meme File"
+  "productName": "Meme File",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Enver-Onur-Cogalan/meme-file.git"
+  }
 }
