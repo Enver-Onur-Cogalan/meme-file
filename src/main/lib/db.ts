@@ -7,7 +7,44 @@ const MIGRATIONS = [
     path TEXT NOT NULL UNIQUE,
     watch INTEGER NOT NULL DEFAULT 1,
     added_at INTEGER NOT NULL
-  )`
+  )`,
+  `CREATE TABLE videos (
+    id INTEGER PRIMARY KEY,
+    folder_id INTEGER NOT NULL REFERENCES folders(id) ON DELETE CASCADE,
+    path TEXT NOT NULL UNIQUE,
+    name TEXT NOT NULL,
+    size INTEGER NOT NULL,
+    modified_at INTEGER NOT NULL,
+    added_at INTEGER NOT NULL,
+    duration_ms INTEGER,
+    width INTEGER,
+    height INTEGER,
+    has_audio INTEGER,
+    quick_hash TEXT,
+    media_status TEXT NOT NULL DEFAULT 'pending',
+    status TEXT NOT NULL DEFAULT 'inbox',
+    missing INTEGER NOT NULL DEFAULT 0,
+    favorite INTEGER NOT NULL DEFAULT 0,
+    send_count INTEGER NOT NULL DEFAULT 0,
+    last_sent_at INTEGER
+  );
+  CREATE INDEX videos_folder ON videos(folder_id);
+  CREATE INDEX videos_hash ON videos(quick_hash);
+  CREATE TABLE tags (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    color TEXT NOT NULL,
+    icon TEXT NOT NULL,
+    created_at INTEGER NOT NULL
+  );
+  CREATE TABLE video_tags (
+    video_id INTEGER NOT NULL REFERENCES videos(id) ON DELETE CASCADE,
+    tag_id INTEGER NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+    PRIMARY KEY (video_id, tag_id)
+  );
+  CREATE INDEX video_tags_tag ON video_tags(tag_id);
+  CREATE TABLE settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+  CREATE VIRTUAL TABLE videos_fts USING fts5(text, tokenize = 'unicode61 remove_diacritics 2');`
 ]
 
 export function openDatabase(file: string): DatabaseSync {
@@ -23,14 +60,21 @@ export function migrate(db: DatabaseSync): void {
     user_version: number
   }
   for (let version = current; version < MIGRATIONS.length; version++) {
-    db.exec('BEGIN')
-    try {
+    transaction(db, () => {
       db.exec(MIGRATIONS[version])
       db.exec(`PRAGMA user_version = ${version + 1}`)
-      db.exec('COMMIT')
-    } catch (error) {
-      db.exec('ROLLBACK')
-      throw error
-    }
+    })
+  }
+}
+
+export function transaction<T>(db: DatabaseSync, fn: () => T): T {
+  db.exec('BEGIN')
+  try {
+    const result = fn()
+    db.exec('COMMIT')
+    return result
+  } catch (error) {
+    db.exec('ROLLBACK')
+    throw error
   }
 }
