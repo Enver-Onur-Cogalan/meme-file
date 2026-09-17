@@ -11,13 +11,13 @@ Tahmini süre: 45-60 dakika. Başlamadan önce **Discord açık** olsun ve bir t
 
 Otomatik güncellemeyi de deneyebilmek için **bilerek eski sürümü** kuruyoruz.
 
-- [ ] **0.1** [v0.1.0 sürüm sayfasından](https://github.com/Enver-Onur-Cogalan/meme-file/releases/tag/v0.1.0) `MemeFile-0.1.0-setup.exe` dosyasını indir ve çalıştır.
+- [ ] **0.1** [v0.1.1 sürüm sayfasından](https://github.com/Enver-Onur-Cogalan/meme-file/releases/tag/v0.1.1) `MemeFile-0.1.1-setup.exe` dosyasını indir ve çalıştır.
   - SmartScreen uyarısı çıkarsa: **Ek bilgi → Yine de çalıştır**.
   - Beklenen: Kurulum biter, masaüstünde Meme File kısayolu oluşur, uygulama açılır.
 - [ ] **0.2** Görev çubuğunda, masaüstü kısayolunda ve saatin yanındaki sistem tepsisinde **sarı-mavi çıkartma ikonu** görünüyor mu?
 - [ ] **0.3** Sağ üstteki küçült / büyüt / kapat butonları uygulamanın renklerine uyuyor ve çalışıyor mu?
-- [ ] **0.4** Uygulama açıldıktan en geç 1 dakika sonra başlık çubuğunun sağında **"Güncelleme indiriliyor %…"** yazısı, ardından yeşil **"0.1.1 hazır · Yeniden başlat"** butonu çıkıyor mu?
-- [ ] **0.5** Butona bas. Beklenen: Uygulama kapanıp kendiliğinden yeniden açılır. **Ayarlar → Sürüm** kısmında `v0.1.1` yazar.
+- [ ] **0.4** Uygulama açıldıktan en geç 1 dakika sonra başlık çubuğunun sağında **"Güncelleme indiriliyor %…"** yazısı, ardından yeşil **"0.1.2 hazır · Yeniden başlat"** butonu çıkıyor mu?
+- [ ] **0.5** Butona bas. Beklenen: Uygulama kapanıp kendiliğinden yeniden açılır. **Ayarlar → Sürüm** kısmında `v0.1.2` yazar.
 
 > 0.4 hiç gelmezse: Ayarlar → Sürüm → **Denetle**'ye bas ve yazan mesajı not al.
 

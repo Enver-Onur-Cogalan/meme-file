@@ -36,4 +36,4 @@ publish:
   provider: github
   owner: Enver-Onur-Cogalan
   repo: meme-file
-  releaseType: release
+  releaseType: draft
