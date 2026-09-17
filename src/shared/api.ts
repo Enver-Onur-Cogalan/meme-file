@@ -121,6 +121,10 @@ export interface MemeApi {
   addTagToVideos(videoIds: number[], tagId: number, add: boolean): Promise<void>
   markReviewed(videoIds: number[]): Promise<void>
   showInFolder(videoId: number): void
+  /** Uzantı korunur; aynı klasörde aynı adda dosya varsa hata verir. */
+  renameVideo(videoId: number, name: string): Promise<Video>
+  /** Dosyaları Geri Dönüşüm Kutusu'na taşır; taşınan video sayısını döndürür. */
+  trashVideos(videoIds: number[]): Promise<number>
 
   listTags(): Promise<Tag[]>
   createTag(input: TagInput): Promise<Tag>

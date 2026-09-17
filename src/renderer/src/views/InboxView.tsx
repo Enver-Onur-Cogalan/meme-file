@@ -47,9 +47,13 @@ export function InboxView(): React.JSX.Element {
     setSkipped((list) => [...list.filter((id) => id !== current.id), current.id])
   }
 
-  const reviewAll = (): void => {
-    if (!window.confirm(`${queue.length} videonun hepsi etiketsiz olarak kütüphaneye taşınsın mı?`))
-      return
+  const reviewAll = async (): Promise<void> => {
+    const ok = await useStore.getState().confirm({
+      title: `${queue.length} videonun hepsi kütüphaneye taşınsın mı?`,
+      text: 'Chip vermediklerin etiketsiz kalır, sonra istediğin zaman ekleyebilirsin.',
+      confirmLabel: 'Hepsini taşı'
+    })
+    if (!ok) return
     void window.api
       .markReviewed(queue.map((video) => video.id))
       .then(() => showToast('Gelen kutusu boşaltıldı'))
@@ -57,8 +61,10 @@ export function InboxView(): React.JSX.Element {
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent): void => {
-      const { chipEditor, playerId, settingsOpen, clip } = useStore.getState()
-      if (chipEditor || playerId !== null || settingsOpen || clip) return
+      const { chipEditor, playerId, settingsOpen, clip, renameId, confirmRequest } =
+        useStore.getState()
+      if (chipEditor || playerId !== null || settingsOpen || clip || renameId || confirmRequest)
+        return
       if (
         event.target instanceof HTMLInputElement ||
         event.ctrlKey ||
@@ -99,7 +105,7 @@ export function InboxView(): React.JSX.Element {
         <span className="grow" />
         {queue.length > 1 && (
           <button
-            onClick={reviewAll}
+            onClick={() => void reviewAll()}
             className="text-[13px] font-semibold text-mute underline underline-offset-[3px] hover:text-text"
           >
             Hepsini etiketsiz kütüphaneye at

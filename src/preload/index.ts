@@ -28,6 +28,8 @@ const api: MemeApi = {
     ipcRenderer.invoke('videos:toggle-tag', videoIds, tagId, add),
   markReviewed: (videoIds) => ipcRenderer.invoke('videos:reviewed', videoIds),
   showInFolder: (videoId) => ipcRenderer.send('videos:show-in-folder', videoId),
+  renameVideo: (videoId, name) => ipcRenderer.invoke('videos:rename', videoId, name),
+  trashVideos: (videoIds) => ipcRenderer.invoke('videos:trash', videoIds),
 
   listTags: () => ipcRenderer.invoke('tags:list'),
   createTag: (input) => ipcRenderer.invoke('tags:create', input),

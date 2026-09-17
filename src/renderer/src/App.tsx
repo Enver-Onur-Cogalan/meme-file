@@ -2,13 +2,15 @@ import { MotionConfig } from 'motion/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ChipEditor } from './components/ChipEditor'
 import { ClipDialog } from './components/ClipDialog'
+import { ConfirmDialog } from './components/ConfirmDialog'
 import { ContextMenu, type MenuState } from './components/ContextMenu'
 import { PlayerModal } from './components/PlayerModal'
+import { RenameDialog } from './components/RenameDialog'
 import { SettingsModal } from './components/SettingsModal'
 import { Sidebar } from './components/Sidebar'
 import { TitleBar } from './components/TitleBar'
 import { Toast } from './components/Toast'
-import { copyVideos, errorMessage, toggleFavorite } from './lib/actions'
+import { copyVideos, errorMessage, toggleFavorite, trashVideos } from './lib/actions'
 import { useStore } from './lib/store'
 import { InboxView } from './views/InboxView'
 import { LibraryView } from './views/LibraryView'
@@ -64,7 +66,16 @@ function MainWindow(): React.JSX.Element {
   useEffect(() => {
     const onKey = (event: KeyboardEvent): void => {
       const state = useStore.getState()
-      if (state.playerId !== null || state.chipEditor || state.clip || state.settingsOpen) return
+      if (
+        state.playerId !== null ||
+        state.chipEditor ||
+        state.clip ||
+        state.settingsOpen ||
+        state.renameId !== null ||
+        state.confirmRequest
+      ) {
+        return
+      }
       const inInput = event.target instanceof HTMLInputElement
       const mod = event.ctrlKey || event.metaKey
       const key = event.key.toLowerCase()
@@ -87,6 +98,10 @@ function MainWindow(): React.JSX.Element {
         else state.clearFilters()
       } else if (key === 'enter' && selected.length === 1) {
         state.openPlayer(selected[0].id)
+      } else if (key === 'f2' && selected.length === 1) {
+        state.openRename(selected[0].id)
+      } else if (key === 'delete' && selected.length > 0) {
+        void trashVideos(selected)
       } else if (key === 'f' && !mod && selected.length > 0) {
         void toggleFavorite(selected)
       } else if (/^arrow(left|right)$/.test(key) && state.videos.length > 0) {
@@ -124,6 +139,8 @@ function MainWindow(): React.JSX.Element {
       <ChipEditor />
       <ClipDialog />
       <SettingsModal />
+      <RenameDialog />
+      <ConfirmDialog />
       <ContextMenu menu={menu} onClose={closeMenu} />
       <Toast />
     </div>

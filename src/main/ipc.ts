@@ -1,11 +1,12 @@
 import { app, BrowserWindow, dialog, ipcMain, shell, type IpcMainInvokeEvent } from 'electron'
 import type { DatabaseSync } from 'node:sqlite'
 import { randomUUID } from 'node:crypto'
-import { copyFile, mkdir, stat } from 'node:fs/promises'
-import { extname, join } from 'node:path'
+import { existsSync } from 'node:fs'
+import { copyFile, mkdir, rename, stat } from 'node:fs/promises'
+import { basename, dirname, extname, join } from 'node:path'
 import type { ClipRequest, Settings, TagInput, VideoQuery } from '../shared/api'
 import { exportBackup, importBackup } from './lib/backup'
-import type { ClipManager } from './lib/clips'
+import { sanitizeFileName, type ClipManager } from './lib/clips'
 import type { LibraryWatcher } from './lib/library'
 import type { MediaJobs } from './lib/media-jobs'
 import * as repo from './lib/repo'
@@ -106,6 +107,40 @@ export function registerIpc(ctx: IpcContext): void {
   ipcMain.handle('videos:reviewed', (_event, videoIds: unknown) => {
     repo.markReviewed(db, ids(videoIds))
     changed()
+  })
+
+  ipcMain.handle('videos:rename', async (_event, videoId: number, name: string) => {
+    const video = repo.getVideo(db, videoId)
+    if (!video) throw new Error('Video bulunamadı')
+    const ext = extname(video.path)
+    const base = sanitizeFileName(String(name ?? '').replace(new RegExp(`\\${ext}$`, 'i'), ''))
+    const target = join(dirname(video.path), `${base}${ext}`)
+    if (target === video.path) return video
+    // Windows'ta büyük/küçük harf değişikliği aynı dosyadır; başka bir dosyanın üzerine yazma.
+    const sameFile = target.toLowerCase() === video.path.toLowerCase()
+    if (!sameFile && existsSync(target)) throw new Error('Bu klasörde aynı adda bir dosya var')
+    await rename(video.path, target)
+    repo.renameVideo(db, videoId, target, basename(target))
+    changed()
+    return repo.getVideo(db, videoId)
+  })
+
+  ipcMain.handle('videos:trash', async (_event, videoIds: unknown) => {
+    const videos = repo.getVideos(db, ids(videoIds))
+    const trashed: number[] = []
+    for (const video of videos) {
+      try {
+        await shell.trashItem(video.path)
+        trashed.push(video.id)
+      } catch {
+        // Dosya zaten silinmiş olabilir; kaydı yine de kaldır.
+        if (!existsSync(video.path)) trashed.push(video.id)
+      }
+    }
+    repo.deleteVideos(db, trashed)
+    await ctx.media.removeCache(trashed)
+    changed()
+    return trashed.length
   })
 
   ipcMain.on('videos:show-in-folder', (_event, videoId: number) => {

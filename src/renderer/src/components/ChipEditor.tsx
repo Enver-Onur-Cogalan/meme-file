@@ -1,7 +1,7 @@
 import { Check, Plus, Search, Trash2, Upload } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useMemo, useState } from 'react'
-import { errorMessage } from '../lib/actions'
+import { confirmDeleteTag, errorMessage } from '../lib/actions'
 import { searchIcons } from '../lib/icons'
 import { useStore } from '../lib/store'
 import { SWATCHES } from '../lib/tags'
@@ -235,11 +235,7 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
             variant="ghost"
             icon={Trash2}
             className="text-sticker-red hover:text-sticker-red"
-            onClick={() => {
-              if (window.confirm(`"${editing.name}" chip'i silinsin mi? Videolar silinmez.`)) {
-                void window.api.deleteTag(editing.id).then(onClose)
-              }
-            }}
+            onClick={() => void confirmDeleteTag(editing).then((deleted) => deleted && onClose())}
           >
             Sil
           </Button>

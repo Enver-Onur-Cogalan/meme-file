@@ -4,11 +4,13 @@ import {
   FolderOpen,
   Maximize,
   Pause,
+  PenLine,
   Play,
   Repeat,
   Scissors,
   Send,
   Shrink,
+  Trash2,
   Volume2,
   VolumeX,
   X
@@ -16,7 +18,7 @@ import {
 import { AnimatePresence, motion } from 'motion/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Video } from '../../../shared/api'
-import { copyVideos, dragVideos, toggleFavorite } from '../lib/actions'
+import { copyVideos, dragVideos, toggleFavorite, trashVideos } from '../lib/actions'
 import { folderName, formatDuration, formatSize, stripExtension } from '../lib/format'
 import { useStore } from '../lib/store'
 import { TagInput } from './TagInput'
@@ -115,6 +117,8 @@ function PlayerBody({
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent): void => {
+      const { clip, chipEditor, renameId, confirmRequest } = useStore.getState()
+      if (clip || chipEditor || renameId !== null || confirmRequest) return
       if (event.target instanceof HTMLInputElement) return
       const key = event.key.toLowerCase()
       if (key === 'escape') onClose()
@@ -127,6 +131,7 @@ function PlayerBody({
         seekTo((ref.current?.currentTime ?? 0) + (event.shiftKey ? 1 : 5))
       else if (key === 'm') setMuted((m) => !m)
       else if (key === 'l') setLoop((l) => !l)
+      else if (key === 'f2') useStore.getState().openRename(video.id)
       else if (key === 'f' && !event.ctrlKey && !event.metaKey) void toggleFavorite([video])
       else if (key === 'c' && (event.ctrlKey || event.metaKey)) {
         event.preventDefault()
@@ -401,16 +406,31 @@ function PlayerBody({
           </div>
 
           <span className="grow" />
-          <button
-            onClick={() => window.api.showInFolder(video.id)}
-            className="flex min-w-0 items-center gap-1.5 text-left text-[12.5px] text-mute hover:text-text"
-            title={video.path}
-          >
-            <FolderOpen size={14} className="shrink-0" />
-            <span className="truncate">
-              {folderName(folder)} / {video.name}
-            </span>
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => window.api.showInFolder(video.id)}
+              className="flex min-w-0 grow items-center gap-1.5 text-left text-[12.5px] text-mute hover:text-text"
+              title={video.path}
+            >
+              <FolderOpen size={14} className="shrink-0" />
+              <span className="truncate">
+                {folderName(folder)} / {video.name}
+              </span>
+            </button>
+            <IconButton
+              icon={PenLine}
+              label="Yeniden adlandır (F2)"
+              size={30}
+              onClick={() => useStore.getState().openRename(video.id)}
+            />
+            <IconButton
+              icon={Trash2}
+              label="Çöp kutusuna taşı"
+              size={30}
+              className="hover:!text-sticker-red"
+              onClick={() => void trashVideos([video])}
+            />
+          </div>
         </div>
       </div>
 

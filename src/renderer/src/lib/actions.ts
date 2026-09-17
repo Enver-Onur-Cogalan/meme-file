@@ -1,5 +1,17 @@
-import { Copy, FolderOpen, Film, Play, Scissors, Shrink, Star, StarOff, Tags } from 'lucide-react'
-import type { Video } from '../../../shared/api'
+import {
+  Copy,
+  FolderOpen,
+  Film,
+  PenLine,
+  Play,
+  Scissors,
+  Shrink,
+  Star,
+  StarOff,
+  Tags,
+  Trash2
+} from 'lucide-react'
+import type { Tag, Video } from '../../../shared/api'
 import type { MenuItem } from '../components/ContextMenu'
 import { useStore } from './store'
 
@@ -13,6 +25,41 @@ export async function copyVideos(ids: number[]): Promise<void> {
 
 export function dragVideos(ids: number[]): void {
   if (ids.length > 0) window.api.startDrag(ids)
+}
+
+export async function trashVideos(videos: Video[]): Promise<void> {
+  if (videos.length === 0) return
+  const store = useStore.getState()
+  const ok = await store.confirm({
+    title:
+      videos.length > 1
+        ? `${videos.length} video çöp kutusuna taşınsın mı?`
+        : 'Video çöp kutusuna taşınsın mı?',
+    text:
+      (videos.length === 1 ? `"${videos[0].name}"\n\n` : '') +
+      "Dosya Geri Dönüşüm Kutusu'na gider, oradan geri alabilirsin. Chip'leri silinir.",
+    confirmLabel: 'Çöp kutusuna taşı',
+    danger: true
+  })
+  if (!ok) return
+  try {
+    const count = await window.api.trashVideos(videos.map((video) => video.id))
+    if (videos.some((video) => video.id === store.playerId)) store.openPlayer(null)
+    store.showToast(count > 1 ? `${count} video çöp kutusunda` : 'Çöp kutusuna taşındı', 'info')
+  } catch (e) {
+    store.showToast(errorMessage(e, 'Silinemedi'), 'error')
+  }
+}
+
+export async function confirmDeleteTag(tag: Tag): Promise<boolean> {
+  const ok = await useStore.getState().confirm({
+    title: `"${tag.name}" chip'i silinsin mi?`,
+    text: `${tag.count} videodan kaldırılır. Videoların kendisi silinmez.`,
+    confirmLabel: 'Chip’i sil',
+    danger: true
+  })
+  if (ok) await window.api.deleteTag(tag.id)
+  return ok
 }
 
 export async function toggleFavorite(videos: Video[]): Promise<void> {
@@ -69,9 +116,23 @@ export function videoMenu(video: Video, selection: Video[]): MenuItem[] {
         icon: FolderOpen,
         separatorBefore: true,
         onSelect: () => window.api.showInFolder(video.id)
+      },
+      {
+        label: 'Yeniden adlandır',
+        icon: PenLine,
+        hint: 'F2',
+        onSelect: () => store.openRename(video.id)
       }
     )
   }
+  items.push({
+    label: many ? `${targets.length} videoyu çöpe at` : 'Çöp kutusuna taşı',
+    icon: Trash2,
+    hint: 'Del',
+    danger: true,
+    separatorBefore: many,
+    onSelect: () => void trashVideos(targets)
+  })
   return items
 }
 

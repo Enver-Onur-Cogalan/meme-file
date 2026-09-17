@@ -348,6 +348,22 @@ export function insertCreatedVideo(
   })
 }
 
+export function renameVideo(db: DatabaseSync, id: number, path: string, name: string): void {
+  transaction(db, () => {
+    db.prepare('UPDATE videos SET path = ?, name = ? WHERE id = ?').run(path, name, id)
+    refreshSearchIndex(db, id)
+  })
+}
+
+export function deleteVideos(db: DatabaseSync, ids: number[]): void {
+  transaction(db, () => {
+    for (const id of ids) {
+      db.prepare('DELETE FROM videos_fts WHERE rowid = ?').run(id)
+      db.prepare('DELETE FROM videos WHERE id = ?').run(id)
+    }
+  })
+}
+
 export function setFavorite(db: DatabaseSync, ids: number[], favorite: boolean): void {
   transaction(db, () => {
     for (const id of ids)

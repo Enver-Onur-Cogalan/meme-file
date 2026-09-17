@@ -11,6 +11,14 @@ import type {
 
 export type ClipMode = 'trim' | 'fit' | 'gif'
 
+export interface ConfirmRequest {
+  title: string
+  text: string
+  confirmLabel: string
+  danger?: boolean
+  resolve(ok: boolean): void
+}
+
 export interface ToastMessage {
   id: number
   text: string
@@ -38,6 +46,8 @@ interface State {
   chipEditor: { tag: Tag | null; assignTo?: number[] } | null
   clip: { videoId: number; mode: ClipMode } | null
   settingsOpen: boolean
+  renameId: number | null
+  confirmRequest: ConfirmRequest | null
   toast: ToastMessage | null
 }
 
@@ -55,6 +65,9 @@ interface Actions {
   openClip(videoId: number, mode: ClipMode): void
   closeClip(): void
   setSettingsOpen(open: boolean): void
+  openRename(videoId: number | null): void
+  confirm(request: Omit<ConfirmRequest, 'resolve'>): Promise<boolean>
+  resolveConfirm(ok: boolean): void
   setSettings(settings: Settings): void
   showToast(text: string, tone?: ToastMessage['tone']): void
 }
@@ -91,6 +104,8 @@ export const useStore = create<State & Actions>()((set, get) => ({
   chipEditor: null,
   clip: null,
   settingsOpen: false,
+  renameId: null,
+  confirmRequest: null,
   toast: null,
 
   async refresh() {
@@ -163,6 +178,17 @@ export const useStore = create<State & Actions>()((set, get) => ({
   },
   setSettingsOpen(open) {
     set({ settingsOpen: open })
+  },
+  openRename(videoId) {
+    set({ renameId: videoId })
+  },
+  confirm(request) {
+    get().confirmRequest?.resolve(false)
+    return new Promise((resolve) => set({ confirmRequest: { ...request, resolve } }))
+  },
+  resolveConfirm(ok) {
+    get().confirmRequest?.resolve(ok)
+    set({ confirmRequest: null })
   },
   setSettings(settings) {
     set({ settings })

@@ -146,6 +146,32 @@ describe('queryVideos', () => {
   })
 })
 
+describe('renameVideo / deleteVideos', () => {
+  it('yeniden adlandırınca chip’ler kalır ve yeni adla aranır', () => {
+    repo.syncFolder(db, folderId, [file('eski ad.mp4')], true)
+    const [video] = repo.queryVideos(db, { view: 'library' })
+    const tag = repo.createTag(db, { name: 'komik', color: '#f5c542', icon: 'lucide:Laugh' })
+    repo.setVideoTags(db, video.id, [tag.id])
+
+    repo.renameVideo(db, video.id, '/memeler/yepyeni şaka.mp4', 'yepyeni şaka.mp4')
+    const [renamed] = repo.queryVideos(db, { view: 'library', text: 'saka' })
+    expect(renamed).toMatchObject({ id: video.id, name: 'yepyeni şaka.mp4', tagIds: [tag.id] })
+    expect(repo.queryVideos(db, { view: 'library', text: 'eski' })).toHaveLength(0)
+
+    // Watcher sonradan yeni yolu görünce aynı kaydı tanımalı, yeni video açmamalı.
+    repo.syncFolder(db, folderId, [file('yepyeni şaka.mp4')], false)
+    expect(repo.getStats(db)).toMatchObject({ total: 1, inbox: 0 })
+  })
+
+  it('silinen videolar arama indeksinden de çıkar', () => {
+    repo.syncFolder(db, folderId, [file('a.mp4'), file('b.mp4')], true)
+    const [first] = repo.queryVideos(db, { view: 'library', text: 'a' })
+    repo.deleteVideos(db, [first.id])
+    expect(repo.queryVideos(db, { view: 'library' }).map((v) => v.name)).toEqual(['b.mp4'])
+    expect(db.prepare('SELECT count(*) AS n FROM videos_fts').get()).toEqual({ n: 1 })
+  })
+})
+
 describe('settings', () => {
   it('varsayılanları döndürür ve sadece bilinen anahtarları kaydeder', () => {
     const settings = repo.updateSettings(db, { tagMode: 'or', unknown: 1 } as never)

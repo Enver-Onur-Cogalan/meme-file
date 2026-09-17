@@ -14,6 +14,7 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import type { LibraryView } from '../../../shared/api'
+import { confirmDeleteTag } from '../lib/actions'
 import { folderName } from '../lib/format'
 import { useStore } from '../lib/store'
 import { tiltFor } from '../lib/tags'
@@ -50,13 +51,13 @@ export function Sidebar({ onAddFolder, onMenu }: Props): React.JSX.Element {
   )
 
   const removeFolder = async (id: number, path: string): Promise<void> => {
-    if (
-      !window.confirm(
-        `"${folderName(path)}" kütüphaneden kaldırılsın mı?\n\nVideolar silinmez, sadece listeden çıkar.`
-      )
-    ) {
-      return
-    }
+    const ok = await useStore.getState().confirm({
+      title: `"${folderName(path)}" kütüphaneden kaldırılsın mı?`,
+      text: "Videolar silinmez, sadece listeden çıkar. Chip'leri de kaldırılır.",
+      confirmLabel: 'Kaldır',
+      danger: true
+    })
+    if (!ok) return
     await window.api.removeFolder(id)
     if (folderId === id) setView('library')
   }
@@ -153,13 +154,7 @@ export function Sidebar({ onAddFolder, onMenu }: Props): React.JSX.Element {
                           label: 'Sil',
                           icon: Trash2,
                           danger: true,
-                          onSelect: () => {
-                            if (
-                              window.confirm(`"${tag.name}" chip'i silinsin mi? Videolar silinmez.`)
-                            ) {
-                              void window.api.deleteTag(tag.id)
-                            }
-                          }
+                          onSelect: () => void confirmDeleteTag(tag)
                         }
                       ]
                     })
