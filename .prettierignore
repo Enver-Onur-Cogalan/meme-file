@@ -6,3 +6,6 @@ tsconfig.json
 tsconfig.*.json
 design
 docs
+
+# Üretilmiş dosyalar
+*.generated.ts

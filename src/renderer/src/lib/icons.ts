@@ -1,5 +1,13 @@
 import * as Lucide from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import { ICON_CATEGORIES, ICON_CATEGORY_IDS, type IconCategoryId } from './icon-catalog.generated'
+
+export { ICON_CATEGORY_IDS }
+export type { IconCategoryId }
+
+/** Kategori sekmelerinde kullanılan liste; "öne çıkanlar" her zaman başta. */
+export type IconTab = 'featured' | IconCategoryId
+export const ICON_TABS: readonly IconTab[] = ['featured', ...ICON_CATEGORY_IDS]
 
 /**
  * Lucide'ın tüm ikonları. `icons` dışa aktarımı bazı ikonları içermediği için modülün kendisinden
@@ -96,6 +104,17 @@ export const FEATURED_ICONS = [
   'Pizza',
   'Tag'
 ].filter((name) => LUCIDE_ICONS.has(name))
+
+/**
+ * Bir kategorinin ikonları. Katalog üretilirken kurulu pakete göre
+ * süzülüyor ama aynı ikonun eski adları hâlâ listede olabilir; burada
+ * tekrarlar ayıklanıyor.
+ */
+export function iconsInCategory(tab: IconTab): readonly string[] {
+  if (tab === 'featured') return FEATURED_ICONS
+  const unique = new Set(UNIQUE_ICON_NAMES)
+  return ICON_CATEGORIES[tab].filter((name) => unique.has(name))
+}
 
 export function searchIcons(query: string, limit = 120): string[] {
   const normalized = query

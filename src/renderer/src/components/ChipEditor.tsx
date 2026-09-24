@@ -1,8 +1,8 @@
 import { Check, Plus, Search, Trash2, Upload } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { confirmDeleteTag, errorMessage } from '../lib/actions'
-import { searchIcons } from '../lib/icons'
+import { ICON_TABS, iconsInCategory, searchIcons, type IconTab } from '../lib/icons'
 import { useStore } from '../lib/store'
 import { nextFreeSwatch, SWATCHES } from '../lib/tags'
 import { TagIcon, TagSticker } from './TagSticker'
@@ -39,9 +39,44 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
     icon.startsWith('custom:') ? 'custom' : 'lucide'
   )
   const [query, setQuery] = useState('')
+  const [category, setCategory] = useState<IconTab>('featured')
   const [error, setError] = useState<string | null>(null)
 
-  const results = useMemo(() => searchIcons(query), [query])
+  const searching = query.trim().length > 0
+  const results = useMemo(
+    () => (searching ? searchIcons(query) : iconsInCategory(category)),
+    [searching, query, category]
+  )
+
+  /*
+    Bazı kategorilerde 500'den fazla ikon var ve hepsini birden basmak ilk
+    açılışta gözle görülür bir takılma yapıyor. Izgara parça parça
+    uzuyor: sona yaklaşınca bir sonraki küme ekleniyor.
+  */
+  const PAGE = 160
+  const [visible, setVisible] = useState(PAGE)
+  const sentinel = useRef<HTMLDivElement>(null)
+
+  // Liste değişince baştan başla. Effect içinde setState çağırmak
+  // zincirleme render tetikliyor; React'in önerdiği yol, önceki anahtarı
+  // state'te tutup render sırasında karşılaştırmak.
+  const listKey = searching ? `q:${query}` : `c:${category}`
+  const [prevListKey, setPrevListKey] = useState(listKey)
+  if (listKey !== prevListKey) {
+    setPrevListKey(listKey)
+    setVisible(PAGE)
+  }
+
+  useEffect(() => {
+    const node = sentinel.current
+    if (!node || visible >= results.length) return
+    const observer = new IntersectionObserver(
+      ([entry]) => entry.isIntersecting && setVisible((count) => count + PAGE),
+      { rootMargin: '200px' }
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [visible, results.length])
   const customIcons = useMemo(() => {
     const set = new Set(tags.map((tag) => tag.icon).filter((i) => i.startsWith('custom:')))
     if (icon.startsWith('custom:')) set.add(icon)
@@ -148,7 +183,7 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
               {SWATCHES.map((swatch) => (
                 <motion.button
                   key={swatch}
-                  whileHover={{ scale: 1.12 }}
+                  whileHover={{ scale: 1.15 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setColor(swatch)}
                   aria-label={swatch}
@@ -202,8 +237,30 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
                   className="min-w-0 grow bg-transparent text-[13.5px] outline-none placeholder:text-dim"
                 />
               </label>
+              {/* Kategoriler; arama yazılınca sonuçlar kategorinin önüne geçer. */}
+              <div className="flex flex-wrap gap-1.5">
+                {ICON_TABS.map((tab) => {
+                  const active = !searching && tab === category
+                  return (
+                    <button
+                      key={tab}
+                      onClick={() => {
+                        setQuery('')
+                        setCategory(tab)
+                      }}
+                      className={`h-7 rounded-full border-[1.5px] px-2.5 text-xs font-semibold transition-colors ${
+                        active
+                          ? 'border-ink bg-text text-ink'
+                          : 'border-line text-mute hover:border-mute hover:text-text'
+                      }`}
+                    >
+                      {t(`chipEditor.cat.${tab}`)}
+                    </button>
+                  )
+                })}
+              </div>
               <div className="grid h-[244px] grid-cols-[repeat(8,minmax(0,1fr))] content-start gap-2 overflow-y-auto pr-1">
-                {results.map((iconName) => (
+                {results.slice(0, visible).map((iconName) => (
                   <IconTile
                     key={iconName}
                     icon={`lucide:${iconName}`}
@@ -214,6 +271,7 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
                   />
                 ))}
                 <UploadTile onClick={() => void upload()} />
+                {visible < results.length && <div ref={sentinel} className="col-span-8 h-px" />}
                 {results.length === 0 && (
                   <div className="col-span-7 self-center text-sm text-dim">
                     {t('chipEditor.iconNotFound')}

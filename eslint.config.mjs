@@ -6,7 +6,7 @@ import eslintPluginReactHooks from 'eslint-plugin-react-hooks'
 import eslintPluginReactRefresh from 'eslint-plugin-react-refresh'
 
 export default defineConfig(
-  { ignores: ['**/node_modules', '**/dist', '**/out'] },
+  { ignores: ['**/node_modules', '**/dist', '**/out', '**/*.generated.ts'] },
   tseslint.configs.recommended,
   eslintPluginReact.configs.flat.recommended,
   eslintPluginReact.configs.flat['jsx-runtime'],
@@ -27,6 +27,12 @@ export default defineConfig(
       ...eslintPluginReactHooks.configs.recommended.rules,
       ...eslintPluginReactRefresh.configs.vite.rules
     }
+  },
+  // Üretim betikleri düz JavaScript; dönüş tipi yazılamıyor. Bu blok
+  // dizinin sonunda olmalı, yoksa önceki yapılandırmalar kuralı geri açıyor.
+  {
+    files: ['scripts/**/*.mjs'],
+    rules: { '@typescript-eslint/explicit-function-return-type': 'off' }
   },
   eslintConfigPrettier
 )
