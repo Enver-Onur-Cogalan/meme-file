@@ -109,7 +109,11 @@ export const tr = {
   'favorite.removed': 'Favorilerden çıkarıldı',
 
   'player.looping': 'Döngüde',
-  'player.loop': 'Döngü (L)',
+  'player.mode.sequence': 'Sırayla (L)',
+  'player.mode.loop': 'Döngü (L)',
+  'player.mode.shuffle': 'Karışık (L)',
+  'player.next': 'Sonraki (N)',
+  'player.previous': 'Önceki (P)',
   'player.fullscreen': 'Tam ekran',
   'player.favorite': 'Favori (F)',
   'player.sound': 'Ses',

@@ -8,9 +8,13 @@ import {
   Play,
   RefreshCw,
   Repeat,
+  Repeat1,
   Scissors,
   Send,
   Shrink,
+  Shuffle,
+  SkipBack,
+  SkipForward,
   Trash2,
   Volume2,
   VolumeX,
@@ -21,7 +25,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Video } from '../../../shared/api'
 import { copyVideos, dragVideos, toggleFavorite, trashVideos } from '../lib/actions'
 import { folderName, formatDuration, formatSize, stripExtension } from '../lib/format'
-import { useStore } from '../lib/store'
+import { useStore, type PlayMode } from '../lib/store'
 import { TagInput } from './TagInput'
 import { TagSticker } from './TagSticker'
 import { Button, IconButton, Kbd, Label } from './ui'
@@ -88,7 +92,24 @@ function PlayerBody({
   const [duration, setDuration] = useState((video.durationMs ?? 0) / 1000)
   const [volume, setVolume] = useState(() => Number(localStorage.getItem('volume') ?? 0.8))
   const [muted, setMuted] = useState(false)
-  const [loop, setLoop] = useState(true)
+  const playMode = useStore((s) => s.playMode)
+  const setPlayMode = useStore((s) => s.setPlayMode)
+  const playAdjacent = useStore((s) => s.playAdjacent)
+  const playRandom = useStore((s) => s.playRandom)
+  const loop = playMode === 'loop'
+
+  // Üç mod tek düğmede sırayla dönüyor; L kısayolu da aynı sırayı izler.
+  const cyclePlayMode = useCallback(() => {
+    const order: PlayMode[] = ['sequence', 'loop', 'shuffle']
+    setPlayMode(order[(order.indexOf(useStore.getState().playMode) + 1) % order.length])
+  }, [setPlayMode])
+
+  // Video bitince: döngüde ise `loop` niteliği zaten halleder.
+  const handleEnded = useCallback(() => {
+    const mode = useStore.getState().playMode
+    if (mode === 'shuffle') playRandom()
+    else if (mode === 'sequence') playAdjacent(1)
+  }, [playAdjacent, playRandom])
   const [scrubbing, setScrubbing] = useState(false)
 
   const videoTags = video.tagIds.map((id) => tags.find((t) => t.id === id)).filter((t) => !!t)
@@ -133,7 +154,9 @@ function PlayerBody({
       else if (key === 'arrowright')
         seekTo((ref.current?.currentTime ?? 0) + (event.shiftKey ? 1 : 5))
       else if (key === 'm') setMuted((m) => !m)
-      else if (key === 'l') setLoop((l) => !l)
+      else if (key === 'l') cyclePlayMode()
+      else if (key === 'n') playAdjacent(1)
+      else if (key === 'p') playAdjacent(-1)
       else if (key === 'f2') useStore.getState().openRename(video.id)
       else if (key === 'f' && !event.ctrlKey && !event.metaKey) void toggleFavorite([video])
       else if (key === 'c' && (event.ctrlKey || event.metaKey)) {
@@ -144,7 +167,7 @@ function PlayerBody({
     }
     window.addEventListener('keydown', onKey, true)
     return () => window.removeEventListener('keydown', onKey, true)
-  }, [onClose, togglePlay, seekTo, video])
+  }, [onClose, togglePlay, seekTo, video, cyclePlayMode, playAdjacent])
 
   const progress = duration ? time / duration : 0
 
@@ -160,6 +183,7 @@ function PlayerBody({
               loop={loop}
               muted={muted}
               onClick={togglePlay}
+              onEnded={handleEnded}
               onPlay={() => setPlaying(true)}
               onPause={() => setPlaying(false)}
               onTimeUpdate={(event) => !scrubbing && setTime(event.currentTarget.currentTime)}
@@ -180,7 +204,7 @@ function PlayerBody({
                   exit={{ opacity: 0, y: -8 }}
                   className="pointer-events-none absolute top-3 left-3 flex h-[26px] items-center gap-1.5 rounded-full bg-ink/80 px-2.5 text-xs font-semibold"
                 >
-                  <Repeat size={13} strokeWidth={2.25} className="text-sticker-yellow" />
+                  <Repeat1 size={13} strokeWidth={2.25} className="text-sticker-yellow" />
                   {t('player.looping')}
                 </motion.div>
               )}
@@ -224,6 +248,12 @@ function PlayerBody({
           </div>
 
           <div className="flex items-center gap-2.5">
+            <IconButton
+              icon={SkipBack}
+              label={t('player.previous')}
+              onClick={() => playAdjacent(-1)}
+              size={36}
+            />
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={togglePlay}
@@ -246,6 +276,12 @@ function PlayerBody({
                 </motion.span>
               </AnimatePresence>
             </motion.button>
+            <IconButton
+              icon={SkipForward}
+              label={t('player.next')}
+              onClick={() => playAdjacent(1)}
+              size={36}
+            />
             <span className="font-mono text-[13px]">
               {formatDuration(time * 1000)}{' '}
               <span className="text-dim">/ {formatDuration(duration * 1000)}</span>
@@ -272,10 +308,10 @@ function PlayerBody({
               aria-label={t('player.sound')}
             />
             <IconButton
-              icon={Repeat}
-              label={t('player.loop')}
-              active={loop}
-              onClick={() => setLoop((l) => !l)}
+              icon={playMode === 'loop' ? Repeat1 : playMode === 'shuffle' ? Shuffle : Repeat}
+              label={t(`player.mode.${playMode}`)}
+              active={playMode !== 'sequence'}
+              onClick={cyclePlayMode}
               size={36}
             />
             <IconButton

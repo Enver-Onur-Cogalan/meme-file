@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { resolveLanguage, type Language } from '../../../shared/i18n'
+import { adjacentId, randomId } from './playback'
 import type {
   LibraryFolder,
   LibraryStats,
@@ -12,6 +13,24 @@ import type {
 } from '../../../shared/api'
 
 export type ClipMode = 'trim' | 'fit' | 'gif'
+
+/**
+ * Video bittiğinde ne olacağı.
+ *   sequence → listedeki sıradakine geçer, sonda başa döner
+ *   loop     → aynı videoda kalır
+ *   shuffle  → listeden rastgele birine geçer
+ */
+export type PlayMode = 'sequence' | 'loop' | 'shuffle'
+
+const PLAY_MODE_KEY = 'playMode'
+
+function storedPlayMode(): PlayMode {
+  const value = localStorage.getItem(PLAY_MODE_KEY)
+  return value === 'loop' || value === 'shuffle' ? value : 'sequence'
+}
+
+/** Rastgele seçimde tekrarı önlemek için akılda tutulan video sayısı. */
+const RANDOM_MEMORY = 10
 
 export interface ConfirmRequest {
   title: string
@@ -45,6 +64,9 @@ interface State {
   anchorId: number | null
 
   playerId: number | null
+  playMode: PlayMode
+  /** Son açılan rastgele videolar; aynı şey arka arkaya gelmesin diye. */
+  recentRandom: number[]
   chipEditor: { tag: Tag | null; assignTo?: number[] } | null
   clip: { videoId: number; mode: ClipMode } | null
   settingsOpen: boolean
@@ -67,6 +89,11 @@ interface Actions {
   setSort(sort: SortOrder): void
   select(ids: number[], anchorId?: number | null): void
   openPlayer(id: number | null): void
+  setPlayMode(mode: PlayMode): void
+  /** Oynatıcıdaki videodan listede bir ileri/geri gider; uçlarda başa sarar. */
+  playAdjacent(step: 1 | -1): void
+  /** O anki listeden rastgele bir video açar. Liste boşsa hiçbir şey yapmaz. */
+  playRandom(): void
   openChipEditor(tag: Tag | null, assignTo?: number[]): void
   closeChipEditor(): void
   openClip(videoId: number, mode: ClipMode): void
@@ -110,6 +137,8 @@ export const useStore = create<State & Actions>()((set, get) => ({
   anchorId: null,
 
   playerId: null,
+  playMode: storedPlayMode(),
+  recentRandom: [],
   chipEditor: null,
   clip: null,
   settingsOpen: false,
@@ -187,6 +216,24 @@ export const useStore = create<State & Actions>()((set, get) => ({
   },
   openPlayer(id) {
     set({ playerId: id })
+  },
+  setPlayMode(mode) {
+    localStorage.setItem(PLAY_MODE_KEY, mode)
+    set({ playMode: mode })
+  },
+  playAdjacent(step) {
+    const { videos, playerId } = get()
+    const next = adjacentId(videos, playerId, step)
+    if (next !== null) set({ playerId: next })
+  },
+  playRandom() {
+    const { videos, recentRandom, playerId } = get()
+    const pick = randomId(videos, recentRandom, playerId)
+    if (pick === null) return
+    set({
+      playerId: pick,
+      recentRandom: [...recentRandom, pick].slice(-RANDOM_MEMORY)
+    })
   },
   openChipEditor(tag, assignTo) {
     set({ chipEditor: { tag, assignTo } })

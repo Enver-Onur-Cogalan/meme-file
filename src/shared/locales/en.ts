@@ -117,7 +117,11 @@ export const en: Messages = {
   'favorite.removed': 'Removed from favorites',
 
   'player.looping': 'Looping',
-  'player.loop': 'Loop (L)',
+  'player.mode.sequence': 'In order (L)',
+  'player.mode.loop': 'Loop (L)',
+  'player.mode.shuffle': 'Shuffle (L)',
+  'player.next': 'Next (N)',
+  'player.previous': 'Previous (P)',
   'player.fullscreen': 'Fullscreen',
   'player.favorite': 'Favorite (F)',
   'player.sound': 'Volume',
