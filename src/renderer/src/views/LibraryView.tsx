@@ -2,6 +2,7 @@ import {
   ArrowDownUp,
   Check,
   Copy,
+  Dices,
   FolderPlus,
   Inbox,
   RefreshCw,
@@ -69,7 +70,8 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
       updateSettings: s.updateSettings,
       toggleTagFilter: s.toggleTagFilter,
       clearFilters: s.clearFilters,
-      select: s.select
+      select: s.select,
+      playRandom: s.playRandom
     }))
   )
   const { videos, tags, view, folderId, folders, text, tagIds, sort, selection, settings } = store
@@ -137,6 +139,18 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
             <span className="font-mono text-[11px] text-[#6d6456]">Ctrl F</span>
           )}
         </label>
+        {/*
+          Rastgele: o an ne görüyorsan onun içinden seçer. Chip filtresi ya
+          da arama varsa havuz odur; kurulan bağlamı yok saymaz.
+        */}
+        <Button
+          icon={Dices}
+          onClick={() => store.playRandom()}
+          disabled={videos.length === 0}
+          className="h-11"
+        >
+          {t('library.random')}
+        </Button>
         <div className="relative">
           <Button icon={ArrowDownUp} onClick={() => setSortOpen((open) => !open)} className="h-11">
             {t(SORTS.find((s) => s.value === sort)?.label ?? 'sort.newest')}

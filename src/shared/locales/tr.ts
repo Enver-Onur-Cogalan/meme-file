@@ -43,6 +43,7 @@ export const tr = {
   'sort.duration': 'Süre',
   'sort.mostSent': 'En çok gönderilen',
 
+  'library.random': 'Rastgele',
   'library.searchPlaceholder': 'Hangi meme lazım?',
   'library.clearSearch': 'Aramayı temizle',
   'library.and': 'VE',

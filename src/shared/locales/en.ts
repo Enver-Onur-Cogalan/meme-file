@@ -45,6 +45,7 @@ export const en: Messages = {
   'sort.duration': 'Duration',
   'sort.mostSent': 'Most sent',
 
+  'library.random': 'Random',
   'library.searchPlaceholder': 'Which meme do you need?',
   'library.clearSearch': 'Clear search',
   'library.and': 'AND',

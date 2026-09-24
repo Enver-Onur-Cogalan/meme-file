@@ -122,6 +122,9 @@ function MainWindow(): React.JSX.Element {
         void trashVideos(selected)
       } else if (key === 'f' && !mod && selected.length > 0) {
         void toggleFavorite(selected)
+      } else if (key === 'r' && !mod) {
+        // Rastgele bir meme aç; havuz o anki filtrelenmiş liste.
+        state.playRandom()
       } else if (/^arrow(left|right)$/.test(key) && state.videos.length > 0) {
         event.preventDefault()
         const index = state.videos.findIndex((video) => video.id === state.anchorId)
