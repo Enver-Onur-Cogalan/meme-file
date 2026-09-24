@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { confirmDeleteTag, errorMessage } from '../lib/actions'
 import { searchIcons } from '../lib/icons'
 import { useStore } from '../lib/store'
-import { SWATCHES } from '../lib/tags'
+import { nextFreeSwatch, SWATCHES } from '../lib/tags'
 import { TagIcon, TagSticker } from './TagSticker'
 import { Button, DialogHeader, Label, Modal, Segmented } from './ui'
 import { bouncy, spring } from '../lib/motion'
@@ -14,7 +14,7 @@ export function ChipEditor(): React.JSX.Element {
   const editor = useStore((s) => s.chipEditor)
   const close = useStore((s) => s.closeChipEditor)
   return (
-    <Modal open={!!editor} onClose={close} width={780}>
+    <Modal open={!!editor} onClose={close} width={860}>
       {editor && <ChipEditorBody key={editor.tag?.id ?? 'new'} onClose={close} />}
     </Modal>
   )
@@ -25,7 +25,15 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
   const editing = chipEditor?.tag ?? null
   const t = useT()
   const [name, setName] = useState(editing?.name ?? '')
-  const [color, setColor] = useState(editing?.color ?? SWATCHES[tags.length % SWATCHES.length])
+  // Yeni chip kullanılmamış bir renkle açılır; eskiden sıradaki renk
+  // veriliyordu ve silinen chip'lerden sonra aynı renk tekrar geliyordu.
+  const [color, setColor] = useState(
+    editing?.color ??
+      nextFreeSwatch(
+        tags.map((tag) => tag.color),
+        tags.length
+      )
+  )
   const [icon, setIcon] = useState(editing?.icon ?? 'lucide:Tag')
   const [tab, setTab] = useState<'lucide' | 'custom'>(
     icon.startsWith('custom:') ? 'custom' : 'lucide'
@@ -81,7 +89,7 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
         onClose={onClose}
       />
       <div className="flex min-h-0">
-        <div className="flex w-[260px] shrink-0 flex-col gap-[18px] border-r-[1.5px] border-line p-[22px]">
+        <div className="flex w-[300px] shrink-0 flex-col gap-[18px] border-r-[1.5px] border-line p-[22px]">
           <div className="notebook flex h-[150px] flex-col items-center justify-center gap-3 rounded-[14px] border-[1.5px] border-line">
             <motion.div
               // Renk ya da ikon değişince önizleme çıkartması zıplar.
@@ -135,7 +143,8 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
           </div>
           <div className="flex flex-col gap-2">
             <Label>{t('chipEditor.color')}</Label>
-            <div className="flex flex-wrap gap-3">
+            {/* 8 hue × 3 ton; satırlar açık → temel → koyu sırasında. */}
+            <div className="grid grid-cols-8 gap-1.5">
               {SWATCHES.map((swatch) => (
                 <motion.button
                   key={swatch}
@@ -144,7 +153,7 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
                   onClick={() => setColor(swatch)}
                   aria-label={swatch}
                   style={{ background: swatch }}
-                  className={`flex size-9 items-center justify-center rounded-full border-2 border-ink ${
+                  className={`flex size-[26px] items-center justify-center rounded-full border-2 border-ink ${
                     swatch === color ? 'shadow-[0_0_0_3px_var(--color-text)]' : ''
                   }`}
                 >
@@ -156,7 +165,7 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
                         exit={{ scale: 0 }}
                         transition={bouncy}
                       >
-                        <Check size={16} strokeWidth={3} color="var(--color-ink)" />
+                        <Check size={13} strokeWidth={3} color="var(--color-ink)" />
                       </motion.span>
                     )}
                   </AnimatePresence>
