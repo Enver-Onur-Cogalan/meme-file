@@ -70,10 +70,15 @@ The estimated size updates live; the encoder picks bitrate, resolution and frame
 - Add folders (subfolders included); they're watched, and new videos land in the **Inbox** for quick tagging with the number keys
 - Thumbnails, hover-scrub previews, duration and sound indicators, a badge for files over Discord's 10 MB limit
 - Sort by date, name, size, duration or send count; favorites, most sent, duplicate detection
+- **Random** opens something from whatever you are looking at right now, filters included, without repeating the last ten
 
 **Chips**
-- Eight sticker colors, 2000+ icons with search, or upload your own SVG / PNG
+- 24 sticker colors (8 hues × 3 tones), 2000+ icons browsable by category or search, or upload your own SVG / PNG
 - Add chips from the player by typing (unknown names create a new chip), or tag many videos at once
+
+**Playing**
+- When a clip ends it moves to the next one in the list; `L` switches between in order, loop and shuffle
+- `‹` `›` or `N` / `P` to step through the list by hand
 
 **Sending**
 - Drag & drop from a card, the player or the quick search window

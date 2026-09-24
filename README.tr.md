@@ -70,10 +70,15 @@ Tahmini boyut canlı güncellenir; kodlayıcı hedefe göre bit hızı, çözün
 - Klasör ekle (alt klasörler dahil); klasörler izlenir, yeni videolar rakam tuşlarıyla hızlı etiketleme için **Gelen Kutusu**'na düşer
 - Kapaklar, fareyle sarılabilen önizleme, süre ve ses göstergesi, Discord'un 10 MB limitini aşanlara rozet
 - Tarih, ad, boyut, süre ya da gönderim sayısına göre sıralama; favoriler, en çok gönderilenler, aynı videoları bulma
+- **Rastgele**, o an ne görüyorsan onun içinden bir video açar; filtrelere uyar ve son onu tekrarlamaz
 
 **Chip'ler**
-- Sekiz çıkartma rengi, aramalı 2000'den fazla ikon ya da kendi SVG / PNG ikonun
+- 24 çıkartma rengi (8 hue × 3 ton), kategoriye göre gezilebilen ya da aranabilen 2000'den fazla ikon, ya da kendi SVG / PNG ikonun
 - Oynatıcıdan yazarak chip ekleme (olmayan ad yeni chip oluşturur) ya da birden fazla videoyu birlikte etiketleme
+
+**Oynatma**
+- Klip bitince listedeki sıradakine geçer; `L` sırayla, döngü ve karışık arasında geçiş yapar
+- Listede elle gezmek için `‹` `›` ya da `N` / `P`
 
 **Gönderme**
 - Karttan, oynatıcıdan ya da hızlı arama penceresinden sürükle bırak
