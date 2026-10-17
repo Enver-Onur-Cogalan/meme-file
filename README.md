@@ -46,6 +46,11 @@ tagging layer on top of them.
 <td valign="top"><b>Plays everything</b><br/>HEVC, ProRes, AC-3 audio and mkv files get a compatible copy in the background.</td>
 <td valign="top"><b>Stays fast</b><br/>Virtualized grid and SQLite full-text search; smooth 60 FPS scrolling as the library grows.</td>
 </tr>
+<tr>
+<td valign="top"><b>Four themes</b><br/>Sticker Wall, a yellow hologram Cyberpunk, a steel-plate Modern and a Windows 98 Old School, each with its own chips and motion.</td>
+<td valign="top"><b>Drop it in</b><br/>Drag files onto the window or press <code>Ctrl+V</code>; the Inbox even suggests chips from the file name.</td>
+<td valign="top"><b>Meme text</b><br/>Add top and bottom captions to a clip, exactly as you see them in the preview.</td>
+</tr>
 </table>
 
 ## In action
@@ -68,6 +73,7 @@ The estimated size updates live; the encoder picks bitrate, resolution and frame
 
 **Library**
 - Add folders (subfolders included); they're watched, and new videos land in the **Inbox** for quick tagging with the number keys
+- Drag files onto the window or paste them with `Ctrl+V` to copy them into your library folder
 - Thumbnails, hover-scrub previews, duration and sound indicators, a badge for files over Discord's 10 MB limit
 - Sort by date, name, size, duration or send count; favorites, most sent, duplicate detection
 - **Random** opens something from whatever you are looking at right now, filters included, without repeating the last ten
@@ -75,6 +81,8 @@ The estimated size updates live; the encoder picks bitrate, resolution and frame
 **Chips**
 - 24 sticker colors (8 hues × 3 tones), 2000+ icons browsable by category or search, or upload your own SVG / PNG
 - Add chips from the player by typing (unknown names create a new chip), or tag many videos at once
+- The Inbox suggests chips from the file name and from similar videos — `A` accepts them all
+- Reorder chips by dragging; `/` opens a chip search when the list gets long
 
 **Playing**
 - When a clip ends it moves to the next one in the list; `L` switches between in order, loop and shuffle
@@ -86,9 +94,13 @@ The estimated size updates live; the encoder picks bitrate, resolution and frame
 
 **Editing**
 - Trim, fit to 10 MB / 50 MB, or make a GIF; the result is copied to the clipboard, and new videos inherit the chips
+- Burn **meme text** onto a clip: top and bottom captions, drawn in the preview exactly as they come out
+- Select several videos and fit them all at once from the selection bar
 - Rename (the file on disk too) and move to the Recycle Bin; moved or renamed files keep their chips
 
 **App**
+- **Stats** screen: totals, the last 12 months, most sent videos, chip spread and records
+- Four themes with their own chips, backgrounds and motion
 - English and Turkish UI, following the system language
 - System tray, start with Windows, automatic updates from GitHub Releases, JSON backup & restore
 
@@ -103,6 +115,16 @@ The estimated size updates live; the encoder picks bitrate, resolution and frame
 | <img src="docs/screenshots/en/inbox.jpg" alt="Inbox" /> | <img src="docs/screenshots/en/settings.jpg" alt="Settings" /> |
 
 </details>
+
+## Themes
+
+Themes are not just a palette swap: the shell, the card frames, the chip surface, the typeface and the motion profile all change together. Your chip colors stay in the database and are translated onto the theme's surface.
+
+| **Sticker Wall** · warm dark, lined notebook | **Cyberpunk** · yellow hologram |
+|---|---|
+| <img src="docs/screenshots/themes/sticker.jpg" alt="Sticker Wall theme" /> | <img src="docs/screenshots/themes/cyber.jpg" alt="Cyberpunk theme" /> |
+| **Modern** · steel plate with rivets | **Old School 98** · bevelled grey, pixel type |
+| <img src="docs/screenshots/themes/modern.jpg" alt="Modern theme" /> | <img src="docs/screenshots/themes/classic.jpg" alt="Old School 98 theme" /> |
 
 ### Safe with anti-cheat
 

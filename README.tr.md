@@ -68,6 +68,7 @@ Tahmini boyut canlı güncellenir; kodlayıcı hedefe göre bit hızı, çözün
 
 **Kütüphane**
 - Klasör ekle (alt klasörler dahil); klasörler izlenir, yeni videolar rakam tuşlarıyla hızlı etiketleme için **Gelen Kutusu**'na düşer
+- Dosyaları pencereye sürükle ya da `Ctrl+V` ile yapıştır; kütüphane klasörüne kopyalanır
 - Kapaklar, fareyle sarılabilen önizleme, süre ve ses göstergesi, Discord'un 10 MB limitini aşanlara rozet
 - Tarih, ad, boyut, süre ya da gönderim sayısına göre sıralama; favoriler, en çok gönderilenler, aynı videoları bulma
 - **Rastgele**, o an ne görüyorsan onun içinden bir video açar; filtrelere uyar ve son onu tekrarlamaz
@@ -75,6 +76,8 @@ Tahmini boyut canlı güncellenir; kodlayıcı hedefe göre bit hızı, çözün
 **Chip'ler**
 - 24 çıkartma rengi (8 hue × 3 ton), kategoriye göre gezilebilen ya da aranabilen 2000'den fazla ikon, ya da kendi SVG / PNG ikonun
 - Oynatıcıdan yazarak chip ekleme (olmayan ad yeni chip oluşturur) ya da birden fazla videoyu birlikte etiketleme
+- Gelen Kutusu dosya adına ve benzer videolara bakarak chip önerir; `A` hepsini kabul eder
+- Chip'ler sürükleyerek sıralanır; liste uzayınca `/` chip aramasını açar
 
 **Oynatma**
 - Klip bitince listedeki sıradakine geçer; `L` sırayla, döngü ve karışık arasında geçiş yapar
@@ -86,9 +89,13 @@ Tahmini boyut canlı güncellenir; kodlayıcı hedefe göre bit hızı, çözün
 
 **Düzenleme**
 - Kırp, 10 MB / 50 MB'a sığdır ya da GIF yap; sonuç panoya kopyalanır, yeni videolar chip'leri devralır
+- Klibe **meme yazısı** bas: üst ve alt yazı, önizlemede gördüğünle birebir aynı çıkar
+- Birden fazla video seçip hepsini seçim çubuğundan tek seferde sığdır
 - Yeniden adlandırma (diskteki dosya da) ve Geri Dönüşüm Kutusu'na taşıma; taşınan ya da adı değişen dosyalar chip'lerini korur
 
 **Uygulama**
+- **İstatistik** ekranı: toplamlar, son 12 ay, en çok gönderilenler, chip dağılımı ve rekorlar
+- Kendi chip'i, arka planı ve hareketi olan dört tema
 - Türkçe ve İngilizce arayüz, sistem diline göre
 - Sistem tepsisi, Windows ile başlatma, GitHub Releases'tan otomatik güncelleme, JSON yedekleme
 
@@ -103,6 +110,16 @@ Tahmini boyut canlı güncellenir; kodlayıcı hedefe göre bit hızı, çözün
 | <img src="docs/screenshots/tr/inbox.jpg" alt="Gelen Kutusu" /> | <img src="docs/screenshots/tr/library.jpg" alt="Kütüphane" /> |
 
 </details>
+
+## Temalar
+
+Tema sadece palet değiştirmiyor: kabuk, kart çerçevesi, chip yüzeyi, yazı tipi ve hareket profili birlikte değişiyor. Chip renkleri veritabanında olduğu gibi kalıyor, ekrana çizilirken temanın yüzeyine çevriliyor.
+
+| **Sticker Duvarı** · sıcak koyu, çizgili defter | **Cyberpunk** · sarı hologram |
+|---|---|
+| <img src="docs/screenshots/themes/sticker.jpg" alt="Sticker Duvarı teması" /> | <img src="docs/screenshots/themes/cyber.jpg" alt="Cyberpunk teması" /> |
+| **Modern** · perçinli demir plaka | **Old School 98** · kabartmalı gri, piksel yazı |
+| <img src="docs/screenshots/themes/modern.jpg" alt="Modern teması" /> | <img src="docs/screenshots/themes/classic.jpg" alt="Old School 98 teması" /> |
 
 ### Hile korumalarıyla güvenli
 
