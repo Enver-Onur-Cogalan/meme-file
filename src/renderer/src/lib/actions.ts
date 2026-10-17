@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import type { Tag, Video } from '../../../shared/api'
 import type { MenuItem } from '../components/ContextMenu'
+import { markInternalDrag } from './dragState'
 import { useStore } from './store'
 import { t } from './i18n'
 
@@ -26,7 +27,28 @@ export async function copyVideos(ids: number[]): Promise<void> {
 }
 
 export function dragVideos(ids: number[]): void {
-  if (ids.length > 0) window.api.startDrag(ids)
+  if (ids.length === 0) return
+  markInternalDrag()
+  window.api.startDrag(ids)
+}
+
+/** Sürüklenen / yapıştırılan dosyaları kütüphaneye ekler ve sonucu bildirir. */
+export async function importPaths(paths: string[]): Promise<void> {
+  const store = useStore.getState()
+  if (paths.length === 0) return
+  try {
+    const result = await window.api.importFiles(paths)
+    if (result.folderId === null) return store.showToast(t('import.noFolderTitle'), 'error')
+    if (result.imported > 0) {
+      store.showToast(t('import.done', { count: result.imported }))
+    } else if (result.alreadyInLibrary > 0) {
+      store.showToast(t('import.already', { count: result.alreadyInLibrary }), 'info')
+    } else {
+      store.showToast(t('import.none'), 'error')
+    }
+  } catch (e) {
+    store.showToast(errorMessage(e, t('import.none')), 'error')
+  }
 }
 
 export async function trashVideos(videos: Video[]): Promise<void> {

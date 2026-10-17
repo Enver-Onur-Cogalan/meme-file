@@ -39,6 +39,14 @@ export const tr = {
   'folder.removeMenu': 'Kütüphaneden kaldır',
   'folder.added': '{count} video eklendi',
 
+  'import.dropTitle': 'Bırak, kütüphaneye eklensin',
+  'import.dropSubtitle': '{folder} klasörüne kopyalanır, Gelen Kutusu’nda chip verirsin',
+  'import.noFolderTitle': 'Önce bir klasör ekle',
+  'import.noFolderText': 'Videoların kopyalanacağı bir klasör seç, sonra sürüklemeyi tekrar dene.',
+  'import.done': '{count} video eklendi · Gelen Kutusu’nda',
+  'import.already': '{count} video zaten kütüphanede',
+  'import.none': 'Eklenecek video bulunamadı',
+
   'sort.newest': 'En yeni',
   'sort.oldest': 'En eski',
   'sort.name': 'İsim',
@@ -239,6 +247,9 @@ export const tr = {
   'settings.shortcutHint':
     "Oyundayken bile açılır. Windows'un standart kısayol sistemini kullanır; oyunlara ya da hile korumalarına dokunmaz.",
   'settings.app': 'Uygulama',
+  'settings.importFolder': 'Sürüklenen videolar nereye kopyalansın',
+  'settings.importFolderHint':
+    'Pencereye bıraktığın ya da Ctrl+V ile yapıştırdığın videolar bu klasöre gider.',
   'settings.closeToTray': 'Kapatınca sistem tepsisinde çalışmaya devam et',
   'settings.launchAtLogin': 'Windows açılınca arka planda başlat',
   'settings.tagMode': 'Birden fazla chip seçilince',

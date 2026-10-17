@@ -576,6 +576,7 @@ export function localizeStarterTags(
 
 export const DEFAULT_SETTINGS: Settings = {
   language: 'system',
+  importFolderId: null,
   closeToTray: true,
   launchAtLogin: false,
   quickSearchShortcut: 'CommandOrControl+Shift+Space',

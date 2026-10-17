@@ -1,7 +1,8 @@
-import { Download, Keyboard, RefreshCw, RotateCw, Settings, Upload } from 'lucide-react'
+import { Download, Folder, Keyboard, RefreshCw, RotateCw, Settings, Upload } from 'lucide-react'
 import { useState } from 'react'
 import type { Settings as SettingsType, UpdateState } from '../../../shared/api'
 import { errorMessage } from '../lib/actions'
+import { folderName } from '../lib/format'
 import { useStore } from '../lib/store'
 import { Button, DialogHeader, Kbd, Label, Modal, Segmented, Toggle } from './ui'
 import { useT } from '../lib/i18n'
@@ -35,7 +36,7 @@ function prettyShortcut(accelerator: string): string {
 }
 
 export function SettingsModal(): React.JSX.Element {
-  const { settingsOpen, setSettingsOpen, settings, showToast } = useStore()
+  const { settingsOpen, setSettingsOpen, settings, showToast, folders } = useStore()
   const t = useT()
   const [recording, setRecording] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -109,6 +110,33 @@ export function SettingsModal(): React.JSX.Element {
             </div>
             <div className="text-xs text-dim">{t('settings.shortcutHint')}</div>
           </section>
+
+          {folders.length > 1 && (
+            <section className="flex flex-col gap-3">
+              <Label>{t('settings.importFolder')}</Label>
+              <div className="flex flex-wrap gap-2">
+                {folders.map((folder) => {
+                  const active = (settings.importFolderId ?? folders[0].id) === folder.id
+                  return (
+                    <button
+                      key={folder.id}
+                      onClick={() => void update({ importFolderId: folder.id })}
+                      title={folder.path}
+                      className={`flex h-9 items-center gap-2 rounded-full border-[1.5px] px-3.5 text-[13px] font-bold ${
+                        active
+                          ? 'border-ink bg-sticker-blue text-ink shadow-[2px_3px_0_var(--color-ink)]'
+                          : 'border-line bg-surf text-mute hover:text-text'
+                      }`}
+                    >
+                      <Folder size={15} />
+                      {folderName(folder.path)}
+                    </button>
+                  )
+                })}
+              </div>
+              <div className="text-xs text-dim">{t('settings.importFolderHint')}</div>
+            </section>
+          )}
 
           <section className="flex flex-col gap-3.5">
             <Label>{t('settings.app')}</Label>

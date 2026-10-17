@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import type { ClipProgress, ConvertProgress, MemeApi, Settings, UpdateStatus } from '../shared/api'
 
 function subscribe<T extends unknown[]>(
@@ -19,6 +19,9 @@ const api: MemeApi = {
   addFolder: () => ipcRenderer.invoke('folders:add'),
   removeFolder: (folderId) => ipcRenderer.invoke('folders:remove', folderId),
   rescan: () => ipcRenderer.invoke('library:rescan'),
+  importFiles: (paths, folderId = null) => ipcRenderer.invoke('library:import', paths, folderId),
+  readClipboardFiles: () => ipcRenderer.invoke('library:clipboard-files'),
+  pathForFile: (file) => webUtils.getPathForFile(file),
 
   queryVideos: (query) => ipcRenderer.invoke('videos:query', query),
   getStats: () => ipcRenderer.invoke('videos:stats'),

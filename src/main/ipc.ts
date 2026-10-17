@@ -8,6 +8,7 @@ import type { ClipRequest, Settings, TagInput, VideoQuery } from '../shared/api'
 import { t } from './i18n'
 import { exportBackup, importBackup } from './lib/backup'
 import { sanitizeFileName, type ClipManager } from './lib/clips'
+import { defaultImportFolder, importFiles, readClipboardFiles } from './lib/import'
 import type { LibraryWatcher } from './lib/library'
 import { convertedPathFor, type MediaJobs } from './lib/media-jobs'
 import * as repo from './lib/repo'
@@ -79,6 +80,28 @@ export function registerIpc(ctx: IpcContext): void {
     await ctx.media.removeCache(removed)
     changed()
   })
+
+  ipcMain.handle('library:import', async (_event, paths: unknown, folderId: unknown) => {
+    const list = Array.isArray(paths)
+      ? paths.filter((item): item is string => typeof item === 'string')
+      : []
+    const target = defaultImportFolder(
+      db,
+      typeof folderId === 'number' ? folderId : repo.getSettings(db).importFolderId
+    )
+    if (list.length === 0 || target === null) {
+      return { imported: 0, skipped: list.length, alreadyInLibrary: 0, folderId: target }
+    }
+    const result = await importFiles(db, ctx.library, list, target)
+    if (result.imported > 0) {
+      repo.updateSettings(db, { importFolderId: target })
+      ctx.media.kick()
+      changed()
+    }
+    return result
+  })
+
+  ipcMain.handle('library:clipboard-files', () => readClipboardFiles())
 
   ipcMain.handle('library:rescan', async () => {
     await ctx.library.syncAll()

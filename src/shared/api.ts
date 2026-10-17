@@ -77,8 +77,19 @@ export interface LibraryStats {
   pendingMedia: number
 }
 
+export interface ImportResult {
+  imported: number
+  /** Video olmayan ya da okunamayan dosyalar */
+  skipped: number
+  /** Zaten kütüphanedeki bir klasörün içinde olanlar */
+  alreadyInLibrary: number
+  folderId: number | null
+}
+
 export interface Settings {
   language: LanguageSetting
+  /** Sürüklenen videoların kopyalanacağı klasör */
+  importFolderId: number | null
   closeToTray: boolean
   launchAtLogin: boolean
   quickSearchShortcut: string
@@ -136,6 +147,11 @@ export interface MemeApi {
   addFolder(): Promise<LibraryFolder | null>
   removeFolder(folderId: number): Promise<void>
   rescan(): Promise<void>
+  /** Sürüklenen / yapıştırılan videoları kütüphaneye kopyalar. */
+  importFiles(paths: string[], folderId?: number | null): Promise<ImportResult>
+  readClipboardFiles(): Promise<string[]>
+  /** Sürüklenen bir File nesnesinin diskteki yolu. */
+  pathForFile(file: File): string
 
   queryVideos(query: VideoQuery): Promise<Video[]>
   getStats(): Promise<LibraryStats>

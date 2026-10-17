@@ -41,6 +41,20 @@ export const en: Messages = {
   'folder.removeMenu': 'Remove from library',
   'folder.added': { one: '1 video added', other: '{count} videos added' },
 
+  'import.dropTitle': 'Drop to add to your library',
+  'import.dropSubtitle': 'Copied into {folder}; tag it in the Inbox',
+  'import.noFolderTitle': 'Add a folder first',
+  'import.noFolderText': 'Pick a folder for your videos, then try dropping again.',
+  'import.done': {
+    one: '1 video added · in the Inbox',
+    other: '{count} videos added · in the Inbox'
+  },
+  'import.already': {
+    one: '1 video is already in the library',
+    other: '{count} videos are already in the library'
+  },
+  'import.none': 'No video to add',
+
   'sort.newest': 'Newest',
   'sort.oldest': 'Oldest',
   'sort.name': 'Name',
@@ -251,6 +265,9 @@ export const en: Messages = {
   'settings.shortcutHint':
     "Works even in-game. Uses Windows' standard hotkey system; it doesn't touch games or anti-cheat software.",
   'settings.app': 'App',
+  'settings.importFolder': 'Where dropped videos go',
+  'settings.importFolderHint':
+    'Videos you drop on the window or paste with Ctrl+V are copied into this folder.',
   'settings.closeToTray': 'Keep running in the system tray when closed',
   'settings.launchAtLogin': 'Start in the background when Windows starts',
   'settings.tagMode': 'When multiple chips are selected',

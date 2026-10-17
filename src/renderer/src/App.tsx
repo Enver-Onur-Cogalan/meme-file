@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { ChipEditor } from './components/ChipEditor'
 import { ClipDialog } from './components/ClipDialog'
 import { ConfirmDialog } from './components/ConfirmDialog'
+import { DropOverlay } from './components/DropOverlay'
 import { ContextMenu, type MenuState } from './components/ContextMenu'
 import { PlayerModal } from './components/PlayerModal'
 import { RenameDialog } from './components/RenameDialog'
@@ -10,7 +11,8 @@ import { SettingsModal } from './components/SettingsModal'
 import { Sidebar } from './components/Sidebar'
 import { TitleBar } from './components/TitleBar'
 import { Toast } from './components/Toast'
-import { copyVideos, errorMessage, toggleFavorite, trashVideos } from './lib/actions'
+import { copyVideos, errorMessage, importPaths, toggleFavorite, trashVideos } from './lib/actions'
+import { isInternalDrag } from './lib/dragState'
 import { useStore } from './lib/store'
 import { InboxView } from './views/InboxView'
 import { LibraryView } from './views/LibraryView'
@@ -30,6 +32,8 @@ function MainWindow(): React.JSX.Element {
   const { refresh, view, folderId, text, tagIds, sort, settings } = store
   const [menu, setMenu] = useState<MenuState | null>(null)
   const searchRef = useRef<HTMLInputElement>(null)
+  const [dropping, setDropping] = useState(false)
+  const dragDepth = useRef(0)
   const closeMenu = useCallback(() => setMenu(null), [])
 
   // Filtre değişince yeniden sorgula; yazarken her tuşta değil, kısa bir duraksamayla.
@@ -39,6 +43,44 @@ function MainWindow(): React.JSX.Element {
   }, [refresh, view, folderId, text, tagIds, sort, settings?.tagMode])
 
   useEffect(() => window.api.onLibraryChanged(() => void refresh()), [refresh])
+
+  // Pencereye video sürükleyip bırakma. Uygulamadan dışarı sürüklenen kartlar sayılmaz.
+  useEffect(() => {
+    const hasFiles = (event: DragEvent): boolean =>
+      !!event.dataTransfer?.types.includes('Files') && !isInternalDrag()
+    const onEnter = (event: DragEvent): void => {
+      if (!hasFiles(event)) return
+      dragDepth.current++
+      setDropping(true)
+    }
+    const onOver = (event: DragEvent): void => {
+      if (hasFiles(event)) event.preventDefault()
+    }
+    const onLeave = (): void => {
+      dragDepth.current = Math.max(0, dragDepth.current - 1)
+      if (dragDepth.current === 0) setDropping(false)
+    }
+    const onDrop = (event: DragEvent): void => {
+      dragDepth.current = 0
+      setDropping(false)
+      if (!hasFiles(event)) return
+      event.preventDefault()
+      const paths = [...(event.dataTransfer?.files ?? [])].map((file) =>
+        window.api.pathForFile(file)
+      )
+      void importPaths(paths.filter(Boolean))
+    }
+    window.addEventListener('dragenter', onEnter)
+    window.addEventListener('dragover', onOver)
+    window.addEventListener('dragleave', onLeave)
+    window.addEventListener('drop', onDrop)
+    return () => {
+      window.removeEventListener('dragenter', onEnter)
+      window.removeEventListener('dragover', onOver)
+      window.removeEventListener('dragleave', onLeave)
+      window.removeEventListener('drop', onDrop)
+    }
+  }, [])
 
   useEffect(() => {
     void Promise.all([window.api.getAppVersion(), window.api.getUpdateStatus()]).then(
@@ -105,6 +147,9 @@ function MainWindow(): React.JSX.Element {
         searchRef.current?.select()
       } else if (inInput || state.view === 'inbox') {
         return
+      } else if (mod && key === 'v') {
+        event.preventDefault()
+        void window.api.readClipboardFiles().then(importPaths)
       } else if (mod && key === 'c' && selected.length > 0) {
         event.preventDefault()
         void copyVideos(selected.map((video) => video.id))
@@ -156,6 +201,7 @@ function MainWindow(): React.JSX.Element {
           />
         )}
       </div>
+      <DropOverlay visible={dropping} onAddFolder={() => void addFolder()} />
       <PlayerModal video={playerVideo} />
       <ChipEditor />
       <ClipDialog />
