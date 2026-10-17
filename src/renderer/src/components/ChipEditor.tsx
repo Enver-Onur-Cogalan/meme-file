@@ -218,7 +218,8 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
                 layoutId="icon-tab"
                 value={tab}
                 onChange={setTab}
-                color="var(--color-text)"
+                color="var(--color-pill)"
+                activeText="var(--color-pill-ink)"
                 options={[
                   { value: 'lucide', label: t('chipEditor.builtIn') },
                   { value: 'custom', label: t('chipEditor.custom') }
@@ -250,7 +251,7 @@ function ChipEditorBody({ onClose }: { onClose(): void }): React.JSX.Element {
                       }}
                       className={`h-7 rounded-full border-[1.5px] px-2.5 text-xs font-semibold transition-colors ${
                         active
-                          ? 'border-ink bg-text text-ink'
+                          ? 'border-ink bg-pill text-pill-ink'
                           : 'border-line text-mute hover:border-mute hover:text-text'
                       }`}
                     >

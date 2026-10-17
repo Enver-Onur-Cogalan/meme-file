@@ -168,14 +168,14 @@ function NavButton({
       onContextMenu={onContextMenu}
       title={title}
       className={`relative flex h-9 w-full shrink-0 items-center gap-2.5 rounded-[10px] px-3 text-left text-sm font-semibold transition-colors ${
-        active ? 'text-ink' : 'text-mute hover:text-text'
+        active ? 'text-pill-ink' : 'text-mute hover:text-text'
       }`}
     >
       {active && (
         <motion.span
           layoutId="nav-active"
           transition={spring}
-          className="absolute inset-0 rounded-[10px] bg-text"
+          className="absolute inset-0 rounded-[10px] bg-pill shadow-[var(--shadow-accent)]"
         />
       )}
       <Icon size={17} className="relative shrink-0" />
@@ -192,7 +192,9 @@ function NavButton({
             {count}
           </motion.span>
         ) : (
-          <span className={`relative font-mono text-[11px] ${active ? 'text-ink' : 'text-dim'}`}>
+          <span
+            className={`relative font-mono text-[11px] ${active ? 'text-pill-ink' : 'text-dim'}`}
+          >
             <AnimatedNumber value={count} />
           </span>
         ))}

@@ -105,8 +105,12 @@ export interface ImportResult {
   folderId: number | null
 }
 
+export type ThemeId = 'sticker' | 'cyber' | 'modern' | 'classic'
+
 export interface Settings {
   language: LanguageSetting
+  /** Arayüz teması */
+  theme: ThemeId
   /** Sürüklenen videoların kopyalanacağı klasör */
   importFolderId: number | null
   closeToTray: boolean

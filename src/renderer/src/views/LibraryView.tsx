@@ -117,7 +117,7 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
             {title}
           </motion.h1>
         </AnimatePresence>
-        <label className="flex h-11 grow items-center gap-2.5 rounded-full border-2 border-ink bg-text px-[18px] text-ink shadow-[3px_4px_0_var(--color-ink)] focus-within:shadow-[3px_4px_0_var(--color-sticker-yellow)]">
+        <label className="flex h-11 grow items-center gap-2.5 rounded-full border-2 border-ink bg-pill px-[18px] text-pill-ink shadow-[var(--shadow-sticker)] focus-within:shadow-[var(--shadow-accent)]">
           <Search size={18} strokeWidth={2.25} className="shrink-0" />
           <input
             ref={searchRef}
@@ -176,7 +176,7 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
                     className="flex h-9 items-center justify-between rounded-[9px] px-2.5 text-left text-[13.5px] font-semibold hover:bg-surf"
                   >
                     {t(option.label)}
-                    {option.value === sort && <Check size={15} className="text-sticker-yellow" />}
+                    {option.value === sort && <Check size={15} className="text-accent" />}
                   </button>
                 ))}
               </motion.div>
@@ -248,7 +248,7 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
             <Button
               variant="primary"
               icon={FolderPlus}
-              color="var(--color-text)"
+              color="var(--color-accent)"
               size="lg"
               onClick={onAddFolder}
             >
@@ -398,7 +398,7 @@ function EmptyState({
         initial={{ scale: 0.6, rotate: -20, opacity: 0 }}
         animate={{ scale: 1, rotate: -6, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 300, damping: 14 }}
-        className="flex size-20 items-center justify-center rounded-3xl border-2 border-ink bg-sticker-yellow text-ink shadow-[4px_5px_0_var(--color-ink)]"
+        className="flex size-20 items-center justify-center rounded-3xl border-2 border-ink bg-accent text-ink shadow-[4px_5px_0_var(--color-ink)]"
       >
         <Icon size={38} strokeWidth={2.25} />
       </motion.div>

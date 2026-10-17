@@ -41,7 +41,7 @@ export function PlayerModal({ video }: { video: Video | undefined }): React.JSX.
       {video && (
         <motion.div
           key="player"
-          className="absolute inset-0 z-40 flex items-center justify-center bg-[rgba(12,10,8,0.74)] p-6"
+          className="absolute inset-0 z-40 flex items-center justify-center bg-scrim p-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -204,7 +204,7 @@ function PlayerBody({
                   exit={{ opacity: 0, y: -8 }}
                   className="pointer-events-none absolute top-3 left-3 flex h-[26px] items-center gap-1.5 rounded-full bg-ink/80 px-2.5 text-xs font-semibold"
                 >
-                  <Repeat1 size={13} strokeWidth={2.25} className="text-sticker-yellow" />
+                  <Repeat1 size={13} strokeWidth={2.25} className="text-accent" />
                   {t('player.looping')}
                 </motion.div>
               )}
@@ -217,7 +217,7 @@ function PlayerBody({
                   exit={{ opacity: 0, scale: 1.3 }}
                   transition={bouncy}
                   onClick={togglePlay}
-                  className="absolute top-1/2 left-1/2 flex size-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-ink bg-sticker-yellow text-ink shadow-[3px_4px_0_var(--color-ink)]"
+                  className="absolute top-1/2 left-1/2 flex size-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-ink bg-accent text-ink shadow-[3px_4px_0_var(--color-ink)]"
                 >
                   <Play size={26} strokeWidth={2.5} className="ml-1" />
                 </motion.button>
@@ -237,7 +237,7 @@ function PlayerBody({
             className="group relative h-3 cursor-pointer rounded-full border-[1.5px] border-ink bg-surf"
           >
             <div
-              className="absolute inset-y-0 left-0 rounded-full bg-sticker-yellow"
+              className="absolute inset-y-0 left-0 rounded-full bg-accent"
               style={{ width: `${progress * 100}%` }}
             />
             <motion.div
@@ -258,7 +258,7 @@ function PlayerBody({
               whileTap={{ scale: 0.9 }}
               onClick={togglePlay}
               aria-label={playing ? t('common.pause') : t('common.play')}
-              className="flex size-11 items-center justify-center rounded-full border-2 border-ink bg-sticker-yellow text-ink shadow-[2px_3px_0_var(--color-ink)]"
+              className="flex size-11 items-center justify-center rounded-full border-2 border-ink bg-accent text-ink shadow-[2px_3px_0_var(--color-ink)]"
             >
               <AnimatePresence mode="wait" initial={false}>
                 <motion.span
@@ -362,7 +362,7 @@ function PlayerBody({
               >
                 <polygon
                   points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-                  fill={video.favorite ? 'var(--color-sticker-yellow)' : 'none'}
+                  fill={video.favorite ? 'var(--color-accent)' : 'none'}
                   stroke={video.favorite ? 'var(--color-ink)' : 'var(--color-mute)'}
                   strokeWidth="1.5"
                   strokeLinejoin="round"
@@ -510,7 +510,7 @@ function ConvertingOverlay({ videoId }: { videoId: number }): React.JSX.Element 
   const progress = useStore((s) => s.convertProgress[videoId]) ?? 0
   const t = useT()
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[rgba(12,10,8,0.85)] text-center">
+    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-veil text-center">
       <motion.div
         animate={{ rotate: [-6, 6, -6] }}
         transition={{ repeat: Infinity, duration: 1.2, ease: 'easeInOut' }}

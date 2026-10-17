@@ -96,7 +96,7 @@ export function QuickSearch(): React.JSX.Element {
         className="flex items-center gap-3 border-b-[1.5px] border-line px-[18px] py-4"
         style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
       >
-        <div className="flex size-7 shrink-0 -rotate-8 items-center justify-center rounded-lg border-[1.5px] border-ink bg-sticker-yellow text-ink">
+        <div className="flex size-7 shrink-0 -rotate-8 items-center justify-center rounded-lg border-[1.5px] border-ink bg-accent text-ink">
           <Search size={15} strokeWidth={2.5} />
         </div>
         <input
@@ -150,7 +150,7 @@ export function QuickSearch(): React.JSX.Element {
                     className="size-full object-cover"
                   />
                 )}
-                <span className="absolute right-1 bottom-1 rounded-full bg-ink/85 px-1.5 font-mono text-[10px]">
+                <span className="absolute right-1 bottom-1 rounded-full bg-ink/85 px-1.5 font-mono text-[10px] text-over">
                   {formatDuration(video.durationMs)}
                 </span>
               </div>

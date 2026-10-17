@@ -13,8 +13,15 @@
   --color-mute: #a89d8a;
   --color-dim: #766c5c;
   --color-ink: #15130f;
+  --color-over: #f4ecdc;
+  --color-pill: #f4ecdc;
+  --color-pill-ink: #15130f;
+  --color-scrim: rgba(12, 10, 8, 0.74);
+  --color-veil: rgba(12, 10, 8, 0.85);
 
   --color-sticker-yellow: #f5c542;
+  --color-accent: #f5c542;
+  --color-gold: #f5c542;
   --color-sticker-orange: #f59a3d;
   --color-sticker-red: #f2665a;
   --color-sticker-pink: #ee7fb4;
@@ -29,7 +36,18 @@
 
 @utility notebook {
   background-color: var(--color-bg);
-  background-image:
+  background-image: var(--notebook-image);
+  background-size: var(--notebook-size, auto);
+  background-position: var(--notebook-position, 0 0);
+  background-attachment: local;
+}
+
+/* ---------------- temalar ----------------
+   Tailwind token'ları :root'ta tanımlı; tema seçimi <html data-theme> ile
+   aynı değişkenleri ezer. Chip renkleri her temada kendi ruhuna göre değişir. */
+
+:root {
+  --notebook-image:
     linear-gradient(
       90deg,
       transparent 13px,
@@ -42,10 +60,121 @@
       transparent 20px
     ),
     repeating-linear-gradient(180deg, transparent 0 27px, var(--color-line) 27px 28px);
-  background-position:
-    0 0,
-    0 12px;
-  background-attachment: local;
+  --notebook-position: 0 0, 0 12px;
+  /* Vurgulu yüzeylerin gölgesi: sticker'da ofset mürekkep, cyber'da neon parıltı */
+  --shadow-sticker: 3px 4px 0 var(--color-ink);
+  --shadow-accent: 3px 4px 0 var(--color-accent);
+}
+
+/* Cyberpunk: gece mavisi zemin, camgöbeği-sarı neon, HUD ızgarası */
+[data-theme='cyber'] {
+  --color-bg: #0a0e14;
+  --color-side: #070a0f;
+  --color-surf: #121a24;
+  --color-line: #1f3040;
+  --color-text: #e8fbff;
+  --color-mute: #8fb3c4;
+  --color-dim: #5c7a8c;
+  --color-ink: #03060a;
+  --color-scrim: rgba(3, 8, 14, 0.78);
+  --color-veil: rgba(3, 8, 14, 0.88);
+
+  --color-sticker-yellow: #ffe14d;
+  --color-accent: #22e5ff;
+  --color-gold: #ffe14d;
+  --color-sticker-orange: #ffa320;
+  --color-sticker-red: #ff3b6b;
+  --color-sticker-pink: #ff5fd2;
+  --color-sticker-purple: #a874ff;
+  --color-sticker-blue: #22e5ff;
+  --color-sticker-teal: #2ef2c0;
+  --color-sticker-green: #7cff6b;
+
+  --notebook-image:
+    repeating-linear-gradient(90deg, transparent 0 39px, #22e5ff1f 39px 40px),
+    repeating-linear-gradient(180deg, transparent 0 39px, #22e5ff14 39px 40px);
+  --notebook-position: 0 0;
+  --color-pill: #22e5ff;
+  --color-pill-ink: #03060a;
+  --shadow-sticker: 0 0 14px #22e5ff40;
+  --shadow-accent: 0 0 20px #22e5ff80;
+}
+
+/* Modern: nötr grafit, az kontrast, soluk pastel vurgular, ince nokta ızgara */
+[data-theme='modern'] {
+  --color-bg: #141516;
+  --color-side: #0f1011;
+  --color-surf: #1c1e1f;
+  --color-line: #2b2e30;
+  --color-text: #ededed;
+  --color-mute: #a3a7a9;
+  --color-dim: #6d7173;
+  --color-ink: #0a0b0b;
+  --color-scrim: rgba(10, 11, 11, 0.76);
+  --color-veil: rgba(10, 11, 11, 0.86);
+
+  --color-sticker-yellow: #e2c782;
+  --color-accent: #e8eaec;
+  --color-gold: #e2c782;
+  --color-sticker-orange: #e0a97e;
+  --color-sticker-red: #d98b85;
+  --color-sticker-pink: #d49bb4;
+  --color-sticker-purple: #ab9fd0;
+  --color-sticker-blue: #8fb5d6;
+  --color-sticker-teal: #8cc7bc;
+  --color-sticker-green: #9ec79b;
+
+  --notebook-image: radial-gradient(#2b2e30 1px, transparent 1px);
+  --notebook-size: 24px 24px;
+  --notebook-position: 0 0;
+  --color-pill: #ededed;
+  --color-pill-ink: #0a0b0b;
+  --shadow-sticker: 0 2px 10px #00000066;
+  --shadow-accent: 0 3px 14px #00000080;
+}
+
+/* Klasik: krem kâğıt, mürekkep konturlar, mavi çizgi + kırmızı marj */
+[data-theme='classic'] {
+  --color-bg: #efe5cf;
+  --color-side: #e4d8bd;
+  --color-surf: #f8f2e3;
+  --color-line: #cdbda0;
+  --color-text: #2c241a;
+  --color-mute: #6d6150;
+  --color-dim: #978a74;
+  --color-ink: #2c241a;
+  --color-scrim: rgba(44, 36, 26, 0.6);
+  --color-veil: rgba(44, 36, 26, 0.8);
+
+  --color-sticker-yellow: #e8b73c;
+  --color-accent: #e8b73c;
+  --color-gold: #e8b73c;
+  --color-sticker-orange: #dd8a42;
+  --color-sticker-red: #c9574a;
+  --color-sticker-pink: #cf7f9c;
+  --color-sticker-purple: #9180b8;
+  --color-sticker-blue: #5f8fb3;
+  --color-sticker-teal: #6fb0a0;
+  --color-sticker-green: #85a85f;
+
+  --notebook-image:
+    linear-gradient(
+      90deg,
+      transparent 13px,
+      #c9574a66 13px,
+      #c9574a66 15px,
+      transparent 15px,
+      transparent 19px,
+      #c9574a33 19px,
+      #c9574a33 20px,
+      transparent 20px
+    ),
+    repeating-linear-gradient(180deg, transparent 0 27px, #5f8fb359 27px 28px);
+  --notebook-position: 0 0, 0 12px;
+  --color-pill: #2c241a;
+  --color-pill-ink: #f3ebd8;
+  --shadow-sticker: 3px 4px 0 var(--color-ink);
+  --shadow-accent: 3px 4px 0 var(--color-sticker-red);
 }
 
 @utility drag-region {

@@ -272,7 +272,7 @@ function ClipBody({
                   initial={{ opacity: 0, y: -6 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="absolute top-3 left-3 rounded-full border-[1.5px] border-ink bg-sticker-yellow px-3 py-1 text-xs font-extrabold text-ink"
+                  className="absolute top-3 left-3 rounded-full border-[1.5px] border-ink bg-accent px-3 py-1 text-xs font-extrabold text-ink"
                 >
                   {dragging === 'start' ? t('clip.start') : t('clip.end')} ·{' '}
                   {formatPreciseTime(dragging === 'start' ? start : end)}
@@ -286,7 +286,7 @@ function ClipBody({
                 whileTap={{ scale: 0.9 }}
                 onClick={togglePlay}
                 aria-label={playing ? t('common.pause') : t('common.play')}
-                className="flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-sticker-yellow text-ink shadow-[2px_2px_0_var(--color-ink)]"
+                className="flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-accent text-ink shadow-[2px_2px_0_var(--color-ink)]"
               >
                 {playing ? (
                   <Pause size={15} strokeWidth={2.5} />
@@ -328,15 +328,15 @@ function ClipBody({
               }
             >
               <div
-                className="absolute inset-y-0 left-0 rounded-l-[9px] bg-[rgba(12,10,8,0.72)]"
+                className="absolute inset-y-0 left-0 rounded-l-[9px] bg-scrim"
                 style={{ width: pct(start) }}
               />
               <div
-                className="absolute inset-y-0 right-0 rounded-r-[9px] bg-[rgba(12,10,8,0.72)]"
+                className="absolute inset-y-0 right-0 rounded-r-[9px] bg-scrim"
                 style={{ left: pct(end) }}
               />
               <div
-                className="pointer-events-none absolute inset-y-0 border-y-[3px] border-sticker-yellow"
+                className="pointer-events-none absolute inset-y-0 border-y-[3px] border-accent"
                 style={{ left: pct(start), right: `calc(100% - ${pct(end)})` }}
               />
               <div
@@ -356,15 +356,15 @@ function ClipBody({
                   >
                     <motion.div
                       animate={{ scaleX: active ? 1.35 : 1 }}
-                      className={`flex h-full w-3.5 items-center justify-center bg-sticker-yellow ${
+                      className={`flex h-full w-3.5 items-center justify-center bg-accent ${
                         handle === 'start' ? 'rounded-l-md' : 'rounded-r-md'
                       }`}
                     >
                       <div className="h-[18px] w-0.5 rounded-sm bg-ink" />
                     </motion.div>
                     <div
-                      className={`pointer-events-none absolute -top-6 rounded-full border-[1.5px] border-ink px-1.5 font-mono text-[10.5px] whitespace-nowrap text-ink transition-colors ${
-                        active ? 'bg-sticker-yellow' : 'bg-text'
+                      className={`pointer-events-none absolute -top-6 rounded-full border-[1.5px] border-ink px-1.5 font-mono text-[10.5px] whitespace-nowrap transition-colors ${
+                        active ? 'bg-accent text-ink' : 'bg-pill text-pill-ink'
                       }`}
                     >
                       {formatPreciseTime(value)}
@@ -388,7 +388,8 @@ function ClipBody({
               layoutId="clip-format"
               value={format}
               onChange={setFormat}
-              color="var(--color-text)"
+              color="var(--color-pill)"
+              activeText="var(--color-pill-ink)"
               options={[
                 { value: 'mp4', label: t('clip.video') },
                 { value: 'gif', label: 'GIF' }
@@ -517,12 +518,12 @@ function ClipBody({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-[rgba(12,10,8,0.82)]"
+              className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-veil"
             >
               <motion.div
                 animate={{ rotate: [-6, 6, -6] }}
                 transition={{ repeat: Infinity, duration: 1.2, ease: 'easeInOut' }}
-                className="flex size-16 items-center justify-center rounded-2xl border-2 border-ink bg-sticker-yellow text-ink shadow-[4px_5px_0_var(--color-ink)]"
+                className="flex size-16 items-center justify-center rounded-2xl border-2 border-ink bg-accent text-ink shadow-[4px_5px_0_var(--color-ink)]"
               >
                 <Icon size={30} strokeWidth={2.25} />
               </motion.div>

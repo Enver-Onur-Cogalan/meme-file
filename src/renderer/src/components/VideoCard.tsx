@@ -91,7 +91,7 @@ export const VideoCard = memo(function VideoCard({
       style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 260px' }}
       className={`flex cursor-grab flex-col overflow-hidden rounded-[14px] border-2 bg-surf active:cursor-grabbing ${
         selected
-          ? 'border-sticker-yellow shadow-[5px_6px_0_var(--color-ink)]'
+          ? 'border-accent shadow-[5px_6px_0_var(--color-ink)]'
           : hover
             ? 'border-text shadow-[6px_8px_0_var(--color-ink)]'
             : 'border-line'
@@ -142,7 +142,7 @@ export const VideoCard = memo(function VideoCard({
             initial={{ opacity: 0, y: -8, rotate: -6, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, rotate: 0, scale: 1 }}
             transition={{ type: 'spring', stiffness: 520, damping: 22 }}
-            className="absolute top-2.5 left-2.5 flex h-[26px] items-center gap-1.5 rounded-full border-[1.5px] border-ink bg-text px-2.5 text-[11.5px] font-bold text-ink"
+            className="absolute top-2.5 left-2.5 flex h-[26px] items-center gap-1.5 rounded-full border-[1.5px] border-ink bg-pill px-2.5 text-[11.5px] font-bold text-pill-ink"
           >
             <Send size={13} strokeWidth={2.25} />
             <span>{t('card.dragToDiscord')}</span>
@@ -190,7 +190,7 @@ export const VideoCard = memo(function VideoCard({
           {video.hasAudio !== null && (
             <div
               title={video.hasAudio ? t('card.withSound') : t('card.silent')}
-              className="flex h-[22px] items-center rounded-full bg-ink/80 px-[7px]"
+              className="flex h-[22px] items-center rounded-full bg-ink/80 px-[7px] text-over"
             >
               {video.hasAudio ? (
                 <Volume2 size={12} />
@@ -199,7 +199,7 @@ export const VideoCard = memo(function VideoCard({
               )}
             </div>
           )}
-          <div className="flex h-[22px] items-center rounded-full bg-ink/80 px-2 font-mono text-[11px]">
+          <div className="flex h-[22px] items-center rounded-full bg-ink/80 px-2 font-mono text-[11px] text-over">
             {formatDuration(video.durationMs)}
           </div>
         </div>
@@ -207,7 +207,7 @@ export const VideoCard = memo(function VideoCard({
         {hover && (
           <div className="absolute right-2.5 bottom-2.5 left-2.5 h-2 overflow-hidden rounded-full border-[1.5px] border-ink bg-ink/55">
             <div
-              className="h-full bg-sticker-yellow"
+              className="h-full bg-accent"
               style={{ width: `${((frame + 1) / SPRITE_FRAMES) * 100}%` }}
             />
           </div>
@@ -231,7 +231,7 @@ export const VideoCard = memo(function VideoCard({
             >
               <polygon
                 points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-                fill="var(--color-sticker-yellow)"
+                fill="var(--color-accent)"
                 stroke="var(--color-ink)"
                 strokeWidth="1.5"
                 strokeLinejoin="round"

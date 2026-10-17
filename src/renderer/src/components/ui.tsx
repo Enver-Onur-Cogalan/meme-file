@@ -15,7 +15,7 @@ interface ButtonProps extends HTMLMotionProps<'button'> {
 export function Button({
   icon: Icon,
   variant = 'secondary',
-  color = 'var(--color-sticker-yellow)',
+  color = 'var(--color-accent)',
   size = 'md',
   className = '',
   children,
@@ -77,7 +77,7 @@ export function IconButton({
       aria-label={label}
       style={{ width: size, height: size }}
       className={`flex shrink-0 items-center justify-center rounded-full transition-colors ${
-        active ? 'bg-surf text-sticker-yellow' : 'bg-surf text-mute hover:text-text'
+        active ? 'bg-surf text-accent' : 'bg-surf text-mute hover:text-text'
       } ${className}`}
       {...rest}
     >
@@ -136,12 +136,15 @@ export function Segmented<T extends string>({
   options,
   onChange,
   color = 'var(--color-sticker-blue)',
+  activeText = 'var(--color-ink)',
   layoutId
 }: {
   value: T
   options: { value: NoInfer<T>; label: ReactNode }[]
   onChange(value: NoInfer<T>): void
   color?: string
+  /** Seçili düğmenin yazı rengi; koyu zeminli temalarda açık olmalı. */
+  activeText?: string
   layoutId: string
 }): React.JSX.Element {
   return (
@@ -153,8 +156,9 @@ export function Segmented<T extends string>({
             key={option.value}
             type="button"
             onClick={() => onChange(option.value)}
+            style={active ? { color: activeText } : undefined}
             className={`relative flex h-9 grow items-center justify-center rounded-full px-3 text-[13px] font-bold whitespace-nowrap ${
-              active ? 'text-ink' : 'text-mute hover:text-text'
+              active ? '' : 'text-mute hover:text-text'
             }`}
           >
             {active && (
@@ -202,7 +206,7 @@ export function Modal({
     <AnimatePresence>
       {open && (
         <motion.div
-          className="absolute inset-0 z-40 flex items-center justify-center bg-[rgba(12,10,8,0.74)] p-6"
+          className="absolute inset-0 z-40 flex items-center justify-center bg-scrim p-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -246,7 +250,7 @@ export function DialogHeader({
         initial={{ rotate: -30, scale: 0.6 }}
         animate={{ rotate: -6, scale: 1 }}
         transition={bouncy}
-        className="flex size-[34px] shrink-0 items-center justify-center rounded-[10px] border-[1.5px] border-ink bg-sticker-yellow text-ink"
+        className="flex size-[34px] shrink-0 items-center justify-center rounded-[10px] border-[1.5px] border-ink bg-accent text-ink"
       >
         <Icon size={18} strokeWidth={2.25} />
       </motion.div>

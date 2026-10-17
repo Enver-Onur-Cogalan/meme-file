@@ -4,6 +4,9 @@ import type { Settings as SettingsType, UpdateState } from '../../../shared/api'
 import { errorMessage } from '../lib/actions'
 import { folderName } from '../lib/format'
 import { useStore } from '../lib/store'
+import { motion } from 'motion/react'
+import { THEMES, type ThemePreview } from '../lib/themes'
+import { spring } from '../lib/motion'
 import { Button, DialogHeader, Kbd, Label, Modal, Segmented, Toggle } from './ui'
 import { useT } from '../lib/i18n'
 import type { MessageKey } from '../../../shared/i18n'
@@ -71,13 +74,29 @@ export function SettingsModal(): React.JSX.Element {
               layoutId="settings-language"
               value={settings.language}
               onChange={(value) => void update({ language: value })}
-              color="var(--color-text)"
+              color="var(--color-pill)"
+              activeText="var(--color-pill-ink)"
               options={[
                 { value: 'system', label: t('settings.languageSystem') },
                 { value: 'tr', label: 'Türkçe' },
                 { value: 'en', label: 'English' }
               ]}
             />
+          </section>
+
+          <section className="flex flex-col gap-3">
+            <Label>{t('settings.theme')}</Label>
+            <div className="grid grid-cols-2 gap-2.5">
+              {THEMES.map((theme) => (
+                <ThemeCard
+                  key={theme.id}
+                  theme={theme}
+                  active={settings.theme === theme.id}
+                  onPick={() => void update({ theme: theme.id })}
+                />
+              ))}
+            </div>
+            <span className="text-[12px] text-dim">{t('settings.themeHint')}</span>
           </section>
 
           <section className="flex flex-col gap-3">
@@ -97,12 +116,12 @@ export function SettingsModal(): React.JSX.Element {
                 }}
                 onBlur={() => setRecording(false)}
                 className={`flex h-11 grow items-center gap-2.5 rounded-xl border-2 px-3.5 text-left text-sm font-semibold ${
-                  recording ? 'border-sticker-yellow' : 'border-line bg-surf'
+                  recording ? 'border-accent' : 'border-line bg-surf'
                 }`}
               >
                 <Keyboard size={17} className="text-mute" />
                 {recording ? (
-                  <span className="text-sticker-yellow">{t('settings.recording')}</span>
+                  <span className="text-accent">{t('settings.recording')}</span>
                 ) : (
                   <Kbd>{prettyShortcut(settings.quickSearchShortcut)}</Kbd>
                 )}
@@ -238,7 +257,7 @@ function UpdateSection(): React.JSX.Element {
     <section className="flex flex-col gap-3">
       <Label>{t('settings.version')}</Label>
       <div className="flex items-center gap-3">
-        <span className="rounded-full border-[1.5px] border-ink bg-sticker-yellow px-2.5 py-0.5 font-mono text-xs font-medium text-ink">
+        <span className="rounded-full border-[1.5px] border-ink bg-accent px-2.5 py-0.5 font-mono text-xs font-medium text-ink">
           v{appVersion}
         </span>
         <span className="grow text-sm text-mute">
@@ -269,5 +288,55 @@ function UpdateSection(): React.JSX.Element {
         )}
       </div>
     </section>
+  )
+}
+
+/** Tema kartı: temanın kendi renkleriyle küçük bir önizleme çizer. */
+function ThemeCard({
+  theme,
+  active,
+  onPick
+}: {
+  theme: ThemePreview
+  active: boolean
+  onPick(): void
+}): React.JSX.Element {
+  const t = useT()
+  return (
+    <motion.button
+      onClick={onPick}
+      whileHover={{ y: -2 }}
+      whileTap={{ scale: 0.98 }}
+      transition={spring}
+      className={`flex flex-col gap-2 rounded-[14px] border-2 p-2.5 text-left ${
+        active ? 'border-accent shadow-[3px_4px_0_var(--color-ink)]' : 'border-line'
+      }`}
+    >
+      <div
+        style={{ background: theme.bg, borderColor: theme.ink }}
+        className="flex h-[58px] flex-col justify-between overflow-hidden rounded-[9px] border-[1.5px] p-2"
+      >
+        <div className="flex gap-1">
+          {theme.chips.map((color) => (
+            <span
+              key={color}
+              style={{ background: color, borderColor: theme.ink }}
+              className="h-[13px] w-[26px] rounded-full border-[1.5px]"
+            />
+          ))}
+        </div>
+        <div className="flex flex-col gap-[3px]">
+          <span
+            style={{ background: theme.text, opacity: 0.85 }}
+            className="h-[3px] w-3/4 rounded-full"
+          />
+          <span style={{ background: theme.line }} className="h-[3px] w-1/2 rounded-full" />
+        </div>
+      </div>
+      <div className="flex flex-col">
+        <span className="text-[13px] font-bold">{t(theme.labelKey)}</span>
+        <span className="text-[11.5px] text-dim">{t(theme.noteKey)}</span>
+      </div>
+    </motion.button>
   )
 }

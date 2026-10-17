@@ -60,7 +60,7 @@ function StatsBody({ onClose }: { onClose(): void }): React.JSX.Element {
           <Metric
             index={0}
             icon={Film}
-            color="var(--color-sticker-yellow)"
+            color="var(--color-accent)"
             label={t('stats.videos')}
             value={totals?.videos ?? 0}
             format={countFormat}
@@ -332,7 +332,7 @@ function Bar({
               ? 'bg-sticker-green'
               : hover
                 ? 'bg-sticker-orange'
-                : 'bg-sticker-yellow'
+                : 'bg-accent'
         }`}
       />
       <span className={`truncate text-[10px] font-semibold ${last ? 'text-text' : 'text-dim'}`}>
@@ -347,7 +347,7 @@ function Empty({ text }: { text: string }): React.JSX.Element {
 }
 
 /** İlk üç sıraya madalya rengi; gerisi sade kalır. */
-const RANK_COLORS = ['var(--color-sticker-yellow)', '#cfd4dc', '#d8a26a']
+const RANK_COLORS = ['var(--color-gold)', '#cfd4dc', '#d8a26a']
 
 function SentRow({ video, rank }: { video: Video; rank: number }): React.JSX.Element {
   const t = useT()
@@ -386,7 +386,7 @@ function SentRow({ video, rank }: { video: Video; rank: number }): React.JSX.Ele
           />
         )}
       </motion.div>
-      <span className="min-w-0 grow truncate text-[13px] font-semibold group-hover:text-sticker-yellow">
+      <span className="min-w-0 grow truncate text-[13px] font-semibold group-hover:text-accent">
         {stripExtension(video.name)}
       </span>
       <span className="shrink-0 text-[11.5px] font-bold text-mute">

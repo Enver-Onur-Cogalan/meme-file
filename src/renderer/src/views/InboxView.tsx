@@ -286,7 +286,7 @@ export function InboxView(): React.JSX.Element {
                 <Button
                   icon={Star}
                   onClick={() => void toggleFavorite([current])}
-                  className={current.favorite ? 'text-sticker-yellow' : ''}
+                  className={current.favorite ? 'text-accent' : ''}
                 >
                   {t('common.favorite')} <Kbd>F</Kbd>
                 </Button>

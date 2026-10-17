@@ -23,7 +23,7 @@ export function ConfirmDialog(): React.JSX.Element {
               animate={{ rotate: -6, scale: 1 }}
               transition={{ type: 'spring', stiffness: 500, damping: 12 }}
               className={`flex size-11 shrink-0 items-center justify-center rounded-xl border-2 border-ink text-ink ${
-                request.danger ? 'bg-sticker-red' : 'bg-sticker-yellow'
+                request.danger ? 'bg-sticker-red' : 'bg-accent'
               }`}
             >
               <AlertTriangle size={22} strokeWidth={2.25} />

@@ -5,7 +5,7 @@ import { useStore } from '../lib/store'
 const TONES = {
   ok: { bg: 'bg-sticker-green', Icon: Check },
   error: { bg: 'bg-sticker-red', Icon: X },
-  info: { bg: 'bg-text', Icon: Info }
+  info: { bg: 'bg-sticker-blue', Icon: Info }
 }
 
 export function Toast(): React.JSX.Element {
