@@ -160,8 +160,9 @@ export const useStore = create<State & Actions>()((set, get) => ({
       window.api.queryVideos({
         view,
         folderId,
-        text,
-        tagIds,
+        // Gelen Kutusu bekleyen her videoyu gösterir; kütüphane filtreleri ona uygulanmaz.
+        text: view === 'inbox' ? '' : text,
+        tagIds: view === 'inbox' ? [] : tagIds,
         sort,
         tagMode: settings?.tagMode ?? 'and'
       }),

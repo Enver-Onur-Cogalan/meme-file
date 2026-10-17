@@ -172,6 +172,22 @@ describe('renameVideo / deleteVideos', () => {
   })
 })
 
+describe('chip sırası', () => {
+  it('yeni chip sona eklenir, sıralama kalıcıdır', () => {
+    const a = repo.createTag(db, { name: 'a', color: '#f5c542', icon: 'lucide:Tag' })
+    const b = repo.createTag(db, { name: 'b', color: '#f5c542', icon: 'lucide:Tag' })
+    const c = repo.createTag(db, { name: 'c', color: '#f5c542', icon: 'lucide:Tag' })
+    expect(repo.listTags(db).map((tag) => tag.name)).toEqual(['a', 'b', 'c'])
+
+    repo.reorderTags(db, [c.id, a.id, b.id])
+    expect(repo.listTags(db).map((tag) => tag.name)).toEqual(['c', 'a', 'b'])
+
+    // Sonradan eklenen chip en sona gider, sıralama bozulmaz.
+    repo.createTag(db, { name: 'd', color: '#f5c542', icon: 'lucide:Tag' })
+    expect(repo.listTags(db).map((tag) => tag.name)).toEqual(['c', 'a', 'b', 'd'])
+  })
+})
+
 describe('settings', () => {
   it('varsayılanları döndürür ve sadece bilinen anahtarları kaydeder', () => {
     const settings = repo.updateSettings(db, { tagMode: 'or', unknown: 1 } as never)

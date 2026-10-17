@@ -166,6 +166,10 @@ export function registerIpc(ctx: IpcContext): void {
     changed()
     return tag
   })
+  ipcMain.handle('tags:reorder', (_event, tagIds: unknown) => {
+    repo.reorderTags(db, ids(tagIds))
+    changed()
+  })
   ipcMain.handle('tags:delete', (_event, tagId: number) => {
     repo.deleteTag(db, tagId)
     changed()

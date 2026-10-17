@@ -29,6 +29,9 @@ export const tr = {
   'nav.chips': "Chip'ler",
   'nav.settings': 'Ayarlar',
   'nav.chipHint': 'Filtrele · sağ tık: düzenle',
+  'nav.chipSearch': 'Chip ara…',
+  'nav.chipSearchHint': 'Chip ara ( / )',
+  'nav.chipNotFound': 'Bu adda chip yok',
 
   'folder.removeTitle': '"{name}" kütüphaneden kaldırılsın mı?',
   'folder.removeText': "Videolar silinmez, sadece listeden çıkar. Chip'leri de kaldırılır.",

@@ -58,7 +58,10 @@ const MIGRATIONS = [
   ALTER TABLE videos ADD COLUMN audio_codec TEXT;
   ALTER TABLE videos ADD COLUMN playback TEXT NOT NULL DEFAULT 'native';
   ALTER TABLE videos ADD COLUMN converted_path TEXT;
-  UPDATE videos SET media_status = 'pending' WHERE missing = 0;`
+  UPDATE videos SET media_status = 'pending' WHERE missing = 0;`,
+  // Chip'ler elle sıralanabilir; mevcutlar oluşturulma sırasını korur.
+  `ALTER TABLE tags ADD COLUMN sort_order INTEGER NOT NULL DEFAULT 0;
+  UPDATE tags SET sort_order = created_at;`
 ]
 
 export function openDatabase(file: string): DatabaseSync {

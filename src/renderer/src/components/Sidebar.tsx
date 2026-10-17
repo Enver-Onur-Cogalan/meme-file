@@ -4,8 +4,6 @@ import {
   FolderPlus,
   Inbox,
   LayoutGrid,
-  Pencil,
-  Plus,
   Send,
   Settings,
   Star,
@@ -14,12 +12,10 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import type { LibraryView } from '../../../shared/api'
-import { confirmDeleteTag } from '../lib/actions'
 import { folderName } from '../lib/format'
 import { useStore } from '../lib/store'
-import { tiltFor } from '../lib/tags'
+import { ChipList } from './ChipList'
 import type { MenuState } from './ContextMenu'
-import { TagSticker } from './TagSticker'
 import { AnimatedNumber } from './ui'
 import { spring } from '../lib/motion'
 import { useT } from '../lib/i18n'
@@ -30,8 +26,7 @@ interface Props {
 }
 
 export function Sidebar({ onAddFolder, onMenu }: Props): React.JSX.Element {
-  const { folders, tags, stats, view, folderId, tagIds, setView, toggleTagFilter, openChipEditor } =
-    useStore()
+  const { folders, stats, view, folderId, setView } = useStore()
   const t = useT()
 
   const navItem = (
@@ -128,63 +123,7 @@ export function Sidebar({ onAddFolder, onMenu }: Props): React.JSX.Element {
         )}
       </div>
 
-      <div className="flex flex-col gap-2.5 px-3">
-        <div className="text-xs font-bold text-dim">{t('nav.chips')}</div>
-        <motion.div layout className="flex flex-wrap gap-x-1.5 gap-y-2">
-          <AnimatePresence initial={false}>
-            {tags.map((tag) => {
-              const active = tagIds.includes(tag.id)
-              return (
-                <motion.button
-                  key={tag.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.5, rotate: -20 }}
-                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                  exit={{ opacity: 0, scale: 0.5 }}
-                  whileHover={{ y: -2, rotate: 0 }}
-                  whileTap={{ scale: 0.92 }}
-                  transition={spring}
-                  onClick={() => toggleTagFilter(tag.id)}
-                  onContextMenu={(event) => {
-                    event.preventDefault()
-                    onMenu({
-                      x: event.clientX,
-                      y: event.clientY,
-                      items: [
-                        {
-                          label: t('common.edit'),
-                          icon: Pencil,
-                          onSelect: () => openChipEditor(tag)
-                        },
-                        {
-                          label: t('common.delete'),
-                          icon: Trash2,
-                          danger: true,
-                          onSelect: () => void confirmDeleteTag(tag)
-                        }
-                      ]
-                    })
-                  }}
-                  title={t('nav.chipHint')}
-                  className={`rounded-full ${active ? 'shadow-[2px_3px_0_var(--color-text)]' : ''}`}
-                >
-                  <TagSticker tag={tag} size="md" count tilt={active ? 0 : tiltFor(tag.id)} />
-                </motion.button>
-              )
-            })}
-          </AnimatePresence>
-          <motion.button
-            layout
-            whileHover={{ rotate: -3, scale: 1.04 }}
-            whileTap={{ scale: 0.94 }}
-            onClick={() => openChipEditor(null)}
-            className="flex h-[30px] items-center gap-1 rounded-full border-[1.5px] border-dashed border-dim px-[11px] text-[13px] font-semibold text-mute hover:text-text"
-          >
-            <Plus size={14} />
-            {t('common.new')}
-          </motion.button>
-        </motion.div>
-      </div>
+      <ChipList onMenu={onMenu} />
 
       <span className="grow" />
       <NavButton

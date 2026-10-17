@@ -153,6 +153,7 @@ export interface MemeApi {
   createTag(input: TagInput): Promise<Tag>
   updateTag(tagId: number, input: TagInput): Promise<Tag>
   deleteTag(tagId: number): Promise<void>
+  reorderTags(tagIds: number[]): Promise<void>
   importIcon(): Promise<string | null>
 
   mediaUrl(filePath: string): string

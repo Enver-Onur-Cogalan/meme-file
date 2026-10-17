@@ -31,6 +31,9 @@ export const en: Messages = {
   'nav.chips': 'Chips',
   'nav.settings': 'Settings',
   'nav.chipHint': 'Filter · right-click: edit',
+  'nav.chipSearch': 'Search chips…',
+  'nav.chipSearchHint': 'Search chips ( / )',
+  'nav.chipNotFound': 'No chip with this name',
 
   'folder.removeTitle': 'Remove "{name}" from the library?',
   'folder.removeText': 'Videos are not deleted, only removed from the list along with their chips.',

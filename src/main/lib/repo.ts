@@ -492,16 +492,28 @@ export function listTags(db: DatabaseSync): Tag[] {
     .prepare(
       `SELECT t.id, t.name, t.color, t.icon,
         (SELECT count(*) FROM video_tags vt JOIN videos v ON v.id = vt.video_id WHERE vt.tag_id = t.id AND v.missing = 0) AS count
-       FROM tags t ORDER BY t.created_at`
+       FROM tags t ORDER BY t.sort_order, t.created_at`
     )
     .all() as unknown as Tag[]
 }
 
 export function createTag(db: DatabaseSync, input: TagInput): Tag {
   const result = db
-    .prepare('INSERT INTO tags (name, color, icon, created_at) VALUES (?, ?, ?, ?)')
+    .prepare(
+      `INSERT INTO tags (name, color, icon, created_at, sort_order)
+       VALUES (?, ?, ?, ?, (SELECT coalesce(max(sort_order), 0) + 1 FROM tags))`
+    )
     .run(input.name.trim(), input.color, input.icon, Date.now())
   return listTags(db).find((tag) => tag.id === Number(result.lastInsertRowid))!
+}
+
+/** Chip'leri verilen sıraya göre yeniden numaralandırır. */
+export function reorderTags(db: DatabaseSync, orderedIds: number[]): void {
+  transaction(db, () => {
+    for (const [index, id] of orderedIds.entries()) {
+      db.prepare('UPDATE tags SET sort_order = ? WHERE id = ?').run(index, id)
+    }
+  })
 }
 
 export function updateTag(db: DatabaseSync, id: number, input: TagInput): Tag {

@@ -35,6 +35,7 @@ const api: MemeApi = {
   createTag: (input) => ipcRenderer.invoke('tags:create', input),
   updateTag: (tagId, input) => ipcRenderer.invoke('tags:update', tagId, input),
   deleteTag: (tagId) => ipcRenderer.invoke('tags:delete', tagId),
+  reorderTags: (tagIds) => ipcRenderer.invoke('tags:reorder', tagIds),
   importIcon: () => ipcRenderer.invoke('tags:import-icon'),
 
   mediaUrl: (filePath) => `media://local/${encodeURIComponent(filePath)}`,
