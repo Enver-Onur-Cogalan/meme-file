@@ -67,6 +67,7 @@ Tahmini boyut canlı güncellenir; kodlayıcı hedefe göre bit hızı, çözün
 ## Özellikler
 
 **Kütüphane**
+
 - Klasör ekle (alt klasörler dahil); klasörler izlenir, yeni videolar rakam tuşlarıyla hızlı etiketleme için **Gelen Kutusu**'na düşer
 - Dosyaları pencereye sürükle ya da `Ctrl+V` ile yapıştır; kütüphane klasörüne kopyalanır
 - Kapaklar, fareyle sarılabilen önizleme, süre ve ses göstergesi, Discord'un 10 MB limitini aşanlara rozet
@@ -74,26 +75,31 @@ Tahmini boyut canlı güncellenir; kodlayıcı hedefe göre bit hızı, çözün
 - **Rastgele**, o an ne görüyorsan onun içinden bir video açar; filtrelere uyar ve son onu tekrarlamaz
 
 **Chip'ler**
+
 - 24 çıkartma rengi (8 hue × 3 ton), kategoriye göre gezilebilen ya da aranabilen 2000'den fazla ikon, ya da kendi SVG / PNG ikonun
 - Oynatıcıdan yazarak chip ekleme (olmayan ad yeni chip oluşturur) ya da birden fazla videoyu birlikte etiketleme
 - Gelen Kutusu dosya adına ve benzer videolara bakarak chip önerir; `A` hepsini kabul eder
 - Chip'ler sürükleyerek sıralanır; liste uzayınca `/` chip aramasını açar
 
 **Oynatma**
+
 - Klip bitince listedeki sıradakine geçer; `L` sırayla, döngü ve karışık arasında geçiş yapar
 - Listede elle gezmek için `‹` `›` ya da `N` / `P`
 
 **Gönderme**
+
 - Karttan, oynatıcıdan ya da hızlı arama penceresinden sürükle bırak
 - `Ctrl+C` dosyanın kendisini panoya koyar, herhangi bir sohbette `Ctrl+V` ile yapıştırılır
 
 **Düzenleme**
+
 - Kırp, 10 MB / 50 MB'a sığdır ya da GIF yap; sonuç panoya kopyalanır, yeni videolar chip'leri devralır
 - Klibe **meme yazısı** bas: üst ve alt yazı, önizlemede gördüğünle birebir aynı çıkar
 - Birden fazla video seçip hepsini seçim çubuğundan tek seferde sığdır
 - Yeniden adlandırma (diskteki dosya da) ve Geri Dönüşüm Kutusu'na taşıma; taşınan ya da adı değişen dosyalar chip'lerini korur
 
 **Uygulama**
+
 - **İstatistik** ekranı: toplamlar, son 12 ay, en çok gönderilenler, chip dağılımı ve rekorlar
 - Kendi chip'i, arka planı ve hareketi olan dört tema
 - Türkçe ve İngilizce arayüz, sistem diline göre
@@ -103,11 +109,11 @@ Tahmini boyut canlı güncellenir; kodlayıcı hedefe göre bit hızı, çözün
 <summary><b>Diğer ekran görüntüleri</b></summary>
 <br/>
 
-| Oynatıcı | Chip düzenleyici |
-|---|---|
-| <img src="docs/screenshots/tr/player.jpg" alt="Oynatıcı" /> | <img src="docs/screenshots/tr/chip-editor.jpg" alt="Chip düzenleyici" /> |
-| **Gelen Kutusu** | **Kütüphane** |
-| <img src="docs/screenshots/tr/inbox.jpg" alt="Gelen Kutusu" /> | <img src="docs/screenshots/tr/library.jpg" alt="Kütüphane" /> |
+| Oynatıcı                                                       | Chip düzenleyici                                                         |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| <img src="docs/screenshots/tr/player.jpg" alt="Oynatıcı" />    | <img src="docs/screenshots/tr/chip-editor.jpg" alt="Chip düzenleyici" /> |
+| **Gelen Kutusu**                                               | **Kütüphane**                                                            |
+| <img src="docs/screenshots/tr/inbox.jpg" alt="Gelen Kutusu" /> | <img src="docs/screenshots/tr/library.jpg" alt="Kütüphane" />            |
 
 </details>
 
@@ -115,11 +121,11 @@ Tahmini boyut canlı güncellenir; kodlayıcı hedefe göre bit hızı, çözün
 
 Tema sadece palet değiştirmiyor: kabuk, kart çerçevesi, chip yüzeyi, yazı tipi ve hareket profili birlikte değişiyor. Chip renkleri veritabanında olduğu gibi kalıyor, ekrana çizilirken temanın yüzeyine çevriliyor.
 
-| **Sticker Duvarı** · sıcak koyu, çizgili defter | **Cyberpunk** · sarı hologram |
-|---|---|
-| <img src="docs/screenshots/themes/sticker.jpg" alt="Sticker Duvarı teması" /> | <img src="docs/screenshots/themes/cyber.jpg" alt="Cyberpunk teması" /> |
-| **Modern** · perçinli demir plaka | **Old School 98** · kabartmalı gri, piksel yazı |
-| <img src="docs/screenshots/themes/modern.jpg" alt="Modern teması" /> | <img src="docs/screenshots/themes/classic.jpg" alt="Old School 98 teması" /> |
+| **Sticker Duvarı** · sıcak koyu, çizgili defter                               | **Cyberpunk** · sarı hologram                                                |
+| ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| <img src="docs/screenshots/themes/sticker.jpg" alt="Sticker Duvarı teması" /> | <img src="docs/screenshots/themes/cyber.jpg" alt="Cyberpunk teması" />       |
+| **Modern** · perçinli demir plaka                                             | **Old School 98** · kabartmalı gri, piksel yazı                              |
+| <img src="docs/screenshots/themes/modern.jpg" alt="Modern teması" />          | <img src="docs/screenshots/themes/classic.jpg" alt="Old School 98 teması" /> |
 
 ### Hile korumalarıyla güvenli
 
@@ -170,13 +176,13 @@ flowchart LR
   Releases["GitHub Releases"] -.-> Updater
 ```
 
-| Katman | Kullanılan |
-|---|---|
-| Masaüstü | Electron 44 (sandbox + context isolation), electron-vite, electron-builder (NSIS) |
-| Arayüz | React 19, TypeScript, Tailwind CSS 4, Motion, Zustand, TanStack Virtual, Lucide |
-| Veri | Electron'un içindeki `node:sqlite`, FTS5 tam metin arama |
-| Video | ffmpeg: bilgi okuma, kapak, önizleme şeridi, codec dönüştürme, hedef boyutlu kodlama, GIF |
-| Dağıtım | Windows üzerinde GitHub Actions, GitHub Releases, electron-updater |
+| Katman   | Kullanılan                                                                                |
+| -------- | ----------------------------------------------------------------------------------------- |
+| Masaüstü | Electron 44 (sandbox + context isolation), electron-vite, electron-builder (NSIS)         |
+| Arayüz   | React 19, TypeScript, Tailwind CSS 4, Motion, Zustand, TanStack Virtual, Lucide           |
+| Veri     | Electron'un içindeki `node:sqlite`, FTS5 tam metin arama                                  |
+| Video    | ffmpeg: bilgi okuma, kapak, önizleme şeridi, codec dönüştürme, hedef boyutlu kodlama, GIF |
+| Dağıtım  | Windows üzerinde GitHub Actions, GitHub Releases, electron-updater                        |
 
 **Mühendislik notları**
 
@@ -197,12 +203,12 @@ flowchart LR
 
 Geliştirme sırasında bir MacBook'ta, Chrome DevTools Protocol metrikleri ve gerçek fare tekerleği olaylarıyla ölçüldü.
 
-| Senaryo | Sonuç |
-|---|---|
-| 5.000 videoda sorgu (tümü / arama / chip filtresi) | ~20 ms / 2 ms / 1 ms |
-| 500 videoluk kütüphanede kaydırırken çizilen kart | ~40 (sanal liste) |
-| İşlemci 4 kat yavaşlatılmışken tekerlekle kaydırma (p50 / p95 kare süresi) | 17 ms / 18 ms, 33 ms'yi aşan kare yok |
-| Boştayken ana iş parçacığı yükü, yenileme döngüsü düzeltmesinden önce → sonra | ~%75 → %0 |
+| Senaryo                                                                       | Sonuç                                 |
+| ----------------------------------------------------------------------------- | ------------------------------------- |
+| 5.000 videoda sorgu (tümü / arama / chip filtresi)                            | ~20 ms / 2 ms / 1 ms                  |
+| 500 videoluk kütüphanede kaydırırken çizilen kart                             | ~40 (sanal liste)                     |
+| İşlemci 4 kat yavaşlatılmışken tekerlekle kaydırma (p50 / p95 kare süresi)    | 17 ms / 18 ms, 33 ms'yi aşan kare yok |
+| Boştayken ana iş parçacığı yükü, yenileme döngüsü düzeltmesinden önce → sonra | ~%75 → %0                             |
 
 5.000 videoluk performans bütçesi CI'da birim testleri ve Windows'ta koşan ffmpeg entegrasyon testleriyle birlikte çalışır.
 

@@ -72,6 +72,7 @@ The estimated size updates live; the encoder picks bitrate, resolution and frame
 ## Features
 
 **Library**
+
 - Add folders (subfolders included); they're watched, and new videos land in the **Inbox** for quick tagging with the number keys
 - Drag files onto the window or paste them with `Ctrl+V` to copy them into your library folder
 - Thumbnails, hover-scrub previews, duration and sound indicators, a badge for files over Discord's 10 MB limit
@@ -79,26 +80,31 @@ The estimated size updates live; the encoder picks bitrate, resolution and frame
 - **Random** opens something from whatever you are looking at right now, filters included, without repeating the last ten
 
 **Chips**
+
 - 24 sticker colors (8 hues × 3 tones), 2000+ icons browsable by category or search, or upload your own SVG / PNG
 - Add chips from the player by typing (unknown names create a new chip), or tag many videos at once
 - The Inbox suggests chips from the file name and from similar videos — `A` accepts them all
 - Reorder chips by dragging; `/` opens a chip search when the list gets long
 
 **Playing**
+
 - When a clip ends it moves to the next one in the list; `L` switches between in order, loop and shuffle
 - `‹` `›` or `N` / `P` to step through the list by hand
 
 **Sending**
+
 - Drag & drop from a card, the player or the quick search window
 - `Ctrl+C` puts the actual file on the clipboard, ready for `Ctrl+V` in any chat
 
 **Editing**
+
 - Trim, fit to 10 MB / 50 MB, or make a GIF; the result is copied to the clipboard, and new videos inherit the chips
 - Burn **meme text** onto a clip: top and bottom captions, drawn in the preview exactly as they come out
 - Select several videos and fit them all at once from the selection bar
 - Rename (the file on disk too) and move to the Recycle Bin; moved or renamed files keep their chips
 
 **App**
+
 - **Stats** screen: totals, the last 12 months, most sent videos, chip spread and records
 - Four themes with their own chips, backgrounds and motion
 - English and Turkish UI, following the system language
@@ -108,11 +114,11 @@ The estimated size updates live; the encoder picks bitrate, resolution and frame
 <summary><b>More screenshots</b></summary>
 <br/>
 
-| Player | Chip editor |
-|---|---|
+| Player                                                    | Chip editor                                                         |
+| --------------------------------------------------------- | ------------------------------------------------------------------- |
 | <img src="docs/screenshots/en/player.jpg" alt="Player" /> | <img src="docs/screenshots/en/chip-editor.jpg" alt="Chip editor" /> |
-| **Inbox** | **Settings** |
-| <img src="docs/screenshots/en/inbox.jpg" alt="Inbox" /> | <img src="docs/screenshots/en/settings.jpg" alt="Settings" /> |
+| **Inbox**                                                 | **Settings**                                                        |
+| <img src="docs/screenshots/en/inbox.jpg" alt="Inbox" />   | <img src="docs/screenshots/en/settings.jpg" alt="Settings" />       |
 
 </details>
 
@@ -120,11 +126,11 @@ The estimated size updates live; the encoder picks bitrate, resolution and frame
 
 Themes are not just a palette swap: the shell, the card frames, the chip surface, the typeface and the motion profile all change together. Your chip colors stay in the database and are translated onto the theme's surface.
 
-| **Sticker Wall** · warm dark, lined notebook | **Cyberpunk** · yellow hologram |
-|---|---|
-| <img src="docs/screenshots/themes/sticker.jpg" alt="Sticker Wall theme" /> | <img src="docs/screenshots/themes/cyber.jpg" alt="Cyberpunk theme" /> |
-| **Modern** · steel plate with rivets | **Old School 98** · bevelled grey, pixel type |
-| <img src="docs/screenshots/themes/modern.jpg" alt="Modern theme" /> | <img src="docs/screenshots/themes/classic.jpg" alt="Old School 98 theme" /> |
+| **Sticker Wall** · warm dark, lined notebook                               | **Cyberpunk** · yellow hologram                                             |
+| -------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| <img src="docs/screenshots/themes/sticker.jpg" alt="Sticker Wall theme" /> | <img src="docs/screenshots/themes/cyber.jpg" alt="Cyberpunk theme" />       |
+| **Modern** · steel plate with rivets                                       | **Old School 98** · bevelled grey, pixel type                               |
+| <img src="docs/screenshots/themes/modern.jpg" alt="Modern theme" />        | <img src="docs/screenshots/themes/classic.jpg" alt="Old School 98 theme" /> |
 
 ### Safe with anti-cheat
 
@@ -175,13 +181,13 @@ flowchart LR
   Releases["GitHub Releases"] -.-> Updater
 ```
 
-| Layer | Stack |
-|---|---|
-| Desktop | Electron 44 (sandbox + context isolation), electron-vite, electron-builder (NSIS) |
-| UI | React 19, TypeScript, Tailwind CSS 4, Motion, Zustand, TanStack Virtual, Lucide |
-| Data | Electron's built-in `node:sqlite` with FTS5 full-text search |
-| Video | ffmpeg: probing, thumbnails, preview strips, codec conversion, size-targeted encoding, GIF |
-| Delivery | GitHub Actions on Windows, GitHub Releases, electron-updater |
+| Layer    | Stack                                                                                      |
+| -------- | ------------------------------------------------------------------------------------------ |
+| Desktop  | Electron 44 (sandbox + context isolation), electron-vite, electron-builder (NSIS)          |
+| UI       | React 19, TypeScript, Tailwind CSS 4, Motion, Zustand, TanStack Virtual, Lucide            |
+| Data     | Electron's built-in `node:sqlite` with FTS5 full-text search                               |
+| Video    | ffmpeg: probing, thumbnails, preview strips, codec conversion, size-targeted encoding, GIF |
+| Delivery | GitHub Actions on Windows, GitHub Releases, electron-updater                               |
 
 **Engineering notes**
 
@@ -203,12 +209,12 @@ flowchart LR
 
 Measured during development on a MacBook, using Chrome DevTools Protocol metrics and real mouse-wheel input.
 
-| Scenario | Result |
-|---|---|
-| Library query on 5,000 videos (all / search / chip filter) | ~20 ms / 2 ms / 1 ms |
-| Cards rendered while scrolling a 500-video library | ~40 (virtualized) |
-| Wheel scrolling with the CPU throttled 4× (p50 / p95 frame time) | 17 ms / 18 ms, 0 frames over 33 ms |
-| Main-thread work while idle, before → after fixing a refresh feedback loop | ~75% → 0% |
+| Scenario                                                                   | Result                             |
+| -------------------------------------------------------------------------- | ---------------------------------- |
+| Library query on 5,000 videos (all / search / chip filter)                 | ~20 ms / 2 ms / 1 ms               |
+| Cards rendered while scrolling a 500-video library                         | ~40 (virtualized)                  |
+| Wheel scrolling with the CPU throttled 4× (p50 / p95 frame time)           | 17 ms / 18 ms, 0 frames over 33 ms |
+| Main-thread work while idle, before → after fixing a refresh feedback loop | ~75% → 0%                          |
 
 A 5,000-video performance budget runs in CI next to unit tests and ffmpeg integration tests on Windows.
 
