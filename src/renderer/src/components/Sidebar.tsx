@@ -1,4 +1,5 @@
 import {
+  BarChart3,
   Copy,
   Folder,
   FolderPlus,
@@ -126,6 +127,12 @@ export function Sidebar({ onAddFolder, onMenu }: Props): React.JSX.Element {
       <ChipList onMenu={onMenu} />
 
       <span className="grow" />
+      <NavButton
+        icon={BarChart3}
+        label={t('nav.stats')}
+        active={false}
+        onClick={() => useStore.getState().setStatsOpen(true)}
+      />
       <NavButton
         icon={Settings}
         label={t('nav.settings')}

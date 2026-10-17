@@ -2,6 +2,7 @@ import { MotionConfig } from 'motion/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { BulkClipDialog } from './components/BulkClipDialog'
 import { ChipEditor } from './components/ChipEditor'
+import { StatsModal } from './components/StatsModal'
 import { ClipDialog } from './components/ClipDialog'
 import { ConfirmDialog } from './components/ConfirmDialog'
 import { DropOverlay } from './components/DropOverlay'
@@ -134,6 +135,7 @@ function MainWindow(): React.JSX.Element {
         state.settingsOpen ||
         state.renameId !== null ||
         state.bulkClip ||
+        state.statsOpen ||
         state.confirmRequest
       ) {
         return
@@ -208,6 +210,7 @@ function MainWindow(): React.JSX.Element {
       <ChipEditor />
       <ClipDialog />
       <BulkClipDialog />
+      <StatsModal />
       <SettingsModal />
       <RenameDialog />
       <ConfirmDialog />

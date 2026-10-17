@@ -25,6 +25,7 @@ const api: MemeApi = {
 
   queryVideos: (query) => ipcRenderer.invoke('videos:query', query),
   getStats: () => ipcRenderer.invoke('videos:stats'),
+  getInsights: () => ipcRenderer.invoke('videos:insights'),
   setFavorite: (videoIds, favorite) => ipcRenderer.invoke('videos:favorite', videoIds, favorite),
   setVideoTags: (videoId, tagIds) => ipcRenderer.invoke('videos:set-tags', videoId, tagIds),
   addTagToVideos: (videoIds, tagId, add) =>

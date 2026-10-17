@@ -251,3 +251,43 @@ describe('settings', () => {
     expect(settings).not.toHaveProperty('unknown')
   })
 })
+
+describe('getInsights', () => {
+  it('toplamları, en çok gönderilenleri ve chip dağılımını çıkarır', () => {
+    repo.syncFolder(db, folderId, [file('a.mp4', 2000), file('b.mp4', 500)], true)
+    const [a, b] = repo.queryVideos(db, { view: 'library', sort: 'name' })
+    repo.saveMediaInfo(db, a.id, {
+      durationMs: 60_000,
+      width: 1920,
+      height: 1080,
+      hasAudio: true,
+      quickHash: 'hash-a',
+      videoCodec: 'h264',
+      audioCodec: 'aac'
+    })
+    const tag = repo.createTag(db, { name: 'komik', color: '#f5c542', icon: 'lucide:Laugh' })
+    repo.setVideoTags(db, a.id, [tag.id])
+    repo.markSent(db, [a.id])
+    repo.markSent(db, [a.id])
+
+    const report = repo.getInsights(db)
+    expect(report.totals).toMatchObject({
+      videos: 2,
+      bytes: 2500,
+      durationMs: 60_000,
+      sends: 2,
+      tagged: 1,
+      neverSent: 1,
+      withSound: 1
+    })
+    expect(report.months).toHaveLength(12)
+    expect(report.months.at(-1)?.added).toBe(2)
+    expect(report.topSent.map((video) => video.id)).toEqual([a.id])
+    expect(report.topTags).toEqual([{ id: tag.id, count: 1 }])
+    expect(report.untagged).toBe(1)
+    expect(report.records.largest?.id).toBe(a.id)
+    expect(report.records.longest?.id).toBe(a.id)
+    expect(report.records.lastSent?.id).toBe(a.id)
+    expect(b.id).toBeGreaterThan(0)
+  })
+})

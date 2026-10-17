@@ -112,6 +112,7 @@ export function registerIpc(ctx: IpcContext): void {
   /* videolar */
   ipcMain.handle('videos:query', (_event, query: VideoQuery) => repo.queryVideos(db, query))
   ipcMain.handle('videos:stats', () => repo.getStats(db))
+  ipcMain.handle('videos:insights', () => repo.getInsights(db))
 
   ipcMain.handle('videos:favorite', (_event, videoIds: unknown, favorite: boolean) => {
     repo.setFavorite(db, ids(videoIds), !!favorite)

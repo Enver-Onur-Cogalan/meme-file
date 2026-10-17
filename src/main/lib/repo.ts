@@ -1,5 +1,6 @@
 import type { DatabaseSync, SQLInputValue } from 'node:sqlite'
 import type {
+  InsightsReport,
   LibraryFolder,
   LibraryStats,
   Settings,
@@ -157,6 +158,81 @@ export function getStats(db: DatabaseSync): LibraryStats {
       FROM videos WHERE missing = 0`
     )
     .get() as unknown as LibraryStats
+}
+
+/**
+ * İstatistik ekranının özeti. Tek çağrıda hesaplanır; kayıp dosyalar hiçbir
+ * sayıya karışmaz.
+ */
+export function getInsights(db: DatabaseSync): InsightsReport {
+  const totals = db
+    .prepare(
+      `SELECT
+        count(*) AS videos,
+        coalesce(sum(size), 0) AS bytes,
+        coalesce(sum(duration_ms), 0) AS durationMs,
+        coalesce(sum(send_count), 0) AS sends,
+        coalesce(sum(has_audio = 1), 0) AS withSound,
+        coalesce(sum(send_count = 0), 0) AS neverSent,
+        (SELECT count(DISTINCT video_id) FROM video_tags t
+          JOIN videos v ON v.id = t.video_id WHERE v.missing = 0) AS tagged
+      FROM videos WHERE missing = 0`
+    )
+    .get() as unknown as InsightsReport['totals']
+
+  // Son 12 ay: boş aylar da görünsün diye önce takvim kurulur, sonra sayılar oturtulur.
+  const added = db
+    .prepare(
+      `SELECT strftime('%Y-%m', added_at / 1000, 'unixepoch', 'localtime') AS month, count(*) AS added
+       FROM videos WHERE missing = 0 GROUP BY month`
+    )
+    .all() as unknown as { month: string; added: number }[]
+  const byMonth = new Map(added.map((row) => [row.month, row.added]))
+  const now = new Date()
+  const months = Array.from({ length: 12 }, (_, index) => {
+    const date = new Date(now.getFullYear(), now.getMonth() - (11 - index), 1)
+    const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+    return { month, added: byMonth.get(month) ?? 0 }
+  })
+
+  const topSent = (
+    db
+      .prepare(
+        `SELECT ${VIDEO_COLUMNS} FROM videos v
+         WHERE v.missing = 0 AND v.send_count > 0 ORDER BY v.send_count DESC, v.last_sent_at DESC LIMIT 5`
+      )
+      .all() as unknown as VideoRow[]
+  ).map(toVideo)
+
+  const topTags = db
+    .prepare(
+      `SELECT t.tag_id AS id, count(*) AS count FROM video_tags t
+       JOIN videos v ON v.id = t.video_id WHERE v.missing = 0
+       GROUP BY t.tag_id ORDER BY count DESC, t.tag_id LIMIT 8`
+    )
+    .all() as unknown as { id: number; count: number }[]
+
+  const record = (order: string): Video | null => {
+    const row = db
+      .prepare(
+        `SELECT ${VIDEO_COLUMNS} FROM videos v WHERE v.missing = 0 ORDER BY ${order} LIMIT 1`
+      )
+      .get() as unknown as VideoRow | undefined
+    return row ? toVideo(row) : null
+  }
+
+  return {
+    totals,
+    months,
+    topSent,
+    topTags,
+    untagged: totals.videos - totals.tagged,
+    records: {
+      largest: record('v.size DESC'),
+      longest: record('v.duration_ms DESC'),
+      lastSent: record('v.last_sent_at IS NULL, v.last_sent_at DESC')
+    }
+  }
 }
 
 /* ---------------- klasörler ---------------- */

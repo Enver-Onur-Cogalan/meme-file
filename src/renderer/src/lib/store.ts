@@ -72,6 +72,7 @@ interface State {
   /** Toplu klip hazırlama için seçili video kimlikleri */
   bulkClip: number[] | null
   settingsOpen: boolean
+  statsOpen: boolean
   renameId: number | null
   confirmRequest: ConfirmRequest | null
   toast: ToastMessage | null
@@ -103,6 +104,7 @@ interface Actions {
   openBulkClip(videoIds: number[]): void
   closeBulkClip(): void
   setSettingsOpen(open: boolean): void
+  setStatsOpen(open: boolean): void
   openRename(videoId: number | null): void
   confirm(request: Omit<ConfirmRequest, 'resolve'>): Promise<boolean>
   resolveConfirm(ok: boolean): void
@@ -147,6 +149,7 @@ export const useStore = create<State & Actions>()((set, get) => ({
   clip: null,
   bulkClip: null,
   settingsOpen: false,
+  statsOpen: false,
   renameId: null,
   confirmRequest: null,
   toast: null,
@@ -261,6 +264,9 @@ export const useStore = create<State & Actions>()((set, get) => ({
   },
   setSettingsOpen(open) {
     set({ settingsOpen: open })
+  },
+  setStatsOpen(open) {
+    set({ statsOpen: open })
   },
   openRename(videoId) {
     set({ renameId: videoId })

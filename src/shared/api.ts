@@ -77,6 +77,25 @@ export interface LibraryStats {
   pendingMedia: number
 }
 
+/** İstatistik ekranının tek seferde çektiği özet. */
+export interface InsightsReport {
+  totals: {
+    videos: number
+    bytes: number
+    durationMs: number
+    sends: number
+    tagged: number
+    neverSent: number
+    withSound: number
+  }
+  /** Son 12 ay; `month` "YYYY-MM" biçiminde, en eskiden yeniye. */
+  months: { month: string; added: number }[]
+  topSent: Video[]
+  topTags: { id: number; count: number }[]
+  untagged: number
+  records: { largest: Video | null; longest: Video | null; lastSent: Video | null }
+}
+
 export interface ImportResult {
   imported: number
   /** Video olmayan ya da okunamayan dosyalar */
@@ -155,6 +174,8 @@ export interface MemeApi {
 
   queryVideos(query: VideoQuery): Promise<Video[]>
   getStats(): Promise<LibraryStats>
+  /** İstatistik ekranı için tüm kütüphanenin özeti. */
+  getInsights(): Promise<InsightsReport>
   setFavorite(videoIds: number[], favorite: boolean): Promise<void>
   setVideoTags(videoId: number, tagIds: number[]): Promise<void>
   addTagToVideos(videoIds: number[], tagId: number, add: boolean): Promise<void>
