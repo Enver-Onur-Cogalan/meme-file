@@ -67,9 +67,11 @@ describe.skipIf(!existsSync(FFMPEG_PATH))('ffmpeg entegrasyonu', () => {
       endMs: 5000,
       mute: false,
       hasAudio: true,
+      sourceWidth: 1280,
       sourceHeight: 720,
       targetBytes: target,
       format: 'mp4',
+      overlay: null,
       onProgress: (ratio) => progress.push(ratio),
       signal: new AbortController().signal
     })
@@ -90,12 +92,50 @@ describe.skipIf(!existsSync(FFMPEG_PATH))('ffmpeg entegrasyonu', () => {
       endMs: 1500,
       mute: true,
       hasAudio: true,
+      sourceWidth: 1280,
       sourceHeight: 720,
       targetBytes: null,
       format: 'gif',
+      overlay: null,
       onProgress: () => {},
       signal: new AbortController().signal
     })
+    expect((await stat(output)).size).toBeGreaterThan(1000)
+  }, 120_000)
+
+  it('meme yazısı katmanını videonun üstüne basar', async () => {
+    // Katman olarak yarı saydam kırmızı bir PNG üretilir; çıktı üretilebilmeli.
+    const overlay = join(dir, 'yazı.png')
+    const made = spawnSync(FFMPEG_PATH, [
+      '-hide_banner',
+      '-y',
+      '-f',
+      'lavfi',
+      '-i',
+      'color=c=red@0.5:size=1280x720,format=rgba',
+      '-frames:v',
+      '1',
+      overlay
+    ])
+    expect(made.status).toBe(0)
+
+    const output = join(dir, 'yazılı.mp4')
+    await encodeClip({
+      input: source,
+      output,
+      startMs: 0,
+      endMs: 1500,
+      mute: true,
+      hasAudio: true,
+      sourceWidth: 1280,
+      sourceHeight: 720,
+      targetBytes: 2 * 1024 * 1024,
+      format: 'mp4',
+      overlay,
+      onProgress: () => {},
+      signal: new AbortController().signal
+    })
+    expect(await probe(output)).toMatchObject({ hasVideo: true })
     expect((await stat(output)).size).toBeGreaterThan(1000)
   }, 120_000)
 })

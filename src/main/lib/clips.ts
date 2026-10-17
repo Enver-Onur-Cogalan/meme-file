@@ -1,6 +1,7 @@
 import type { DatabaseSync } from 'node:sqlite'
 import { existsSync } from 'node:fs'
-import { stat } from 'node:fs/promises'
+import { rm, stat, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
 import { basename, dirname, join } from 'node:path'
 import type { ClipRequest, ClipResult } from '../../shared/api'
 import { t } from '../i18n'
@@ -55,7 +56,12 @@ export class ClipManager {
 
     const jobId = this.nextJobId++
     this.controller = new AbortController()
+    // Meme yazısı PNG olarak gelir; ffmpeg'e dosya üzerinden verilir.
+    const overlay = request.overlay
+      ? join(tmpdir(), `meme-file-overlay-${jobId}-${Date.now()}.png`)
+      : null
     try {
+      if (overlay && request.overlay) await writeFile(overlay, request.overlay)
       await encodeClip({
         input: video.path,
         output,
@@ -63,14 +69,17 @@ export class ClipManager {
         endMs,
         mute: request.mute,
         hasAudio: video.hasAudio ?? true,
+        sourceWidth: video.width,
         sourceHeight: video.height,
         targetBytes: request.format === 'gif' ? null : request.targetBytes,
         format: request.format,
+        overlay,
         signal: this.controller.signal,
         onProgress: (ratio) => this.onProgress(jobId, ratio)
       })
     } finally {
       this.controller = null
+      if (overlay) await rm(overlay, { force: true })
     }
 
     const info = await stat(output)

@@ -246,6 +246,9 @@ export const tr = {
     "Orijinal dosyaya dokunulmaz, yanına yeni bir kopya oluşturulur ve chip'leri de aktarılır.",
   'clip.preparing': 'Hazırlanıyor… %{percent}',
   'clip.createAndCopy': 'Oluştur ve kopyala',
+  'clip.memeText': 'Meme yazısı',
+  'clip.topText': 'Üst yazı',
+  'clip.bottomText': 'Alt yazı',
   'bulk.title': '{count} video için klip hazırla',
   'bulk.hint':
     'Her video baştan sona işlenir; orijinaller olduğu gibi kalır, kopyalar yanlarına oluşur.',

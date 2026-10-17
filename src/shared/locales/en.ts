@@ -264,6 +264,9 @@ export const en: Messages = {
     'The original file is not touched; a new copy is created next to it with the same chips.',
   'clip.preparing': 'Preparing… {percent}%',
   'clip.createAndCopy': 'Create and copy',
+  'clip.memeText': 'Meme text',
+  'clip.topText': 'Top text',
+  'clip.bottomText': 'Bottom text',
   'bulk.title': { one: 'Prepare a clip', other: 'Prepare clips for {count} videos' },
   'bulk.hint':
     'Each video is processed end to end; the originals stay as they are and copies appear next to them.',

@@ -124,6 +124,8 @@ export interface ClipRequest {
   mute: boolean
   format: 'mp4' | 'gif'
   outputName: string
+  /** Videonun üzerine basılacak PNG (meme yazısı); kaynak çözünürlüğünde. */
+  overlay?: Uint8Array | null
 }
 
 export interface ConvertProgress {

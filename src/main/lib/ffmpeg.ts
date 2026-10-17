@@ -249,9 +249,12 @@ export interface EncodeOptions {
   endMs: number
   mute: boolean
   hasAudio: boolean
+  sourceWidth: number | null
   sourceHeight: number | null
   targetBytes: number | null
   format: 'mp4' | 'gif'
+  /** Videonun üstüne basılacak PNG'nin yolu (meme yazısı); yoksa null. */
+  overlay: string | null
   onProgress(ratio: number): void
   signal: AbortSignal
 }
@@ -300,6 +303,21 @@ export function planEncode(
   }
 }
 
+const GIF_CHAIN =
+  'fps=15,scale=480:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=128[p];[b][p]paletteuse=dither=bayer:bayer_scale=4'
+
+/**
+ * Meme yazısı PNG'sini kaynak çözünürlüğüne oturtup videonun üstüne basar.
+ * Küçültme sonradan yapılır; böylece yazı videoyla birlikte ölçeklenir.
+ */
+function overlayChain(options: EncodeOptions): string {
+  const fit =
+    options.sourceWidth && options.sourceHeight
+      ? `scale=${options.sourceWidth}:${options.sourceHeight},`
+      : ''
+  return `[1:v]${fit}setsar=1[png];[0:v][png]overlay=0:0:format=auto`
+}
+
 export async function encodeClip(options: EncodeOptions): Promise<void> {
   const durationSec = (options.endMs - options.startMs) / 1000
   const trim = ['-ss', (options.startMs / 1000).toFixed(3), '-t', durationSec.toFixed(3)]
@@ -317,8 +335,15 @@ export async function encodeClip(options: EncodeOptions): Promise<void> {
           ...trim,
           '-i',
           options.input,
-          '-vf',
-          'fps=15,scale=480:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=128[p];[b][p]paletteuse=dither=bayer:bayer_scale=4',
+          ...(options.overlay ? ['-i', options.overlay] : []),
+          ...(options.overlay
+            ? [
+                '-filter_complex',
+                `${overlayChain(options)}[ov];[ov]${GIF_CHAIN}[out]`,
+                '-map',
+                '[out]'
+              ]
+            : ['-vf', GIF_CHAIN]),
           '-loop',
           '0',
           ...progress,
@@ -351,10 +376,16 @@ export async function encodeClip(options: EncodeOptions): Promise<void> {
           ...trim,
           '-i',
           options.input,
-          '-map',
-          '0:v:0',
+          ...(options.overlay ? ['-i', options.overlay] : []),
+          ...(options.overlay
+            ? [
+                '-filter_complex',
+                `${overlayChain(options)}${filters.length ? `[ov];[ov]${filters.join(',')}` : ''}[v]`,
+                '-map',
+                '[v]'
+              ]
+            : ['-map', '0:v:0', ...(filters.length ? ['-vf', filters.join(',')] : [])]),
           ...(withAudio ? ['-map', '0:a:0?'] : ['-an']),
-          ...(filters.length ? ['-vf', filters.join(',')] : []),
           '-c:v',
           'libx264',
           '-preset',

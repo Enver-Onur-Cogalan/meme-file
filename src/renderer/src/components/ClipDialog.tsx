@@ -1,9 +1,10 @@
-import { Check, Film, Pause, Play, Scissors, Shrink, Volume2, VolumeX, X } from 'lucide-react'
+import { Check, Film, Pause, Play, Scissors, Shrink, Type, Volume2, VolumeX, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 import { DISCORD_LIMIT_BYTES, DISCORD_TARGET_BYTES, type Video } from '../../../shared/api'
 import { errorMessage } from '../lib/actions'
 import { formatPreciseTime, formatSize, stripExtension } from '../lib/format'
+import { drawMemeText, hasMemeText, overlayBytes } from '../lib/memeText'
 import { type ClipMode, useStore } from '../lib/store'
 import { Button, DialogHeader, Label, Modal, Segmented, Toggle } from './ui'
 import { useT } from '../lib/i18n'
@@ -64,9 +65,11 @@ function ClipBody({
   const [name, setName] = useState(
     `${stripExtension(video.name)}${mode === 'fit' ? `-${t('clip.suffixDiscord')}` : mode === 'gif' ? '' : `-${t('clip.suffixTrim')}`}`
   )
+  const [meme, setMeme] = useState({ top: '', bottom: '' })
   const [progress, setProgress] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const memeRef = useRef<HTMLCanvasElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
   const playheadRef = useRef<HTMLDivElement>(null)
   const [dragging, setDragging] = useState<'start' | 'end' | 'seek' | null>(null)
@@ -81,6 +84,12 @@ function ClipBody({
   })
 
   useEffect(() => window.api.onClipProgress(({ ratio }) => setProgress(ratio)), [])
+
+  // Yazı, videonun kendi çözünürlüğünde çizilir; önizleme bunu CSS ile küçültür.
+  const memeSize = { width: video.width ?? 1280, height: video.height ?? 720 }
+  useEffect(() => {
+    if (memeRef.current) drawMemeText(memeRef.current, meme, memeSize.width, memeSize.height)
+  }, [meme, memeSize.width, memeSize.height])
 
   // Seçili aralık döngüde oynar. timeupdate saniyede ~4 kez geldiği için bitiş sınırı
   // her karede kontrol edilir; böylece önizleme seçimin sonunu taşmaz.
@@ -196,6 +205,8 @@ function ClipBody({
     setProgress(0)
     onBusy(true)
     try {
+      const overlay =
+        hasMemeText(meme) && memeRef.current ? await overlayBytes(memeRef.current) : null
       const result = await window.api.createClip({
         videoId: video.id,
         startMs: start,
@@ -203,7 +214,8 @@ function ClipBody({
         targetBytes,
         mute: format === 'gif' || mute,
         format,
-        outputName: name
+        outputName: name,
+        overlay
       })
       const copied = result.videoId
         ? await window.api.copyVideos([result.videoId])
@@ -234,7 +246,7 @@ function ClipBody({
         onClose={() => progress === null && onClose()}
       />
       <div className="relative flex min-h-0">
-        <div className="flex min-w-0 grow flex-col gap-4 bg-side px-[22px] py-5">
+        <div className="flex min-w-0 grow flex-col gap-4 overflow-y-auto bg-side px-[22px] py-5">
           <div className="group relative overflow-hidden rounded-[14px] border-2 border-ink bg-ink">
             <video
               ref={videoRef}
@@ -249,6 +261,10 @@ function ClipBody({
                 void event.currentTarget.play()
               }}
               className="aspect-video w-full cursor-pointer object-contain"
+            />
+            <canvas
+              ref={memeRef}
+              className="pointer-events-none absolute inset-0 m-auto max-h-full max-w-full"
             />
             <AnimatePresence>
               {dragging && dragging !== 'seek' && (
@@ -365,7 +381,7 @@ function ClipBody({
           </div>
         </div>
 
-        <div className="flex w-[360px] shrink-0 flex-col gap-5 px-[22px] py-5">
+        <div className="flex w-[360px] shrink-0 flex-col gap-5 overflow-y-auto px-[22px] py-5">
           <div className="flex flex-col gap-2">
             <Label>{t('clip.format')}</Label>
             <Segmented
@@ -443,6 +459,27 @@ function ClipBody({
           {format === 'mp4' && video.hasAudio !== false && (
             <Toggle checked={mute} onChange={setMute} label={t('clip.removeSound')} />
           )}
+
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-1.5">
+              <Type size={13} className="text-dim" />
+              <Label>{t('clip.memeText')}</Label>
+            </div>
+            <input
+              value={meme.top}
+              onChange={(event) => setMeme((current) => ({ ...current, top: event.target.value }))}
+              placeholder={t('clip.topText')}
+              className="h-10 rounded-xl border-[1.5px] border-line bg-surf px-3.5 text-[13.5px] outline-none placeholder:text-dim focus:border-mute"
+            />
+            <input
+              value={meme.bottom}
+              onChange={(event) =>
+                setMeme((current) => ({ ...current, bottom: event.target.value }))
+              }
+              placeholder={t('clip.bottomText')}
+              className="h-10 rounded-xl border-[1.5px] border-line bg-surf px-3.5 text-[13.5px] outline-none placeholder:text-dim focus:border-mute"
+            />
+          </div>
 
           <div className="flex flex-col gap-2">
             <Label>{t('clip.newName')}</Label>
