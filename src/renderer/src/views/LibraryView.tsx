@@ -8,6 +8,7 @@ import {
   RefreshCw,
   Search,
   SearchX,
+  Shrink,
   Star,
   Tags,
   X
@@ -359,6 +360,12 @@ function BulkBar({
         </Button>
         <Button icon={Star} onClick={onFavorite}>
           {t('common.favorite')}
+        </Button>
+        <Button
+          icon={Shrink}
+          onClick={() => useStore.getState().openBulkClip(selectedVideos.map((video) => video.id))}
+        >
+          {t('player.fit')}
         </Button>
         <Button variant="primary" icon={Copy} onClick={onCopy}>
           {t('common.copy')}

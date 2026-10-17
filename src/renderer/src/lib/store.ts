@@ -69,6 +69,8 @@ interface State {
   recentRandom: number[]
   chipEditor: { tag: Tag | null; assignTo?: number[] } | null
   clip: { videoId: number; mode: ClipMode } | null
+  /** Toplu klip hazırlama için seçili video kimlikleri */
+  bulkClip: number[] | null
   settingsOpen: boolean
   renameId: number | null
   confirmRequest: ConfirmRequest | null
@@ -98,6 +100,8 @@ interface Actions {
   closeChipEditor(): void
   openClip(videoId: number, mode: ClipMode): void
   closeClip(): void
+  openBulkClip(videoIds: number[]): void
+  closeBulkClip(): void
   setSettingsOpen(open: boolean): void
   openRename(videoId: number | null): void
   confirm(request: Omit<ConfirmRequest, 'resolve'>): Promise<boolean>
@@ -141,6 +145,7 @@ export const useStore = create<State & Actions>()((set, get) => ({
   recentRandom: [],
   chipEditor: null,
   clip: null,
+  bulkClip: null,
   settingsOpen: false,
   renameId: null,
   confirmRequest: null,
@@ -247,6 +252,12 @@ export const useStore = create<State & Actions>()((set, get) => ({
   },
   closeClip() {
     set({ clip: null })
+  },
+  openBulkClip(videoIds) {
+    set({ bulkClip: videoIds })
+  },
+  closeBulkClip() {
+    set({ bulkClip: null })
   },
   setSettingsOpen(open) {
     set({ settingsOpen: open })

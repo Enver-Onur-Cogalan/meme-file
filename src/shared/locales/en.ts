@@ -241,6 +241,16 @@ export const en: Messages = {
     'The original file is not touched; a new copy is created next to it with the same chips.',
   'clip.preparing': 'Preparing… {percent}%',
   'clip.createAndCopy': 'Create and copy',
+  'bulk.title': { one: 'Prepare a clip', other: 'Prepare clips for {count} videos' },
+  'bulk.hint':
+    'Each video is processed end to end; the originals stay as they are and copies appear next to them.',
+  'bulk.progress': 'Preparing {done}/{total}',
+  'bulk.done': { one: '1 video ready · {size}', other: '{count} videos ready · {size} total' },
+  'bulk.doneCopied': {
+    one: '1 video ready and copied · {size}',
+    other: '{count} videos ready and copied · {size} total'
+  },
+  'bulk.cancelled': 'Stopped · {count} videos prepared',
   'clip.suffixTrim': 'trimmed',
   'clip.suffixDiscord': 'discord',
 

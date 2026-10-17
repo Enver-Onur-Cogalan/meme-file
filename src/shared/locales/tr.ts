@@ -226,6 +226,13 @@ export const tr = {
     "Orijinal dosyaya dokunulmaz, yanına yeni bir kopya oluşturulur ve chip'leri de aktarılır.",
   'clip.preparing': 'Hazırlanıyor… %{percent}',
   'clip.createAndCopy': 'Oluştur ve kopyala',
+  'bulk.title': '{count} video için klip hazırla',
+  'bulk.hint':
+    'Her video baştan sona işlenir; orijinaller olduğu gibi kalır, kopyalar yanlarına oluşur.',
+  'bulk.progress': '{done}/{total} hazırlanıyor',
+  'bulk.done': '{count} video hazır · toplam {size}',
+  'bulk.doneCopied': '{count} video hazır ve kopyalandı · toplam {size}',
+  'bulk.cancelled': 'Durduruldu · {count} video hazırlandı',
   'clip.suffixTrim': 'kirpilmis',
   'clip.suffixDiscord': 'discord',
 
