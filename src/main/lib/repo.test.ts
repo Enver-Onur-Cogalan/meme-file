@@ -188,6 +188,61 @@ describe('chip sırası', () => {
   })
 })
 
+describe('suggestTags', () => {
+  it('benzer adlı videolarda kullanılan chip’leri ve adı geçen chip’i önerir', () => {
+    const gaming = repo.createTag(db, { name: 'oyun', color: '#f2665a', icon: 'lucide:Gamepad2' })
+    const epic = repo.createTag(db, { name: 'efsane', color: '#f59a3d', icon: 'lucide:Flame' })
+    const cat = repo.createTag(db, { name: 'kedi', color: '#ee7fb4', icon: 'lucide:Cat' })
+
+    repo.syncFolder(
+      db,
+      folderId,
+      [file('valorant clutch 1.mp4'), file('valorant ace 2.mp4'), file('kedi dans.mp4')],
+      true
+    )
+    const byName = (name: string): number =>
+      repo.queryVideos(db, { view: 'library' }).find((v) => v.name === name)!.id
+    repo.addTagToVideos(
+      db,
+      [byName('valorant clutch 1.mp4'), byName('valorant ace 2.mp4')],
+      gaming.id,
+      true
+    )
+    repo.addTagToVideos(db, [byName('valorant clutch 1.mp4')], epic.id, true)
+    // epic sadece tek videoda: benzerlik eşiğini geçmemeli
+    repo.addTagToVideos(db, [byName('kedi dans.mp4')], cat.id, true)
+
+    // Yeni gelen video: adında "valorant" geçiyor.
+    repo.syncFolder(
+      db,
+      folderId,
+      [
+        file('valorant clutch 1.mp4'),
+        file('valorant ace 2.mp4'),
+        file('kedi dans.mp4'),
+        file('valorant 1v4.mp4')
+      ],
+      false
+    )
+    const fresh = repo.queryVideos(db, { view: 'inbox' })[0]
+    const suggestions = repo.suggestTags(db, fresh.id)
+
+    expect(suggestions).toEqual([gaming.id])
+    expect(suggestions).not.toContain(epic.id)
+    expect(suggestions).not.toContain(cat.id)
+  })
+
+  it('zaten eklenmiş chip’i önermez', () => {
+    const tag = repo.createTag(db, { name: 'komik', color: '#f5c542', icon: 'lucide:Tag' })
+    repo.syncFolder(db, folderId, [file('komik an.mp4')], true)
+    const video = repo.queryVideos(db, { view: 'library' })[0]
+    expect(repo.suggestTags(db, video.id)).toEqual([tag.id])
+
+    repo.addTagToVideos(db, [video.id], tag.id, true)
+    expect(repo.suggestTags(db, video.id)).toEqual([])
+  })
+})
+
 describe('settings', () => {
   it('varsayılanları döndürür ve sadece bilinen anahtarları kaydeder', () => {
     const settings = repo.updateSettings(db, { tagMode: 'or', unknown: 1 } as never)

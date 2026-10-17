@@ -179,6 +179,7 @@ export function registerIpc(ctx: IpcContext): void {
 
   /* chip'ler */
   ipcMain.handle('tags:list', () => repo.listTags(db))
+  ipcMain.handle('tags:suggest', (_event, videoId: number) => repo.suggestTags(db, videoId))
   ipcMain.handle('tags:create', (_event, input: TagInput) => {
     const tag = repo.createTag(db, validTag(input))
     changed()

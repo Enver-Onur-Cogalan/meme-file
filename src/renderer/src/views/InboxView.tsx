@@ -1,7 +1,7 @@
-import { CornerDownLeft, Inbox, Plus, SkipForward, Star } from 'lucide-react'
+import { CornerDownLeft, Inbox, Plus, SkipForward, Sparkles, Star } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useMemo, useState } from 'react'
-import type { Video } from '../../../shared/api'
+import type { Tag, Video } from '../../../shared/api'
 import { TagSticker } from '../components/TagSticker'
 import { AnimatedNumber, Button, Kbd, Label } from '../components/ui'
 import { toggleFavorite } from '../lib/actions'
@@ -24,6 +24,24 @@ export function InboxView(): React.JSX.Element {
     [videos, skipped]
   )
   const current = queue[0]
+  const [suggested, setSuggested] = useState<{ videoId: number; ids: number[] }>({
+    videoId: 0,
+    ids: []
+  })
+
+  // Dosya adına ve benzer videolara bakarak chip önerisi.
+  const currentId = current?.id
+  const tagCount = current?.tagIds.length
+  useEffect(() => {
+    if (currentId === undefined) return
+    let cancelled = false
+    void window.api.suggestTags(currentId).then((ids) => {
+      if (!cancelled) setSuggested({ videoId: currentId, ids })
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [currentId, tagCount])
   const quickTags = tags.slice(0, 9)
   const t = useT()
   const [waitingBefore, waitingAfter] = useCountParts('inbox.waiting', queue.length)
@@ -35,6 +53,18 @@ export function InboxView(): React.JSX.Element {
       current.id,
       has ? current.tagIds.filter((id) => id !== tagId) : [...current.tagIds, tagId]
     )
+  }
+
+  const suggestions = (suggested.videoId === currentId ? suggested.ids : [])
+    .map((id) => tags.find((tag) => tag.id === id))
+    .filter((tag): tag is Tag => !!tag && !current?.tagIds.includes(tag.id))
+
+  const acceptAll = (): void => {
+    if (!current || suggestions.length === 0) return
+    void window.api.setVideoTags(current.id, [
+      ...current.tagIds,
+      ...suggestions.map((tag) => tag.id)
+    ])
   }
 
   const save = (): void => {
@@ -80,6 +110,7 @@ export function InboxView(): React.JSX.Element {
         if (tag) toggleTag(tag.id)
       } else if (event.key === 'Enter') save()
       else if (event.key.toLowerCase() === 's') skip()
+      else if (event.key.toLowerCase() === 'a') acceptAll()
       else if (event.key.toLowerCase() === 'f' && current) void toggleFavorite([current])
       else return
       event.preventDefault()
@@ -180,6 +211,47 @@ export function InboxView(): React.JSX.Element {
                 <Label>{t('inbox.quickTag')}</Label>
                 <span className="text-xs text-dim">{t('inbox.toggleHint')}</span>
               </div>
+              <AnimatePresence initial={false}>
+                {suggestions.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="flex flex-col gap-2 rounded-xl border-[1.5px] border-dashed border-sticker-blue/60 bg-sticker-blue/5 p-2.5">
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5 text-xs font-bold text-sticker-blue">
+                          <Sparkles size={13} />
+                          {t('inbox.suggested')}
+                        </span>
+                        <button
+                          onClick={acceptAll}
+                          className="flex items-center gap-1 text-xs font-semibold text-mute hover:text-text"
+                        >
+                          {t('inbox.acceptAll')} <Kbd>A</Kbd>
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap gap-x-2 gap-y-2">
+                        {suggestions.map((tag) => (
+                          <motion.button
+                            key={tag.id}
+                            layout
+                            initial={{ opacity: 0, scale: 0.6 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.6 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => toggleTag(tag.id)}
+                            title={t('inbox.suggestedHint')}
+                          >
+                            <TagSticker tag={tag} size="md" off />
+                          </motion.button>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
               <div className="flex flex-wrap gap-x-2 gap-y-2.5">
                 {quickTags.map((tag, i) => {
                   const on = current.tagIds.includes(tag.id)

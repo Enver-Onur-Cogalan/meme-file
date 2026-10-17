@@ -487,6 +487,52 @@ export function refreshSearchIndex(db: DatabaseSync, videoId: number): void {
 
 /* ---------------- chip'ler ---------------- */
 
+/**
+ * Dosya adına bakarak chip önerir:
+ * 1. Adında chip'in adı geçen videolar (ör. "valorant-clutch" → valorant)
+ * 2. Benzer adlı videolarda daha önce kullandığın chip'ler (arama indeksi üzerinden)
+ */
+export function suggestTags(db: DatabaseSync, videoId: number, limit = 3): number[] {
+  const video = getVideo(db, videoId)
+  if (!video) return []
+  const words = new Set(
+    normalizeForSearch(video.name.replace(/\.[^.]+$/, ''))
+      .split(/[^\p{L}\p{N}]+/u)
+      .filter((word) => word.length > 1)
+  )
+  if (words.size === 0) return []
+
+  const scores = new Map<number, number>()
+  const add = (tagId: number, points: number): void => {
+    if (video.tagIds.includes(tagId)) return
+    scores.set(tagId, (scores.get(tagId) ?? 0) + points)
+  }
+
+  for (const tag of listTags(db)) {
+    const name = normalizeForSearch(tag.name)
+    if (words.has(name)) add(tag.id, 10)
+  }
+
+  const match = [...words].map((word) => `"${word}"`).join(' OR ')
+  const similar = db
+    .prepare(
+      `SELECT vt.tag_id AS tagId, count(*) AS score
+       FROM videos_fts f
+       JOIN videos v ON v.id = f.rowid
+       JOIN video_tags vt ON vt.video_id = v.id
+       WHERE videos_fts MATCH ? AND v.id <> ? AND v.missing = 0 AND v.status = 'library'
+       GROUP BY vt.tag_id ORDER BY score DESC LIMIT 10`
+    )
+    .all(match, videoId) as { tagId: number; score: number }[]
+  // Tek bir benzer videodan gelen chip gürültü oluyor; en az iki videoda geçmeli.
+  for (const row of similar) if (row.score >= 2) add(row.tagId, row.score)
+
+  return [...scores.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([tagId]) => tagId)
+}
+
 export function listTags(db: DatabaseSync): Tag[] {
   return db
     .prepare(

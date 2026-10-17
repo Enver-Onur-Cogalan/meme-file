@@ -35,6 +35,7 @@ const api: MemeApi = {
   trashVideos: (videoIds) => ipcRenderer.invoke('videos:trash', videoIds),
 
   listTags: () => ipcRenderer.invoke('tags:list'),
+  suggestTags: (videoId) => ipcRenderer.invoke('tags:suggest', videoId),
   createTag: (input) => ipcRenderer.invoke('tags:create', input),
   updateTag: (tagId, input) => ipcRenderer.invoke('tags:update', tagId, input),
   deleteTag: (tagId) => ipcRenderer.invoke('tags:delete', tagId),

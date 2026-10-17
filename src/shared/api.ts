@@ -166,6 +166,8 @@ export interface MemeApi {
   trashVideos(videoIds: number[]): Promise<number>
 
   listTags(): Promise<Tag[]>
+  /** Dosya adına ve benzer videolara bakarak chip önerir. */
+  suggestTags(videoId: number): Promise<number[]>
   createTag(input: TagInput): Promise<Tag>
   updateTag(tagId: number, input: TagInput): Promise<Tag>
   deleteTag(tagId: number): Promise<void>
