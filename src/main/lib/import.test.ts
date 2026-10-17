@@ -39,7 +39,9 @@ describe('importFiles', () => {
     const result = await importFiles(
       db,
       watcher,
-      [await source('komik: klip.mp4'), await source('notes.txt')],
+      // Windows'ta ad içinde ":" olamaz; fazla boşluk ve sondaki boşluk da
+      // sanitizeFileName'in temizlediği şeylerden.
+      [await source('komik   klip .mp4'), await source('notes.txt')],
       folderId
     )
 
