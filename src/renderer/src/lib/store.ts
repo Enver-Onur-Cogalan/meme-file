@@ -192,7 +192,11 @@ export const useStore = create<State & Actions>()((set, get) => ({
       // Ayarlar sadece ilk yüklemede okunur; sonrasında arayüz tek doğru kaynaktır.
       // (Aksi hâlde uçuştaki eski bir yenileme az önce değiştirilen ayarı geri alabiliyordu.)
       ...(freshSettings && !get().settings
-        ? (applyTheme(freshSettings.theme),
+        ? ((document.documentElement.lang = resolveLanguage(
+            freshSettings.language,
+            navigator.language
+          )),
+          applyTheme(freshSettings.theme),
           {
             settings: freshSettings,
             language: resolveLanguage(freshSettings.language, navigator.language)
@@ -283,6 +287,7 @@ export const useStore = create<State & Actions>()((set, get) => ({
   },
   setSettings(settings) {
     applyTheme(settings.theme)
+    document.documentElement.lang = resolveLanguage(settings.language, navigator.language)
     set({ settings, language: resolveLanguage(settings.language, navigator.language) })
   },
   async updateSettings(patch) {

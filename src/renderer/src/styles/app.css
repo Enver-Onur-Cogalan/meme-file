@@ -64,6 +64,13 @@
   /* Vurgulu yüzeylerin gölgesi: sticker'da ofset mürekkep, cyber'da neon parıltı */
   --shadow-sticker: 3px 4px 0 var(--color-ink);
   --shadow-accent: 3px 4px 0 var(--color-accent);
+  /* Chip kimliği: her tema çıkartmayı kendi diliyle çizer. */
+  --chip-radius: 999px;
+  --chip-border: 1.5px;
+  --chip-shadow: none;
+  --chip-tracking: 0;
+  --chip-case: none;
+  --chip-font: inherit;
 }
 
 /* Cyberpunk: gece mavisi zemin, camgöbeği-sarı neon, HUD ızgarası */
@@ -91,11 +98,20 @@
   --color-sticker-green: #7cff6b;
 
   --notebook-image:
-    repeating-linear-gradient(90deg, transparent 0 39px, #22e5ff1f 39px 40px),
-    repeating-linear-gradient(180deg, transparent 0 39px, #22e5ff14 39px 40px);
+    radial-gradient(90% 60% at 50% -10%, #22e5ff1a, transparent 70%),
+    repeating-linear-gradient(180deg, #ffffff06 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, transparent 0 39px, #22e5ff21 39px 40px),
+    repeating-linear-gradient(180deg, transparent 0 39px, #22e5ff16 39px 40px);
   --notebook-position: 0 0;
   --color-pill: #22e5ff;
   --color-pill-ink: #03060a;
+  /* Köşeli HUD rozeti: keskin köşe, ince kontur, neon hale */
+  --chip-radius: 4px;
+  --chip-border: 1px;
+  --chip-shadow: 0 0 9px #22e5ff4d;
+  --chip-tracking: 0.04em;
+  --chip-case: uppercase;
+  --chip-font: var(--font-mono);
   --shadow-sticker: 0 0 14px #22e5ff40;
   --shadow-accent: 0 0 20px #22e5ff80;
 }
@@ -124,11 +140,19 @@
   --color-sticker-teal: #8cc7bc;
   --color-sticker-green: #9ec79b;
 
-  --notebook-image: radial-gradient(#2b2e30 1px, transparent 1px);
-  --notebook-size: 24px 24px;
+  --notebook-image:
+    radial-gradient(70% 50% at 20% 0%, #ffffff0a, transparent 65%),
+    radial-gradient(#2b2e30 1px, transparent 1px);
+  --notebook-size: 100% 100%, 24px 24px;
   --notebook-position: 0 0;
   --color-pill: #ededed;
   --color-pill-ink: #0a0b0b;
+  /* Sade etiket: yumuşak köşe, kontursuz, gölgesiz */
+  --chip-radius: 8px;
+  --chip-border: 0px;
+  --chip-shadow: none;
+  --chip-tracking: 0;
+  --chip-case: none;
   --shadow-sticker: 0 2px 10px #00000066;
   --shadow-accent: 0 3px 14px #00000080;
 }
@@ -169,10 +193,17 @@
       #c9574a33 20px,
       transparent 20px
     ),
-    repeating-linear-gradient(180deg, transparent 0 27px, #5f8fb359 27px 28px);
-  --notebook-position: 0 0, 0 12px;
+    repeating-linear-gradient(180deg, transparent 0 27px, #5f8fb359 27px 28px),
+    repeating-radial-gradient(#00000008 0 1px, transparent 1px 4px),
+    radial-gradient(120% 80% at 50% 0%, #ffffff80, transparent 60%);
+  --notebook-position: 0 0, 0 12px, 0 0, 0 0;
   --color-pill: #2c241a;
   --color-pill-ink: #f3ebd8;
+  /* Mürekkep damgası: kalın kontur, ofset gölge */
+  --chip-radius: 7px;
+  --chip-border: 2px;
+  --chip-shadow: 2px 2px 0 var(--color-ink);
+  --chip-tracking: 0.01em;
   --shadow-sticker: 3px 4px 0 var(--color-ink);
   --shadow-accent: 3px 4px 0 var(--color-sticker-red);
 }

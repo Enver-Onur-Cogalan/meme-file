@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { motion } from 'motion/react'
 import { memo, useState } from 'react'
+import { useFeel } from '../lib/motion'
 import { useStore } from '../lib/store'
 import type { Tag, Video } from '../../../shared/api'
 import { DISCORD_LIMIT_BYTES, formatDuration, formatSize, stripExtension } from '../lib/format'
@@ -53,22 +54,23 @@ export const VideoCard = memo(function VideoCard({
     .filter((tag): tag is Tag => !!tag)
   const ready = video.mediaStatus === 'ready' && !thumbFailed
   const frame = Math.min(SPRITE_FRAMES - 1, Math.floor(scrub * SPRITE_FRAMES))
+  const feel = useFeel()
 
   return (
     <motion.div
       layout={animateLayout ? 'position' : false}
-      initial={entry ? { opacity: 0, y: 18, rotate: -1.5, scale: 0.97 } : false}
+      initial={entry ? feel.enter : false}
       animate={{
         opacity: 1,
-        y: hover ? -4 : 0,
-        rotate: peeling ? -5 : hover ? -1.2 : 0,
+        y: hover ? feel.lift : 0,
+        rotate: peeling ? feel.rotate * 4 : hover ? feel.rotate : 0,
         scale: peeling ? 1.06 : 1
       }}
       exit={{ opacity: 0, scale: 0.85, transition: { duration: 0.15 } }}
       transition={{
         type: 'spring',
-        stiffness: 380,
-        damping: 26,
+        stiffness: feel.card.stiffness,
+        damping: feel.card.damping,
         // Gecikme sadece giriş animasyonunda; üzerine gelme tepkisi anında olmalı.
         delay: entered ? 0 : delay
       }}

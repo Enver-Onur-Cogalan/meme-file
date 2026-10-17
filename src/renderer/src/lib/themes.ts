@@ -1,3 +1,4 @@
+import { applyMotionProfile } from './motion'
 import type { MessageKey } from '../../../shared/i18n'
 import type { ThemeId } from '../../../shared/api'
 
@@ -64,4 +65,5 @@ export const THEMES: ThemePreview[] = [
 /** Tema her pencerede (hızlı arama dâhil) kök elemente yazılır. */
 export function applyTheme(theme: ThemeId): void {
   document.documentElement.dataset.theme = theme
+  applyMotionProfile(theme)
 }

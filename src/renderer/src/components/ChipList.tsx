@@ -5,7 +5,7 @@ import type { Tag } from '../../../shared/api'
 import { normalizeForSearch } from '../../../shared/search'
 import { confirmDeleteTag } from '../lib/actions'
 import { useT } from '../lib/i18n'
-import { spring } from '../lib/motion'
+import { spring, useFeel } from '../lib/motion'
 import { useStore } from '../lib/store'
 import { tiltFor } from '../lib/tags'
 import type { MenuState } from './ContextMenu'
@@ -17,6 +17,7 @@ const DRAG_THRESHOLD = 6
 export function ChipList({ onMenu }: { onMenu(menu: MenuState): void }): React.JSX.Element {
   const { tags, tagIds, toggleTagFilter, openChipEditor } = useStore()
   const t = useT()
+  const feel = useFeel()
   const [query, setQuery] = useState('')
   const [searching, setSearching] = useState(false)
   const [order, setOrder] = useState<Tag[]>(tags)
@@ -177,8 +178,10 @@ export function ChipList({ onMenu }: { onMenu(menu: MenuState): void }): React.J
                   zIndex: dragging ? 10 : 0
                 }}
                 exit={{ opacity: 0, scale: 0.5 }}
-                whileHover={dragging ? undefined : { y: -2, rotate: 0 }}
-                whileTap={dragging ? undefined : { scale: 0.92 }}
+                whileHover={
+                  dragging ? undefined : { y: feel.lift / 2, rotate: 0, scale: feel.grow }
+                }
+                whileTap={dragging ? undefined : { scale: feel.press }}
                 transition={spring}
                 onPointerDown={(event) => {
                   if (!canReorder || event.button !== 0) return
@@ -260,7 +263,7 @@ export function ChipList({ onMenu }: { onMenu(menu: MenuState): void }): React.J
                   tag={tag}
                   size="md"
                   count
-                  tilt={active || dragging ? 0 : tiltFor(tag.id)}
+                  tilt={active || dragging ? 0 : tiltFor(tag.id) * feel.tilt}
                 />
               </motion.button>
             )

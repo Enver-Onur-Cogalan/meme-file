@@ -3,6 +3,7 @@ import { motion, type HTMLMotionProps } from 'motion/react'
 import { createElement } from 'react'
 import type { Tag } from '../../../shared/api'
 import { LUCIDE_ICONS } from '../lib/icons'
+import { useTagColor } from '../lib/theme'
 import { AnimatedNumber } from './ui'
 import { t } from '../lib/i18n'
 
@@ -62,6 +63,8 @@ export function TagSticker({
     md: { h: 30, font: 13, icon: 15, pl: 9 },
     lg: { h: 42, font: 18, icon: 20, pl: 13 }
   }[size]
+  const mapColor = useTagColor()
+  const color = mapColor(tag.color)
   const trailing = count || onRemove || hotkey
   return (
     <motion.div
@@ -71,16 +74,22 @@ export function TagSticker({
         paddingRight: trailing ? 4 : dims.pl + 3,
         fontSize: dims.font,
         rotate: tilt,
-        background: off ? 'transparent' : tag.color
+        background: off ? 'transparent' : color,
+        borderRadius: 'var(--chip-radius, 999px)',
+        borderWidth: off ? 1.5 : 'var(--chip-border, 1.5px)',
+        boxShadow: off ? undefined : 'var(--chip-shadow, none)',
+        letterSpacing: 'var(--chip-tracking, 0)',
+        textTransform: 'var(--chip-case, none)' as React.CSSProperties['textTransform'],
+        fontFamily: 'var(--chip-font, inherit)'
       }}
-      className={`flex max-w-full shrink-0 items-center gap-[5px] rounded-full border-[1.5px] font-bold whitespace-nowrap select-none ${
+      className={`flex max-w-full shrink-0 items-center gap-[5px] border-solid font-bold whitespace-nowrap select-none ${
         off ? 'border-dashed border-dim text-mute' : 'border-ink text-ink'
       } ${className}`}
       {...rest}
     >
       {hotkey && (
         <span
-          style={{ color: off ? undefined : tag.color }}
+          style={{ color: off ? undefined : color }}
           className={`flex size-[18px] items-center justify-center rounded-[5px] font-mono text-[11px] ${off ? 'bg-surf' : 'bg-ink'}`}
         >
           {hotkey}
@@ -94,7 +103,7 @@ export function TagSticker({
       <span className="truncate">{tag.name}</span>
       {count && tag.count !== undefined && (
         <span
-          style={{ color: tag.color }}
+          style={{ color }}
           className="flex h-5 items-center rounded-full bg-ink px-1.5 font-mono text-[11px] font-medium"
         >
           <AnimatedNumber value={tag.count} />
@@ -110,7 +119,7 @@ export function TagSticker({
           }}
           className="flex size-5 items-center justify-center rounded-full bg-ink transition-transform hover:scale-110"
         >
-          <X size={11} strokeWidth={2.5} color={tag.color} />
+          <X size={11} strokeWidth={2.5} color={color} />
         </button>
       )}
       {hotkey && !count && !onRemove && <span className="w-1.5" />}
