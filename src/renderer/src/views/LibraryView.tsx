@@ -112,12 +112,12 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
             animate={{ opacity: 1, y: 0, rotate: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={spring}
-            className="m-0 max-w-[40%] truncate text-[30px] leading-none font-extrabold tracking-[-0.02em]"
+            className="page-title m-0 max-w-[40%] truncate text-[30px] leading-none font-extrabold tracking-[-0.02em]"
           >
             {title}
           </motion.h1>
         </AnimatePresence>
-        <label className="flex h-11 grow items-center gap-2.5 rounded-full border-2 border-ink bg-pill px-[18px] text-pill-ink shadow-[var(--shadow-sticker)] focus-within:shadow-[var(--shadow-accent)]">
+        <label className="search-field flex h-11 grow items-center gap-2.5 rounded-full border-2 border-ink bg-pill px-[18px] text-pill-ink shadow-[var(--shadow-sticker)] focus-within:shadow-[var(--shadow-accent)]">
           <Search size={18} strokeWidth={2.25} className="shrink-0" />
           <input
             ref={searchRef}
@@ -130,14 +130,14 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
               }
             }}
             placeholder={t('library.searchPlaceholder')}
-            className="min-w-0 grow bg-transparent text-[14.5px] font-medium outline-none placeholder:text-[#6d6456]"
+            className="min-w-0 grow bg-transparent text-[14.5px] font-medium outline-none placeholder:text-current placeholder:opacity-55"
           />
           {text ? (
             <button onClick={() => store.setText('')} aria-label={t('library.clearSearch')}>
               <X size={16} strokeWidth={2.5} />
             </button>
           ) : (
-            <span className="font-mono text-[11px] text-[#6d6456]">Ctrl F</span>
+            <span className="font-mono text-[11px] opacity-55">Ctrl F</span>
           )}
         </label>
         {/*

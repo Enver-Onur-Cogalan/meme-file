@@ -42,23 +42,23 @@ export const THEMES: ThemePreview[] = [
     id: 'modern',
     labelKey: 'theme.modern',
     noteKey: 'theme.modernNote',
-    bg: '#141516',
-    surf: '#1c1e1f',
-    line: '#2b2e30',
-    text: '#ededed',
+    bg: '#1a1d20',
+    surf: '#24282b',
+    line: '#383d41',
+    text: '#eef3f6',
     ink: '#0a0b0b',
-    chips: ['#e2c782', '#8fb5d6', '#9ec79b']
+    chips: ['#e3c86a', '#7fb0d2', '#94c491']
   },
   {
     id: 'classic',
     labelKey: 'theme.classic',
     noteKey: 'theme.classicNote',
-    bg: '#efe5cf',
-    surf: '#f8f2e3',
-    line: '#cdbda0',
-    text: '#2c241a',
-    ink: '#2c241a',
-    chips: ['#e8b73c', '#c9574a', '#5f8fb3']
+    bg: '#c0c0c0',
+    surf: '#d4d0c8',
+    line: '#7b7b7b',
+    text: '#0b0b0b',
+    ink: '#008080',
+    chips: ['#e8c33c', '#d86056', '#74b4d8']
   }
 ]
 

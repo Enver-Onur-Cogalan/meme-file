@@ -15,16 +15,14 @@ interface Shift {
   hues?: number[]
 }
 
-/** Cyberpunk'ta renkler beş neon tona iner: camgöbeği, magenta, sarı, yeşil, mor. */
-const NEON_HUES = [187, 320, 52, 110, 265]
-/** Klasikte vintage baskı tonları: hardal, tuğla, mürekkep mavisi, zeytin, gül. */
-const VINTAGE_HUES = [42, 12, 205, 78, 340]
-
 const SHIFTS: Record<ThemeId, Shift | null> = {
   sticker: null,
-  cyber: { saturation: 2.2, lightness: 1.05, range: [0.58, 0.7], hues: NEON_HUES },
-  modern: { saturation: 0.3, lightness: 1.05, range: [0.7, 0.86] },
-  classic: { saturation: 0.72, lightness: 0.84, range: [0.52, 0.76], hues: VINTAGE_HUES }
+  // Neon: renk korunur, doygunluk artar; kimliği parıltı ve çerçeve taşır.
+  cyber: { saturation: 1.45, lightness: 1.02, range: [0.55, 0.74] },
+  // Metal yüzeyde renkler biraz yumuşar ama tanınır kalır.
+  modern: { saturation: 0.82, lightness: 1.0, range: [0.58, 0.84] },
+  // 98 paleti daha az doygun ve biraz daha koyu basar.
+  classic: { saturation: 0.74, lightness: 0.92, range: [0.52, 0.8] }
 }
 
 export function themeColor(hex: string, theme: ThemeId): string {

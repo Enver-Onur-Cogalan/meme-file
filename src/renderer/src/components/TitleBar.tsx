@@ -9,7 +9,7 @@ export function TitleBar(): React.JSX.Element {
   const update = useStore((s) => s.update)
   const t = useT()
   return (
-    <div className="drag-region flex h-9 shrink-0 items-center bg-side">
+    <div className="titlebar drag-region flex h-9 shrink-0 items-center bg-side">
       <div
         className={`flex items-center gap-2 text-[13px] font-extrabold ${isMac ? 'pl-20' : 'pl-3.5'}`}
       >

@@ -6,24 +6,30 @@ describe('themeColor', () => {
     expect(themeColor('#f5c542', 'sticker')).toBe('#f5c542')
   })
 
-  it('cyber temada hue en yakın neon tona oturur, renk doygunlaşır', () => {
-    // Sarı (#f5c542, hue ~45°) neon sarıya (52°) gider, maviye değil.
+  it('cyber temada renk tanınır kalır ama doygunlaşır', () => {
+    // Sarı sarı kalır: hue korunur, doygunluk artar.
     const neon = themeColor('#f5c542', 'cyber')
-    expect(hue(neon)).toBeGreaterThan(40)
-    expect(hue(neon)).toBeLessThan(65)
-    expect(saturation(neon)).toBeGreaterThan(0.9)
+    expect(Math.abs(hue(neon) - hue('#f5c542'))).toBeLessThan(2)
+    expect(saturation(neon)).toBeGreaterThan(saturation('#f5c542') - 0.01)
   })
 
-  it('modern temada renk solar ama aydınlık kalır', () => {
+  it('modern temada renk yumuşar ama tanınır kalır', () => {
     const muted = themeColor('#f2665a', 'modern')
-    expect(saturation(muted)).toBeLessThan(0.45)
-    expect(lightness(muted)).toBeGreaterThan(0.65)
+    expect(saturation(muted)).toBeLessThan(saturation('#f2665a'))
+    expect(Math.abs(hue(muted) - hue('#f2665a'))).toBeLessThan(2)
+    expect(lightness(muted)).toBeGreaterThan(0.55)
   })
 
   it('klasik temada mürekkebe karşı okunur kalacak kadar aydınlık', () => {
     for (const color of ['#f5c542', '#5cc3e8', '#b69cf2', '#37bb37']) {
       expect(lightness(themeColor(color, 'classic'))).toBeGreaterThan(0.5)
     }
+  })
+
+  it('98 temasında renkler biraz solup koyulaşır', () => {
+    const flat = themeColor('#5cc3e8', 'classic')
+    expect(saturation(flat)).toBeLessThan(saturation('#5cc3e8'))
+    expect(lightness(flat)).toBeLessThan(lightness('#5cc3e8'))
   })
 
   it('tanınmayan değeri olduğu gibi döndürür', () => {

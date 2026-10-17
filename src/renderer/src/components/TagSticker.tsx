@@ -82,7 +82,7 @@ export function TagSticker({
         textTransform: 'var(--chip-case, none)' as React.CSSProperties['textTransform'],
         fontFamily: 'var(--chip-font, inherit)'
       }}
-      className={`flex max-w-full shrink-0 items-center gap-[5px] border-solid font-bold whitespace-nowrap select-none ${
+      className={`chip flex max-w-full shrink-0 items-center gap-[5px] border-solid font-bold whitespace-nowrap select-none ${
         off ? 'border-dashed border-dim text-mute' : 'border-ink text-ink'
       } ${className}`}
       {...rest}

@@ -91,7 +91,8 @@ export const VideoCard = memo(function VideoCard({
         onAction('drag', video)
       }}
       style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 260px' }}
-      className={`flex cursor-grab flex-col overflow-hidden rounded-[14px] border-2 bg-surf active:cursor-grabbing ${
+      data-selected={selected || undefined}
+      className={`card flex cursor-grab flex-col overflow-hidden rounded-[14px] border-2 bg-surf active:cursor-grabbing ${
         selected
           ? 'border-accent shadow-[5px_6px_0_var(--color-ink)]'
           : hover

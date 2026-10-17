@@ -31,7 +31,7 @@ export function Button({
         whileTap={disabled ? undefined : { y: 2, boxShadow: '1px 1px 0 var(--color-ink)' }}
         disabled={disabled}
         style={{ background: color, ...style }}
-        className={`flex ${height} shrink-0 items-center justify-center gap-2 rounded-full border-2 border-ink px-[18px] text-sm font-extrabold whitespace-nowrap text-ink shadow-[3px_4px_0_var(--color-ink)] disabled:opacity-50 ${className}`}
+        className={`btn btn-primary flex ${height} shrink-0 items-center justify-center gap-2 rounded-full border-2 border-ink px-[18px] text-sm font-extrabold whitespace-nowrap text-ink shadow-[3px_4px_0_var(--color-ink)] disabled:opacity-50 ${className}`}
         {...rest}
       >
         {Icon && <Icon size={16} strokeWidth={2.25} />}
@@ -44,7 +44,7 @@ export function Button({
       whileTap={disabled ? undefined : { scale: 0.96 }}
       disabled={disabled}
       style={style}
-      className={`flex ${height} shrink-0 items-center justify-center gap-2 rounded-full px-3.5 text-[13.5px] font-bold whitespace-nowrap transition-colors disabled:opacity-40 ${
+      className={`btn flex ${height} shrink-0 items-center justify-center gap-2 rounded-full px-3.5 text-[13.5px] font-bold whitespace-nowrap transition-colors disabled:opacity-40 ${
         variant === 'ghost'
           ? 'text-mute hover:bg-surf hover:text-text'
           : 'border-[1.5px] border-line bg-surf text-text hover:border-mute'
@@ -223,7 +223,7 @@ export function Modal({
             exit={{ opacity: 0, scale: 0.95, rotate: 1, y: 12 }}
             transition={{ type: 'spring', stiffness: 420, damping: 30 }}
             style={{ width, maxWidth: '100%' }}
-            className="flex max-h-full flex-col overflow-hidden rounded-[20px] border-2 border-text bg-bg shadow-[8px_10px_0_var(--color-ink)]"
+            className="panel flex max-h-full flex-col overflow-hidden rounded-[20px] border-2 border-text bg-bg shadow-[8px_10px_0_var(--color-ink)]"
           >
             {children}
           </motion.div>

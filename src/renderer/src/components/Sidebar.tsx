@@ -61,7 +61,7 @@ export function Sidebar({ onAddFolder, onMenu }: Props): React.JSX.Element {
   }
 
   return (
-    <aside className="flex w-60 shrink-0 flex-col gap-[22px] overflow-y-auto bg-side px-3 py-4">
+    <aside className="sidebar flex w-60 shrink-0 flex-col gap-[22px] overflow-y-auto bg-side px-3 py-4">
       <div className="flex flex-col gap-[3px]">
         {navItem(LayoutGrid, t('nav.library'), 'library', stats.total)}
         {navItem(Inbox, t('nav.inbox'), 'inbox', stats.inbox, stats.inbox > 0)}
