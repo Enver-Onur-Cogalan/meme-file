@@ -89,7 +89,7 @@
   --color-veil: rgba(3, 8, 14, 0.88);
 
   --color-sticker-yellow: #ffe14d;
-  --color-accent: #22e5ff;
+  --color-accent: #ffd23f;
   --color-gold: #ffe14d;
   --color-sticker-orange: #ffa320;
   --color-sticker-red: #ff3b6b;
@@ -100,21 +100,21 @@
   --color-sticker-green: #7cff6b;
 
   --notebook-image:
-    radial-gradient(90% 60% at 50% -10%, #22e5ff1a, transparent 70%),
+    radial-gradient(90% 60% at 50% -10%, #ffd23f1f, transparent 70%),
     repeating-linear-gradient(180deg, #ffffff06 0 1px, transparent 1px 3px),
-    repeating-linear-gradient(90deg, transparent 0 39px, #22e5ff21 39px 40px),
-    repeating-linear-gradient(180deg, transparent 0 39px, #22e5ff16 39px 40px);
+    repeating-linear-gradient(90deg, transparent 0 39px, #ffd23f1c 39px 40px),
+    repeating-linear-gradient(180deg, transparent 0 39px, #ffd23f12 39px 40px);
   --notebook-position: 0 0;
-  --color-pill: #22e5ff;
-  --color-pill-ink: #03060a;
+  --color-pill: #ffd23f;
+  --color-pill-ink: #120d00;
   /* Köşeli HUD rozeti: keskin köşe, ince kontur, neon hale */
   --chip-radius: 999px;
   --chip-border: 1.5px;
   --chip-shadow: 0 0 10px currentColor;
   --chip-tracking: 0.01em;
   --chip-case: none;
-  --shadow-sticker: 0 0 14px #22e5ff40;
-  --shadow-accent: 0 0 20px #22e5ff80;
+  --shadow-sticker: 0 0 14px #ffd23f40;
+  --shadow-accent: 0 0 20px #ffd23f80;
 }
 
 /* Modern: nötr grafit, az kontrast, soluk pastel vurgular, ince nokta ızgara */
@@ -277,8 +277,9 @@
     inset 1px 1px 0 #7b7b7b;
 }
 [data-theme='cyber'] .btn {
-  border-color: #22e5ff;
-  box-shadow: 0 0 10px #22e5ff33;
+  border-color: #ffd23f;
+  color: #ffeaa0;
+  box-shadow: 0 0 10px #ffd23f33;
 }
 [data-theme='cyber'] .btn-primary {
   box-shadow:
@@ -302,100 +303,188 @@
   border: 1px solid #7b7b7b;
 }
 
-/* NEON_PRISM_OS kabuğu: neon çerçeveli paneller, parlayan başlıklar */
+/* NEON_PRISM_OS: sarı hologram — saydam paneller, tarama çizgisi, köşe parantezleri */
 [data-theme='cyber'] .card {
-  background: #0b1118;
-  border-color: #22e5ff;
+  background:
+    linear-gradient(160deg, #ffd23f12, #0000 42%), linear-gradient(180deg, #0f0d06e6, #070705f2);
+  border-color: #ffd23f;
   box-shadow:
-    0 0 12px #22e5ff40,
-    inset 0 0 18px #22e5ff14;
+    0 0 14px #ffd23f4d,
+    inset 0 0 22px #ffd23f1a;
+}
+/* Hologram katmanı: tarama çizgileri + köşelerde parantez işareti */
+[data-theme='cyber'] .card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    repeating-linear-gradient(180deg, #ffd23f12 0 1px, transparent 1px 4px),
+    linear-gradient(115deg, transparent 38%, #ffd23f1f 46%, transparent 54%);
+  box-shadow:
+    inset 9px 9px 0 -8px #ffd23f,
+    inset -9px 9px 0 -8px #ffd23f,
+    inset 9px -9px 0 -8px #ffd23f,
+    inset -9px -9px 0 -8px #ffd23f;
 }
 [data-theme='cyber'] .card[data-selected] {
-  border-color: #ff5fd2;
+  border-color: #fff0a8;
   box-shadow:
-    0 0 18px #ff5fd266,
-    inset 0 0 18px #ff5fd21f;
+    0 0 22px #ffd23f80,
+    inset 0 0 24px #ffd23f26;
 }
 [data-theme='cyber'] .card > div:last-child {
-  background: linear-gradient(180deg, #0b1118, #070c12);
+  background: linear-gradient(180deg, #0f0d06cc, #07070599);
 }
 [data-theme='cyber'] .card span.truncate {
-  color: #d8fbff;
-  text-shadow: 0 0 8px #22e5ff80;
+  color: #ffeaa0;
+  text-shadow: 0 0 9px #ffd23f99;
 }
 [data-theme='cyber'] .page-title {
-  color: #22e5ff;
+  color: #ffd23f;
   text-shadow:
-    0 0 12px #22e5ff80,
-    0 0 32px #22e5ff40;
+    0 0 12px #ffd23f99,
+    0 0 34px #ffd23f4d;
 }
 [data-theme='cyber'] .search-field {
-  background: #081019;
-  border-color: #22e5ff;
-  color: #d8fbff;
+  background: #120f06;
+  border-color: #ffd23f;
+  color: #ffeaa0;
   box-shadow:
-    0 0 14px #22e5ff40,
-    inset 0 0 14px #22e5ff1a;
+    0 0 14px #ffd23f4d,
+    inset 0 0 14px #ffd23f1f;
 }
 [data-theme='cyber'] .titlebar {
-  background: linear-gradient(180deg, #0c141c, #070b10);
-  box-shadow: inset 0 -1px 0 #22e5ff40;
+  background: linear-gradient(180deg, #151106, #0a0905);
+  box-shadow: inset 0 -1px 0 #ffd23f55;
   font-family: var(--font-mono);
   letter-spacing: 0.06em;
+  color: #ffeaa0;
 }
 [data-theme='cyber'] .sidebar {
   background:
-    linear-gradient(180deg, #0a1017, #070b10),
-    repeating-linear-gradient(90deg, transparent 0 23px, #22e5ff0f 23px 24px);
-  box-shadow: inset -1px 0 0 #22e5ff33;
+    linear-gradient(180deg, #100e07, #08070a),
+    repeating-linear-gradient(90deg, transparent 0 23px, #ffd23f10 23px 24px);
+  box-shadow: inset -1px 0 0 #ffd23f3d;
 }
 [data-theme='cyber'] .panel {
-  border-color: #22e5ff;
+  border-color: #ffd23f;
   box-shadow:
-    0 0 26px #22e5ff33,
-    inset 0 0 22px #22e5ff12;
+    0 0 26px #ffd23f3d,
+    inset 0 0 22px #ffd23f14;
 }
 
-/* Modern kabuk: fırçalanmış metal yüzeyler, cam gibi kartlar */
+/* Modern: demir plaka — fırçalanmış yüzey, perçinli köşeler, kazınmış yazı */
 [data-theme='modern'] .card {
-  background: linear-gradient(180deg, #24282b, #1a1d20);
-  border-color: #383d41;
+  background:
+    repeating-linear-gradient(90deg, #ffffff06 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, #3b4147, #262a2e 42%, #1b1e21);
+  border-color: #4b5157;
   box-shadow:
-    0 8px 20px #00000066,
-    inset 0 1px 0 #ffffff14;
+    inset 0 1px 0 #ffffff2e,
+    inset 0 -1px 0 #00000080,
+    0 10px 24px #000000a6;
 }
 [data-theme='modern'] .card[data-selected] {
   border-color: #cfd6db;
   box-shadow:
-    0 10px 26px #00000080,
-    inset 0 1px 0 #ffffff1f;
+    inset 0 1px 0 #ffffff3d,
+    0 12px 28px #000000b3,
+    0 0 0 1px #cfd6db66;
 }
+[data-theme='modern'] .card span.truncate {
+  color: #f0f5f9;
+  text-shadow:
+    0 1px 0 #000000a6,
+    0 -1px 0 #ffffff14;
+}
+/* Kart adının olduğu şerit plakanın görünen yüzü: fırça izi + üst pah */
+[data-theme='modern'] .card > div:last-child {
+  position: relative;
+  background:
+    repeating-linear-gradient(90deg, #ffffff0a 0 1px, transparent 1px 3px),
+    linear-gradient(115deg, #ffffff0f 0 18%, transparent 36%),
+    linear-gradient(180deg, #555e66, #343b41 55%, #262b30);
+  box-shadow:
+    inset 0 1px 0 #ffffff3d,
+    inset 0 -1px 0 #00000080;
+}
+/* Plakanın dört köşesindeki perçinler */
+[data-theme='modern'] .card > div:last-child::before {
+  content: '';
+  position: absolute;
+  inset: 6px 7px;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 0 0,
+      #f4f8fb 0 2px,
+      #9aa4ad 2px 3.4px,
+      #00000099 3.4px 4.6px,
+      transparent 4.6px
+    ),
+    radial-gradient(
+      circle at 100% 0,
+      #f4f8fb 0 2px,
+      #9aa4ad 2px 3.4px,
+      #00000099 3.4px 4.6px,
+      transparent 4.6px
+    ),
+    radial-gradient(
+      circle at 0 100%,
+      #f4f8fb 0 2px,
+      #9aa4ad 2px 3.4px,
+      #00000099 3.4px 4.6px,
+      transparent 4.6px
+    ),
+    radial-gradient(
+      circle at 100% 100%,
+      #f4f8fb 0 2px,
+      #9aa4ad 2px 3.4px,
+      #00000099 3.4px 4.6px,
+      transparent 4.6px
+    );
+}
+
 [data-theme='modern'] .titlebar {
-  background: linear-gradient(180deg, #2a2e32, #1b1e21);
-  box-shadow: inset 0 -1px 0 #ffffff12;
+  background:
+    repeating-linear-gradient(90deg, #ffffff05 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, #343a3f, #1e2125);
+  box-shadow: inset 0 -1px 0 #00000080;
 }
 [data-theme='modern'] .sidebar {
-  background: linear-gradient(180deg, #15171a, #101214);
-  box-shadow: inset -1px 0 0 #ffffff0f;
+  background:
+    repeating-linear-gradient(90deg, #ffffff04 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, #1a1d20, #121416);
+  box-shadow: inset -1px 0 0 #ffffff14;
 }
 [data-theme='modern'] .search-field {
-  background: linear-gradient(180deg, #2b2f33, #202427);
-  border-color: #3d4247;
+  background:
+    repeating-linear-gradient(90deg, #ffffff05 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, #2f3439, #212529);
+  border-color: #4b5157;
   color: #e9edf0;
   box-shadow:
-    inset 0 1px 0 #ffffff1a,
-    0 4px 14px #00000059;
+    inset 0 1px 0 #ffffff2e,
+    0 4px 14px #00000066;
 }
 [data-theme='modern'] .page-title {
   color: #eef3f6;
   letter-spacing: -0.02em;
+  text-shadow:
+    0 1px 0 #000000a6,
+    0 -1px 0 #ffffff1a;
 }
 [data-theme='modern'] .panel {
-  background: linear-gradient(180deg, #212528, #17191c);
-  border-color: #3a3f44;
+  background:
+    repeating-linear-gradient(90deg, #ffffff05 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, #2b3035, #17191c);
+  border-color: #4b5157;
   box-shadow:
-    0 20px 60px #000000a6,
-    inset 0 1px 0 #ffffff14;
+    0 20px 60px #000000bf,
+    inset 0 1px 0 #ffffff26;
 }
 
 @utility drag-region {

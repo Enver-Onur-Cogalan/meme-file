@@ -3,7 +3,8 @@ import { motion, type HTMLMotionProps } from 'motion/react'
 import { createElement } from 'react'
 import type { Tag } from '../../../shared/api'
 import { LUCIDE_ICONS } from '../lib/icons'
-import { useTagColor } from '../lib/theme'
+import { useTagColor, useThemeId } from '../lib/theme'
+import { chipSkin } from '../lib/chipStyle'
 import { AnimatedNumber } from './ui'
 import { t } from '../lib/i18n'
 
@@ -65,6 +66,7 @@ export function TagSticker({
   }[size]
   const mapColor = useTagColor()
   const color = mapColor(tag.color)
+  const skin = chipSkin(color, useThemeId())
   const trailing = count || onRemove || hotkey
   return (
     <motion.div
@@ -74,7 +76,8 @@ export function TagSticker({
         paddingRight: trailing ? 4 : dims.pl + 3,
         fontSize: dims.font,
         rotate: tilt,
-        background: off ? 'transparent' : color,
+        ...(off ? { background: 'transparent' } : skin.surface),
+        color: off ? undefined : skin.ink,
         borderRadius: 'var(--chip-radius, 999px)',
         borderWidth: off ? 1.5 : 'var(--chip-border, 1.5px)',
         boxShadow: off ? undefined : 'var(--chip-shadow, none)',
@@ -83,28 +86,24 @@ export function TagSticker({
         fontFamily: 'var(--chip-font, inherit)'
       }}
       className={`chip flex max-w-full shrink-0 items-center gap-[5px] border-solid font-bold whitespace-nowrap select-none ${
-        off ? 'border-dashed border-dim text-mute' : 'border-ink text-ink'
+        off ? 'border-dashed border-dim text-mute' : 'border-ink'
       } ${className}`}
       {...rest}
     >
       {hotkey && (
         <span
-          style={{ color: off ? undefined : color }}
-          className={`flex size-[18px] items-center justify-center rounded-[5px] font-mono text-[11px] ${off ? 'bg-surf' : 'bg-ink'}`}
+          style={{ color: off ? undefined : color, background: off ? undefined : skin.badge }}
+          className="flex size-[18px] items-center justify-center rounded-[5px] font-mono text-[11px]"
         >
           {hotkey}
         </span>
       )}
-      <TagIcon
-        icon={tag.icon}
-        size={dims.icon}
-        color={off ? 'var(--color-mute)' : 'var(--color-ink)'}
-      />
+      <TagIcon icon={tag.icon} size={dims.icon} color={off ? 'var(--color-mute)' : skin.ink} />
       <span className="truncate">{tag.name}</span>
       {count && tag.count !== undefined && (
         <span
-          style={{ color }}
-          className="flex h-5 items-center rounded-full bg-ink px-1.5 font-mono text-[11px] font-medium"
+          style={{ color, background: skin.badge }}
+          className="flex h-5 items-center rounded-full px-1.5 font-mono text-[11px] font-medium"
         >
           <AnimatedNumber value={tag.count} />
         </span>

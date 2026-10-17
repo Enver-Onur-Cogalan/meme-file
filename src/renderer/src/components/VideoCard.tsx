@@ -92,7 +92,7 @@ export const VideoCard = memo(function VideoCard({
       }}
       style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 260px' }}
       data-selected={selected || undefined}
-      className={`card flex cursor-grab flex-col overflow-hidden rounded-[14px] border-2 bg-surf active:cursor-grabbing ${
+      className={`card relative flex cursor-grab flex-col overflow-hidden rounded-[14px] border-2 bg-surf active:cursor-grabbing ${
         selected
           ? 'border-accent shadow-[5px_6px_0_var(--color-ink)]'
           : hover

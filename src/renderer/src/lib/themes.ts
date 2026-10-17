@@ -32,11 +32,11 @@ export const THEMES: ThemePreview[] = [
     labelKey: 'theme.cyber',
     noteKey: 'theme.cyberNote',
     bg: '#0a0e14',
-    surf: '#121a24',
-    line: '#1f3040',
-    text: '#e8fbff',
-    ink: '#03060a',
-    chips: ['#22e5ff', '#ffe14d', '#ff3b6b']
+    surf: '#0f0d06',
+    line: '#ffd23f',
+    text: '#ffeaa0',
+    ink: '#120d00',
+    chips: ['#ffd23f', '#ffe14d', '#ff9f1c']
   },
   {
     id: 'modern',

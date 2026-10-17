@@ -88,3 +88,28 @@ function toHex(h: number, s: number, l: number): string {
     .map((value) => value.toString(16).padStart(2, '0'))
     .join('')}`
 }
+
+/** "#rrggbb" + alfa → rgba(). Tanınmayan değer olduğu gibi döner. */
+export function toRgba(hex: string, alpha: number): string {
+  const rgb = toRgb(hex)
+  return rgb ? `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})` : hex
+}
+
+/** İki rengi oranla karıştırır; 0 = ilk renk, 1 = ikinci renk. */
+export function mix(hex: string, other: string, amount: number): string {
+  const a = toRgb(hex)
+  const b = toRgb(other)
+  if (!a || !b) return hex
+  const channel = (index: number): string =>
+    Math.round(a[index] + (b[index] - a[index]) * amount)
+      .toString(16)
+      .padStart(2, '0')
+  return `#${channel(0)}${channel(1)}${channel(2)}`
+}
+
+function toRgb(hex: string): [number, number, number] | null {
+  const match = /^#?([0-9a-f]{6})$/i.exec(hex.trim())
+  if (!match) return null
+  const value = parseInt(match[1], 16)
+  return [(value >> 16) & 255, (value >> 8) & 255, value & 255]
+}
