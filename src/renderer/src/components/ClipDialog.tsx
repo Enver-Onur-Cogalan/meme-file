@@ -4,7 +4,13 @@ import { useEffect, useRef, useState } from 'react'
 import { DISCORD_LIMIT_BYTES, DISCORD_TARGET_BYTES, type Video } from '../../../shared/api'
 import { errorMessage } from '../lib/actions'
 import { formatPreciseTime, formatSize, stripExtension } from '../lib/format'
-import { drawMemeText, hasMemeText, overlayBytes } from '../lib/memeText'
+import {
+  drawMemeText,
+  hasMemeText,
+  overlayBytes,
+  type MemeSize,
+  type MemeText
+} from '../lib/memeText'
 import { type ClipMode, useStore } from '../lib/store'
 import { Button, DialogHeader, Label, Modal, Segmented, Toggle } from './ui'
 import { useT } from '../lib/i18n'
@@ -16,6 +22,12 @@ const TARGET_BYTES: Record<Target, number | null> = {
   large: 50 * 1024 * 1024
 }
 const MIN_CLIP_MS = 300
+const MEME_SIZE_KEY = 'memeTextSize'
+
+function storedMemeSize(): MemeSize {
+  const value = localStorage.getItem(MEME_SIZE_KEY)
+  return value === 'small' || value === 'medium' ? value : 'large'
+}
 
 export function ClipDialog(): React.JSX.Element {
   const clip = useStore((s) => s.clip)
@@ -65,7 +77,8 @@ function ClipBody({
   const [name, setName] = useState(
     `${stripExtension(video.name)}${mode === 'fit' ? `-${t('clip.suffixDiscord')}` : mode === 'gif' ? '' : `-${t('clip.suffixTrim')}`}`
   )
-  const [meme, setMeme] = useState({ top: '', bottom: '' })
+  // Seçilen yazı boyutu bir sonraki klipte de geçerli olsun.
+  const [meme, setMeme] = useState<MemeText>({ top: '', bottom: '', size: storedMemeSize() })
   const [progress, setProgress] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -479,6 +492,21 @@ function ClipBody({
               }
               placeholder={t('clip.bottomText')}
               className="h-10 rounded-xl border-[1.5px] border-line bg-surf px-3.5 text-[13.5px] outline-none placeholder:text-dim focus:border-mute"
+            />
+            <Segmented
+              layoutId="clip-text-size"
+              value={meme.size}
+              onChange={(size) => {
+                localStorage.setItem(MEME_SIZE_KEY, size)
+                setMeme((current) => ({ ...current, size }))
+              }}
+              color="var(--color-pill)"
+              activeText="var(--color-pill-ink)"
+              options={[
+                { value: 'small', label: t('size.small') },
+                { value: 'medium', label: t('size.medium') },
+                { value: 'large', label: t('size.large') }
+              ]}
             />
           </div>
 

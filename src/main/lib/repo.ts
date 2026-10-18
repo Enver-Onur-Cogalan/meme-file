@@ -699,6 +699,7 @@ export function localizeStarterTags(
 export const DEFAULT_SETTINGS: Settings = {
   language: 'system',
   theme: 'sticker',
+  uiScale: 'large',
   importFolderId: null,
   closeToTray: true,
   launchAtLogin: false,

@@ -24,7 +24,9 @@ function secureWebPreferences(): Electron.WebPreferences {
   }
 }
 
-function loadRenderer(window: BrowserWindow, hash = ''): void {
+function loadRenderer(window: BrowserWindow, hash = '', zoom = 1): void {
+  // Ölçek her yüklemede yeniden uygulanır; yoksa yeni pencere %100 açılıyor.
+  window.webContents.on('did-finish-load', () => window.webContents.setZoomFactor(zoom))
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     void window.loadURL(`${process.env['ELECTRON_RENDERER_URL']}${hash ? `#${hash}` : ''}`)
   } else {
@@ -47,10 +49,18 @@ export class AppWindows {
   private quitting = false
   private registeredShortcut: string | null = null
 
-  constructor(private getCloseToTray: () => boolean) {
+  constructor(
+    private getCloseToTray: () => boolean,
+    private getZoom: () => number = () => 1
+  ) {
     app.on('before-quit', () => {
       this.quitting = true
     })
+  }
+
+  /** Ayarlardaki arayüz ölçeğini açık bütün pencerelere uygular. */
+  applyZoom(factor: number): void {
+    for (const window of this.all()) window.webContents.setZoomFactor(factor)
   }
 
   /** Güncelleme kurulumu gibi durumlarda pencereler tepsiye gizlenmek yerine kapanabilsin. */
@@ -96,7 +106,7 @@ export class AppWindows {
       this.main = null
     })
 
-    loadRenderer(window)
+    loadRenderer(window, '', this.getZoom())
     this.main = window
     return window
   }
@@ -141,7 +151,7 @@ export class AppWindows {
         window.hide()
       }
     })
-    loadRenderer(window, 'quick')
+    loadRenderer(window, 'quick', this.getZoom())
     this.quick = window
   }
 

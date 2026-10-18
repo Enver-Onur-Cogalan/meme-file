@@ -3,14 +3,22 @@
  * önizlemede gösterilir hem de PNG olarak ffmpeg'e gider; böylece gördüğün
  * şey çıktıyla birebir aynı olur.
  */
+export type MemeSize = 'small' | 'medium' | 'large'
+
 export interface MemeText {
   top: string
   bottom: string
+  size: MemeSize
 }
 
 /** Klasik meme görünümü: Impact, beyaz dolgu, kalın siyah kontur. */
 const FONT_STACK = 'Impact, "Arial Black", "Haettenschweiler", sans-serif'
-const FONT_RATIO = 0.115
+/** Yazı yüksekliği videonun yüksekliğine oranla; "büyük" ilk günkü boyut. */
+const FONT_RATIOS: Record<MemeSize, number> = {
+  small: 0.072,
+  medium: 0.092,
+  large: 0.115
+}
 const LINE_RATIO = 1.14
 const STROKE_RATIO = 0.15
 const SIDE_PADDING = 0.05
@@ -33,7 +41,7 @@ export function drawMemeText(
   if (!ctx) return
   ctx.clearRect(0, 0, width, height)
 
-  const fontSize = Math.max(16, Math.round(height * FONT_RATIO))
+  const fontSize = Math.max(12, Math.round(height * FONT_RATIOS[text.size]))
   const lineHeight = fontSize * LINE_RATIO
   const maxWidth = width * (1 - SIDE_PADDING * 2)
   const padding = height * 0.035

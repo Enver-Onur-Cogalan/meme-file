@@ -106,11 +106,21 @@ export interface ImportResult {
 }
 
 export type ThemeId = 'sticker' | 'cyber' | 'modern' | 'classic'
+export type UiScale = 'small' | 'medium' | 'large'
+
+/** Arayüz ölçeği: "büyük" uygulamanın ilk günkü boyutu. */
+export const ZOOM_FACTORS: Record<UiScale, number> = {
+  small: 0.8,
+  medium: 0.9,
+  large: 1
+}
 
 export interface Settings {
   language: LanguageSetting
   /** Arayüz teması */
   theme: ThemeId
+  /** Yazı ve arayüz boyutu */
+  uiScale: UiScale
   /** Sürüklenen videoların kopyalanacağı klasör */
   importFolderId: number | null
   closeToTray: boolean

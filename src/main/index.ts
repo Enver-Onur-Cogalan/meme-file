@@ -2,7 +2,7 @@ import { app, globalShortcut } from 'electron'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
-import type { Settings } from '../shared/api'
+import { ZOOM_FACTORS, type Settings } from '../shared/api'
 import { ClipManager } from './lib/clips'
 import { openDatabase } from './lib/db'
 import { isConvertedCopy, isLibraryVideo, LibraryWatcher } from './lib/library'
@@ -36,7 +36,10 @@ async function start(): Promise<void> {
   setLanguage(settings.language, app.getLocale())
   if (freshInstall) localizeStarterTags(db, t)
 
-  const windows = new AppWindows(() => settings.closeToTray)
+  const windows = new AppWindows(
+    () => settings.closeToTray,
+    () => ZOOM_FACTORS[settings.uiScale]
+  )
 
   // Çok sayıda dosya aynı anda işlenirken arayüzü boğmamak için bildirimleri seyrekleştir.
   let notifyTimer: ReturnType<typeof setTimeout> | null = null
@@ -66,7 +69,9 @@ async function start(): Promise<void> {
 
   const applySettings = (next: Settings): void => {
     const languageChanged = next.language !== settings.language
+    const zoomChanged = next.uiScale !== settings.uiScale
     settings = next
+    if (zoomChanged) windows.applyZoom(ZOOM_FACTORS[next.uiScale])
     setLanguage(next.language, app.getLocale())
     if (languageChanged) windows.updateTrayMenu()
     windows.broadcast('settings:changed', next)

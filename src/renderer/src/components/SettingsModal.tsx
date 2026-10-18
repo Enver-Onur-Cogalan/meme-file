@@ -100,6 +100,23 @@ export function SettingsModal(): React.JSX.Element {
           </section>
 
           <section className="flex flex-col gap-3">
+            <Label>{t('settings.uiScale')}</Label>
+            <Segmented
+              layoutId="settings-scale"
+              value={settings.uiScale}
+              onChange={(value) => void update({ uiScale: value })}
+              color="var(--color-pill)"
+              activeText="var(--color-pill-ink)"
+              options={[
+                { value: 'small', label: t('size.small') },
+                { value: 'medium', label: t('size.medium') },
+                { value: 'large', label: t('size.large') }
+              ]}
+            />
+            <span className="text-[12px] text-dim">{t('settings.uiScaleHint')}</span>
+          </section>
+
+          <section className="flex flex-col gap-3">
             <Label>{t('settings.shortcut')}</Label>
             <div className="flex items-center gap-3">
               <button
