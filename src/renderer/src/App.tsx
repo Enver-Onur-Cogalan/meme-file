@@ -2,6 +2,7 @@ import { MotionConfig } from 'motion/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { BulkClipDialog } from './components/BulkClipDialog'
 import { BootSequence } from './components/BootSequence'
+import { CyberAtmosphere } from './components/CyberAtmosphere'
 import { MenuBar, StatusBar } from './components/ExplorerChrome'
 import { ChipEditor } from './components/ChipEditor'
 import { StatsModal } from './components/StatsModal'
@@ -218,6 +219,7 @@ function MainWindow(): React.JSX.Element {
       <ClipDialog />
       <BulkClipDialog />
       <StatsModal />
+      <CyberAtmosphere />
       <BootSequence />
       <SettingsModal />
       <RenameDialog />

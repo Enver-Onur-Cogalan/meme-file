@@ -21,7 +21,7 @@ export function Toast(): React.JSX.Element {
             animate={{ opacity: 1, scale: 1, rotate: -2, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 16 }}
             transition={{ type: 'spring', stiffness: 520, damping: 22 }}
-            className={`flex h-11 items-center gap-2 rounded-full border-2 border-ink px-5 text-[15px] font-extrabold whitespace-nowrap text-ink shadow-[3px_4px_0_var(--color-ink)] ${TONES[message.tone].bg}`}
+            className={`toast flex h-11 items-center gap-2 rounded-full border-2 border-ink px-5 text-[15px] font-extrabold whitespace-nowrap text-ink shadow-[3px_4px_0_var(--color-ink)] ${TONES[message.tone].bg}`}
           >
             {(() => {
               const Icon = TONES[message.tone].Icon

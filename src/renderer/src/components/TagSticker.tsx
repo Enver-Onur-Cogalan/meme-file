@@ -83,7 +83,8 @@ export function TagSticker({
         boxShadow: off ? undefined : 'var(--chip-shadow, none)',
         letterSpacing: 'var(--chip-tracking, 0)',
         textTransform: 'var(--chip-case, none)' as React.CSSProperties['textTransform'],
-        fontFamily: 'var(--chip-font, inherit)'
+        fontFamily: 'var(--chip-font, inherit)',
+        clipPath: 'var(--chip-clip, none)'
       }}
       className={`chip flex max-w-full shrink-0 items-center gap-[5px] border-solid font-bold whitespace-nowrap select-none ${
         off ? 'border-dashed border-dim text-mute' : 'border-ink'
@@ -99,7 +100,9 @@ export function TagSticker({
         </span>
       )}
       <TagIcon icon={tag.icon} size={dims.icon} color={off ? 'var(--color-mute)' : skin.ink} />
-      <span className="truncate">{tag.name}</span>
+      <span className="chip-label truncate" data-text={tag.name}>
+        {tag.name}
+      </span>
       {count && tag.count !== undefined && (
         <span
           style={{ color, background: skin.badge }}

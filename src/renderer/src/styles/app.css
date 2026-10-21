@@ -4,6 +4,10 @@
 @import '@fontsource/dm-mono/500.css';
 @import '@fontsource/silkscreen/400.css';
 @import '@fontsource/silkscreen/700.css';
+@import '@fontsource/chakra-petch/500.css';
+@import '@fontsource/chakra-petch/600.css';
+@import '@fontsource/chakra-petch/700.css';
+@import '@fontsource/share-tech-mono/400.css';
 
 /* Tasarım: design/*.dc.html ("Sticker Duvarı") */
 @theme {
@@ -108,11 +112,16 @@
   --color-pill: #ffd23f;
   --color-pill-ink: #120d00;
   /* Köşeli HUD rozeti: keskin köşe, ince kontur, neon hale */
-  --chip-radius: 999px;
+  /* Köşeleri kesik HUD rozeti */
+  --chip-radius: 0px;
   --chip-border: 1.5px;
   --chip-shadow: 0 0 10px currentColor;
-  --chip-tracking: 0.01em;
+  --chip-tracking: 0.06em;
   --chip-case: none;
+  --chip-clip: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+  /* Arayüzün tamamı tek tip değişir: başlıklar Chakra Petch, veriler terminal. */
+  --font-sans: 'Chakra Petch', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Share Tech Mono', ui-monospace, Consolas, monospace;
   --shadow-sticker: 0 0 14px #ffd23f40;
   --shadow-accent: 0 0 20px #ffd23f80;
 }
@@ -276,7 +285,7 @@
     inset -1px -1px 0 #ffffff,
     inset 1px 1px 0 #7b7b7b;
 }
-[data-theme='cyber'] .btn {
+[data-theme='cyber'] .btn:not(.btn-primary) {
   border-color: #ffd23f;
   color: #ffeaa0;
   box-shadow: 0 0 10px #ffd23f33;
@@ -523,4 +532,274 @@ body {
   background: var(--color-line);
   border-radius: 999px;
   border: 2px solid var(--color-bg);
+}
+
+/* ---------------- Cyberpunk hareketleri ----------------
+   Ekran bir CRT gibi nefes alır: ızgara kayar, tarama çizgisi geçer,
+   arada sinyal bozulur. Hepsi "hareketi azalt" ayarına saygılı. */
+
+@keyframes cyber-sweep {
+  0% {
+    transform: translateY(-20vh);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.9;
+  }
+  92% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(120vh);
+    opacity: 0;
+  }
+}
+
+@keyframes cyber-drift {
+  0% {
+    background-position:
+      0 0,
+      0 0;
+  }
+  100% {
+    background-position:
+      0 40px,
+      40px 0;
+  }
+}
+
+@keyframes cyber-flicker {
+  0%,
+  96%,
+  100% {
+    opacity: 0;
+  }
+  97% {
+    opacity: 0.35;
+    transform: translateX(-3px);
+  }
+  98% {
+    opacity: 0.2;
+    transform: translateX(2px);
+  }
+  99% {
+    opacity: 0.4;
+    transform: translateX(-1px);
+  }
+}
+
+@keyframes glitch-top {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-2px, -1px);
+  }
+  40% {
+    transform: translate(2px, 1px);
+  }
+  60% {
+    transform: translate(-1px, 0);
+  }
+  80% {
+    transform: translate(1px, -1px);
+  }
+}
+
+@keyframes glitch-bottom {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(2px, 1px);
+  }
+  50% {
+    transform: translate(-2px, -1px);
+  }
+  75% {
+    transform: translate(1px, 1px);
+  }
+}
+
+.cyber-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 61;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.cyber-atmosphere::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(180deg, #ffd23f10 0 1px, transparent 1px 3px);
+}
+
+.cyber-atmosphere .sweep {
+  position: absolute;
+  inset-inline: 0;
+  height: 140px;
+  background: linear-gradient(180deg, transparent, #ffd23f1a 45%, #ffd23f2e 50%, transparent);
+}
+
+.cyber-atmosphere .tear {
+  position: absolute;
+  inset-inline: 0;
+  top: 32%;
+  height: 26px;
+  background: linear-gradient(90deg, #ff3b6b33, #22e5ff33);
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cyber-atmosphere .sweep {
+    animation: cyber-sweep 9s linear infinite;
+  }
+  .cyber-atmosphere .tear {
+    animation: cyber-flicker 7s steps(1) infinite;
+  }
+  [data-theme='cyber'] .notebook {
+    animation: cyber-drift 12s linear infinite;
+  }
+}
+
+/* Chip yazısı: üzerine gelince sinyal bozulur (kırmızı/camgöbeği ayrışma) */
+[data-theme='cyber'] .chip-label {
+  position: relative;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-theme='cyber'] .chip:hover .chip-label::before,
+  [data-theme='cyber'] .chip:hover .chip-label::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  [data-theme='cyber'] .chip:hover .chip-label::before {
+    color: #ff3b6b;
+    clip-path: inset(0 0 52% 0);
+    animation: glitch-top 0.28s steps(2) infinite;
+  }
+  [data-theme='cyber'] .chip:hover .chip-label::after {
+    color: #22e5ff;
+    clip-path: inset(52% 0 0 0);
+    animation: glitch-bottom 0.33s steps(2) infinite;
+  }
+}
+
+/* Kart adı da üzerine gelince titrer */
+@media (prefers-reduced-motion: no-preference) {
+  [data-theme='cyber'] .card:hover span.truncate {
+    animation: glitch-top 0.5s steps(3) infinite;
+  }
+}
+
+/* Oynatıcı Cyberpunk'ta bir izleme terminaline dönüşür. */
+[data-theme='cyber'] .player-shell {
+  border-color: #ffd23f;
+  background: linear-gradient(180deg, #0d0b05, #070705);
+  box-shadow:
+    0 0 40px #ffd23f33,
+    inset 0 0 40px #ffd23f0f;
+}
+
+[data-theme='cyber'] .player-stage {
+  border-color: #ffd23f;
+  box-shadow:
+    inset 0 0 0 1px #ffd23f55,
+    0 0 20px #ffd23f33;
+}
+
+/* Görüntünün üstünde tarama çizgisi ve köşe parantezleri */
+[data-theme='cyber'] .player-stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: repeating-linear-gradient(180deg, #ffd23f12 0 1px, transparent 1px 4px);
+  box-shadow:
+    inset 14px 14px 0 -12px #ffd23f,
+    inset -14px 14px 0 -12px #ffd23f,
+    inset 14px -14px 0 -12px #ffd23f,
+    inset -14px -14px 0 -12px #ffd23f;
+}
+
+/* İlerleme çubuğu bloklara bölünür: bir HUD göstergesi gibi */
+[data-theme='cyber'] .player-track {
+  border-radius: 0;
+  border-color: #ffd23f66;
+  background: repeating-linear-gradient(90deg, #ffd23f1f 0 6px, transparent 6px 8px), #0b0a06;
+}
+
+[data-theme='cyber'] .player-track > div:first-child {
+  border-radius: 0;
+  background:
+    repeating-linear-gradient(90deg, #ffd23f 0 6px, transparent 6px 8px),
+    linear-gradient(180deg, #ffd23f, #ff9f1c);
+  box-shadow: 0 0 12px #ffd23f99;
+}
+
+[data-theme='cyber'] .player-title {
+  font-family: var(--font-sans);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #ffeaa0;
+  text-shadow: 0 0 14px #ffd23f66;
+}
+
+/* Oynatıcı açılırken sinyale kilitlenme: kısa bir parlama ve açılma */
+@keyframes cyber-lock {
+  0% {
+    clip-path: inset(48% 0 48% 0);
+    filter: brightness(2.4) saturate(0.4);
+  }
+  55% {
+    clip-path: inset(0 0 0 0);
+    filter: brightness(1.35);
+  }
+  70% {
+    filter: brightness(0.85);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-theme='cyber'] .player-shell {
+    animation: cyber-lock 0.42s ease-out;
+  }
+}
+
+/* Bildirim de temanın diliyle konuşur: terminal satırı / 98 kutusu */
+[data-theme='cyber'] .toast {
+  border-radius: 0;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  clip-path: polygon(
+    10px 0,
+    100% 0,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    0 100%,
+    0 10px
+  );
+  box-shadow: 0 0 22px currentColor;
+}
+
+[data-theme='classic'] .toast {
+  border-radius: 2px;
+  border-width: 0;
+  font-family: var(--font-display);
+  font-size: 11px;
+  box-shadow:
+    inset 1px 1px 0 #ffffff,
+    inset -1px -1px 0 #7b7b7b,
+    2px 2px 0 #00000055;
 }

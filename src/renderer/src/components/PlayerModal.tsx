@@ -54,7 +54,7 @@ export function PlayerModal({ video }: { video: Video | undefined }): React.JSX.
             animate={{ opacity: 1, scale: 1, rotate: 0, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, rotate: 1, y: 12 }}
             transition={{ type: 'spring', stiffness: 420, damping: 30 }}
-            className="flex max-h-full w-full max-w-[1120px] flex-col overflow-hidden rounded-[20px] border-2 border-text bg-bg shadow-[8px_10px_0_var(--color-ink)]"
+            className="player-shell flex max-h-full w-full max-w-[1120px] flex-col overflow-hidden rounded-[20px] border-2 border-text bg-bg shadow-[8px_10px_0_var(--color-ink)]"
           >
             <PlayerBody
               key={video.id}
@@ -175,7 +175,7 @@ function PlayerBody({
     <>
       <div className="flex min-h-0">
         <div className="flex min-w-0 grow flex-col gap-3 bg-side p-[18px]">
-          <div className="relative overflow-hidden rounded-xl border-2 border-ink bg-ink">
+          <div className="player-stage relative overflow-hidden rounded-xl border-2 border-ink bg-ink">
             <video
               ref={ref}
               src={window.api.mediaUrl(video.playbackPath)}
@@ -234,7 +234,7 @@ function PlayerBody({
             }}
             onPointerMove={(event) => scrubbing && seekFromPointer(event.clientX)}
             onPointerUp={() => setScrubbing(false)}
-            className="group relative h-3 cursor-pointer rounded-full border-[1.5px] border-ink bg-surf"
+            className="player-track group relative h-3 cursor-pointer rounded-full border-[1.5px] border-ink bg-surf"
           >
             <div
               className="absolute inset-y-0 left-0 rounded-full bg-accent"
@@ -326,7 +326,7 @@ function PlayerBody({
         <div className="flex w-[320px] shrink-0 flex-col gap-[18px] overflow-y-auto px-[22px] py-5">
           <div className="flex items-start gap-2.5">
             <div className="flex min-w-0 grow flex-col gap-1">
-              <div className="text-[22px] leading-[1.15] font-extrabold tracking-[-0.01em] break-words">
+              <div className="player-title text-[22px] leading-[1.15] font-extrabold tracking-[-0.01em] break-words">
                 {stripExtension(video.name)}
               </div>
               <div className="font-mono text-[11.5px] text-mute">
