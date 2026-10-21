@@ -902,20 +902,41 @@ body {
   opacity: 1;
 }
 
-/* Sticker Duvarı: üzerine gelince kâğıdın köşesi kıvrılır */
+/* Sticker Duvarı: üzerine gelince kâğıdın köşesi belirgin biçimde kıvrılır.
+   Alt kenar zemini (kesilmiş köşe), sol kenar kâğıdın arka yüzünü gösterir. */
 [data-theme='sticker'] .card::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  z-index: 3;
+  pointer-events: none;
+  border-style: solid;
+  border-width: 0;
+  border-color: transparent transparent var(--color-bg) #efe2c4;
+  filter: drop-shadow(-3px -3px 3px rgba(0, 0, 0, 0.55));
+  transition: border-width 0.22s cubic-bezier(0.22, 1, 0.3, 1);
+}
+
+[data-theme='sticker'] .card:hover::after {
+  border-width: 0 0 38px 38px;
+}
+
+/* Kıvrılan köşenin bıraktığı kırışık izi */
+[data-theme='sticker'] .card::before {
   content: '';
   position: absolute;
   right: 0;
   bottom: 0;
   z-index: 2;
   pointer-events: none;
-  border-style: solid;
-  border-width: 0;
-  border-color: transparent transparent var(--color-bg) var(--color-line);
-  transition: border-width 0.18s ease;
+  width: 38px;
+  height: 38px;
+  opacity: 0;
+  background: radial-gradient(120% 120% at 100% 100%, rgba(0, 0, 0, 0.45), transparent 62%);
+  transition: opacity 0.22s ease;
 }
 
-[data-theme='sticker'] .card:hover::after {
-  border-width: 0 0 20px 20px;
+[data-theme='sticker'] .card:hover::before {
+  opacity: 1;
 }
