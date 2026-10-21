@@ -1,6 +1,8 @@
 import { MotionConfig } from 'motion/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { BulkClipDialog } from './components/BulkClipDialog'
+import { BootSequence } from './components/BootSequence'
+import { MenuBar, StatusBar } from './components/ExplorerChrome'
 import { ChipEditor } from './components/ChipEditor'
 import { StatsModal } from './components/StatsModal'
 import { ClipDialog } from './components/ClipDialog'
@@ -193,6 +195,10 @@ function MainWindow(): React.JSX.Element {
   return (
     <div className="relative flex h-full flex-col">
       <TitleBar />
+      {/* Old School 98: üstte menü, altta durum çubuğu. */}
+      {settings?.theme === 'classic' && (
+        <MenuBar onMenu={setMenu} onAddFolder={() => void addFolder()} />
+      )}
       <div className="flex min-h-0 grow">
         <Sidebar onAddFolder={() => void addFolder()} onMenu={setMenu} />
         {view === 'inbox' && folderId === null ? (
@@ -205,12 +211,14 @@ function MainWindow(): React.JSX.Element {
           />
         )}
       </div>
+      {settings?.theme === 'classic' && <StatusBar />}
       <DropOverlay visible={dropping} onAddFolder={() => void addFolder()} />
       <PlayerModal video={playerVideo} />
       <ChipEditor />
       <ClipDialog />
       <BulkClipDialog />
       <StatsModal />
+      <BootSequence />
       <SettingsModal />
       <RenameDialog />
       <ConfirmDialog />

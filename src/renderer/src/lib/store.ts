@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { resolveLanguage, type Language } from '../../../shared/i18n'
 import { adjacentId, randomId } from './playback'
 import { applyTheme } from './themes'
+import { configureSound, play } from './sound'
 import type {
   LibraryFolder,
   LibraryStats,
@@ -197,6 +198,7 @@ export const useStore = create<State & Actions>()((set, get) => ({
             navigator.language
           )),
           applyTheme(freshSettings.theme),
+          configureSound(freshSettings.sounds, freshSettings.theme),
           {
             settings: freshSettings,
             language: resolveLanguage(freshSettings.language, navigator.language)
@@ -287,6 +289,7 @@ export const useStore = create<State & Actions>()((set, get) => ({
   },
   setSettings(settings) {
     applyTheme(settings.theme)
+    configureSound(settings.sounds, settings.theme)
     document.documentElement.lang = resolveLanguage(settings.language, navigator.language)
     set({ settings, language: resolveLanguage(settings.language, navigator.language) })
   },
@@ -300,6 +303,7 @@ export const useStore = create<State & Actions>()((set, get) => ({
     }
   },
   showToast(text, tone = 'ok') {
+    play(tone === 'error' ? 'error' : tone === 'info' ? 'click' : 'copy')
     clearTimeout(toastTimer)
     set({ toast: { id: Date.now(), text, tone } })
     toastTimer = setTimeout(() => set({ toast: null }), 1800)

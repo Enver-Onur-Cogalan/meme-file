@@ -15,6 +15,7 @@ import type { Tag, Video } from '../../../shared/api'
 import type { MenuItem } from '../components/ContextMenu'
 import { markInternalDrag } from './dragState'
 import { useStore } from './store'
+import { play } from './sound'
 import { t } from './i18n'
 
 export async function copyVideos(ids: number[]): Promise<void> {
@@ -27,6 +28,7 @@ export async function copyVideos(ids: number[]): Promise<void> {
 }
 
 export function dragVideos(ids: number[]): void {
+  play('drag')
   if (ids.length === 0) return
   markInternalDrag()
   window.api.startDrag(ids)

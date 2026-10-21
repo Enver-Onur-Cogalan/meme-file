@@ -6,6 +6,7 @@ import { TagSticker } from '../components/TagSticker'
 import { AnimatedNumber, Button, Kbd, Label } from '../components/ui'
 import { toggleFavorite } from '../lib/actions'
 import { folderName, formatDuration, formatSize, stripExtension } from '../lib/format'
+import { play } from '../lib/sound'
 import { useStore } from '../lib/store'
 import { useCountParts, useT } from '../lib/i18n'
 
@@ -49,6 +50,7 @@ export function InboxView(): React.JSX.Element {
   const toggleTag = (tagId: number): void => {
     if (!current) return
     const has = current.tagIds.includes(tagId)
+    play('chip')
     void window.api.setVideoTags(
       current.id,
       has ? current.tagIds.filter((id) => id !== tagId) : [...current.tagIds, tagId]

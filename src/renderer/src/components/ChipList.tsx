@@ -6,6 +6,7 @@ import { normalizeForSearch } from '../../../shared/search'
 import { confirmDeleteTag } from '../lib/actions'
 import { useT } from '../lib/i18n'
 import { spring, useFeel } from '../lib/motion'
+import { play } from '../lib/sound'
 import { useStore } from '../lib/store'
 import { tiltFor } from '../lib/tags'
 import type { MenuState } from './ContextMenu'
@@ -228,6 +229,7 @@ export function ChipList({ onMenu }: { onMenu(menu: MenuState): void }): React.J
                     suppressClick.current = false
                     return
                   }
+                  play('chip')
                   toggleTagFilter(tag.id)
                 }}
                 onPointerCancel={() => {

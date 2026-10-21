@@ -121,6 +121,8 @@ export interface Settings {
   theme: ThemeId
   /** Yazı ve arayüz boyutu */
   uiScale: UiScale
+  /** Arayüz sesleri */
+  sounds: boolean
   /** Sürüklenen videoların kopyalanacağı klasör */
   importFolderId: number | null
   closeToTray: boolean

@@ -700,6 +700,7 @@ export const DEFAULT_SETTINGS: Settings = {
   language: 'system',
   theme: 'sticker',
   uiScale: 'large',
+  sounds: true,
   importFolderId: null,
   closeToTray: true,
   launchAtLogin: false,

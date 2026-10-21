@@ -1,5 +1,6 @@
 import { Download, RotateCw } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
+import { formatSize } from '../lib/format'
 import { useStore } from '../lib/store'
 import { AppLogo } from './AppLogo'
 import { useT } from '../lib/i18n'
@@ -7,6 +8,7 @@ import { useT } from '../lib/i18n'
 export function TitleBar(): React.JSX.Element {
   const isMac = window.api.platform === 'darwin'
   const update = useStore((s) => s.update)
+  const theme = useStore((s) => s.settings?.theme)
   const t = useT()
   return (
     <div className="titlebar drag-region flex h-9 shrink-0 items-center bg-side">
@@ -14,8 +16,11 @@ export function TitleBar(): React.JSX.Element {
         className={`flex items-center gap-2 text-[13px] font-extrabold ${isMac ? 'pl-20' : 'pl-3.5'}`}
       >
         <AppLogo size={20} />
-        <span>meme file</span>
+        <span>{theme === 'cyber' ? 'meme file :: [NEON_PRISM_OS]' : 'meme file'}</span>
       </div>
+      <span className="grow" />
+      {/* Cyberpunk'ta başlık çubuğu bir durum şeridine dönüşür. */}
+      {theme === 'cyber' && <StatusStrip />}
       <span className="grow" />
       {/* Windows'ta sağdaki pencere butonları için boşluk bırakılır. */}
       <div className={`no-drag flex items-center ${isMac ? 'pr-3' : 'pr-[150px]'}`}>
@@ -49,6 +54,29 @@ export function TitleBar(): React.JSX.Element {
           )}
         </AnimatePresence>
       </div>
+    </div>
+  )
+}
+
+/** Kütüphanenin canlı sayıları: dosya, boyut, Gelen Kutusu. */
+function StatusStrip(): React.JSX.Element {
+  const stats = useStore((s) => s.stats)
+  const videos = useStore((s) => s.videos)
+  const bytes = videos.reduce((total, video) => total + video.size, 0)
+  return (
+    <div className="hidden font-mono text-[10.5px] tracking-[0.08em] text-accent/80 sm:flex sm:items-center sm:gap-3">
+      <span>{stats.total} FILES</span>
+      <span className="text-accent/40">{'//'}</span>
+      <span>{formatSize(bytes)}</span>
+      <span className="text-accent/40">{'//'}</span>
+      <span>INBOX {stats.inbox}</span>
+      <span className="text-accent/40">{'//'}</span>
+      <motion.span
+        animate={{ opacity: [1, 0.35, 1] }}
+        transition={{ repeat: Infinity, duration: 2.4, ease: 'easeInOut' }}
+      >
+        LINK OK
+      </motion.span>
     </div>
   )
 }

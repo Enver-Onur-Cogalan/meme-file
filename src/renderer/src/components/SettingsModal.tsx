@@ -6,6 +6,7 @@ import { folderName } from '../lib/format'
 import { useStore } from '../lib/store'
 import { motion } from 'motion/react'
 import { THEMES, type ThemePreview } from '../lib/themes'
+import { play } from '../lib/sound'
 import { spring } from '../lib/motion'
 import { Button, DialogHeader, Kbd, Label, Modal, Segmented, Toggle } from './ui'
 import { useT } from '../lib/i18n'
@@ -176,6 +177,14 @@ export function SettingsModal(): React.JSX.Element {
 
           <section className="flex flex-col gap-3.5">
             <Label>{t('settings.app')}</Label>
+            <Toggle
+              checked={settings.sounds}
+              onChange={(value) => {
+                void update({ sounds: value })
+                if (value) play('chip')
+              }}
+              label={t('settings.sounds')}
+            />
             <Toggle
               checked={settings.closeToTray}
               onChange={(value) => void update({ closeToTray: value })}

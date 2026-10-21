@@ -20,6 +20,7 @@ import type { MenuState } from '../components/ContextMenu'
 import { TagSticker } from '../components/TagSticker'
 import { AnimatedNumber, Button, Kbd } from '../components/ui'
 import { spring } from '../lib/motion'
+import { play } from '../lib/sound'
 import { VideoGrid } from '../components/VideoGrid'
 import { copyVideos, toggleFavorite } from '../lib/actions'
 import { folderName } from '../lib/format'
@@ -289,7 +290,10 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
             count={selection.length}
             onCopy={() => void copyVideos(selection)}
             onFavorite={() => void toggleFavorite(selectedVideos)}
-            onTag={(tagId, add) => void window.api.addTagToVideos(selection, tagId, add)}
+            onTag={(tagId, add) => {
+              play('chip')
+              void window.api.addTagToVideos(selection, tagId, add)
+            }}
             onClear={() => store.select([])}
             selectedVideos={selectedVideos}
           />

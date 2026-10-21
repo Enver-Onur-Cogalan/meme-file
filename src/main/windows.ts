@@ -20,7 +20,9 @@ function secureWebPreferences(): Electron.WebPreferences {
     preload: join(__dirname, '../preload/index.js'),
     sandbox: true,
     contextIsolation: true,
-    nodeIntegration: false
+    nodeIntegration: false,
+    // Arayüz sesleri kullanıcı bir yere tıklamadan da çalabilsin.
+    autoplayPolicy: 'no-user-gesture-required'
   }
 }
 
