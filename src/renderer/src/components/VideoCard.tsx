@@ -219,7 +219,11 @@ export const VideoCard = memo(function VideoCard({
 
       <div className="flex flex-col gap-[9px] px-3 pt-2.5 pb-3">
         <div className="flex min-w-0 items-center gap-1.5">
-          <span className="grow truncate text-[13.5px] font-semibold" title={video.name}>
+          <span
+            className="card-title grow truncate text-[13.5px] font-semibold"
+            data-text={video.name}
+            title={video.name}
+          >
             {stripExtension(video.name)}
           </span>
           {video.favorite && (

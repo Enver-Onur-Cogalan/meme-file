@@ -691,10 +691,81 @@ body {
   }
 }
 
-/* Kart adı da üzerine gelince titrer */
+/* Kart adı üzerine gelince bozulur: yatay dilimler kayar, renk ayrışır */
+[data-theme='cyber'] .card-title {
+  position: relative;
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  [data-theme='cyber'] .card:hover span.truncate {
-    animation: glitch-top 0.5s steps(3) infinite;
+  [data-theme='cyber'] .card:hover .card-title::before,
+  [data-theme='cyber'] .card:hover .card-title::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  [data-theme='cyber'] .card:hover .card-title::before {
+    color: #ff3b6b;
+    animation: glitch-slice-a 0.9s steps(1) infinite;
+  }
+  [data-theme='cyber'] .card:hover .card-title::after {
+    color: #22e5ff;
+    animation: glitch-slice-b 1.1s steps(1) infinite;
+  }
+}
+
+@keyframes glitch-slice-a {
+  0%,
+  100% {
+    clip-path: inset(0 0 74% 0);
+    transform: translateX(-4px);
+  }
+  18% {
+    clip-path: inset(22% 0 52% 0);
+    transform: translateX(5px);
+  }
+  36% {
+    clip-path: inset(48% 0 28% 0);
+    transform: translateX(-5px);
+  }
+  54% {
+    clip-path: inset(66% 0 8% 0);
+    transform: translateX(4px);
+  }
+  72% {
+    clip-path: inset(10% 0 66% 0);
+    transform: translateX(-3px);
+  }
+  90% {
+    clip-path: inset(0 0 100% 0);
+    transform: translateX(0);
+  }
+}
+
+@keyframes glitch-slice-b {
+  0%,
+  100% {
+    clip-path: inset(62% 0 10% 0);
+    transform: translateX(4px);
+  }
+  22% {
+    clip-path: inset(30% 0 48% 0);
+    transform: translateX(-5px);
+  }
+  44% {
+    clip-path: inset(8% 0 72% 0);
+    transform: translateX(5px);
+  }
+  66% {
+    clip-path: inset(52% 0 24% 0);
+    transform: translateX(-4px);
+  }
+  84% {
+    clip-path: inset(0 0 100% 0);
+    transform: translateX(0);
   }
 }
 
@@ -802,4 +873,49 @@ body {
     inset 1px 1px 0 #ffffff,
     inset -1px -1px 0 #7b7b7b,
     2px 2px 0 #00000055;
+}
+
+/* Modern: üzerine gelince plakanın üstünden ışık geçer */
+[data-theme='modern'] .card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    115deg,
+    transparent 38%,
+    #ffffff1f 47%,
+    #ffffff0a 52%,
+    transparent 62%
+  );
+  transform: translateX(-55%);
+  opacity: 0;
+  transition:
+    transform 0.65s ease,
+    opacity 0.2s ease;
+}
+
+[data-theme='modern'] .card:hover::before {
+  transform: translateX(55%);
+  opacity: 1;
+}
+
+/* Sticker Duvarı: üzerine gelince kâğıdın köşesi kıvrılır */
+[data-theme='sticker'] .card::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-style: solid;
+  border-width: 0;
+  border-color: transparent transparent var(--color-bg) var(--color-line);
+  transition: border-width 0.18s ease;
+}
+
+[data-theme='sticker'] .card:hover::after {
+  border-width: 0 0 20px 20px;
 }
