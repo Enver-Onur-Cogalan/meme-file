@@ -940,3 +940,25 @@ body {
 [data-theme='sticker'] .card:hover::before {
   opacity: 1;
 }
+
+/* Üzerine gelince kartın kendi ışıması artmaz; sahneyi kıvılcıma bırakır. */
+[data-theme='cyber'] .card:hover {
+  border-color: #ffd23f;
+  box-shadow:
+    0 0 10px #ffd23f33,
+    inset 0 0 18px #ffd23f14;
+}
+
+/* Kıvılcım kartın dışına taşabilsin: kapak ve alt şerit kendi köşelerini
+   zaten kırptığı için kartın kırpması kapatılabiliyor. */
+[data-theme='cyber'] .card {
+  overflow: visible;
+}
+
+[data-theme='cyber'] .card > div:first-child {
+  border-radius: 12px 12px 0 0;
+}
+
+[data-theme='cyber'] .card > div:last-child {
+  border-radius: 0 0 12px 12px;
+}

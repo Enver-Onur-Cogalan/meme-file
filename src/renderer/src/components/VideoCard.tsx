@@ -11,6 +11,8 @@ import {
 import { motion } from 'motion/react'
 import { memo, useState } from 'react'
 import { useFeel } from '../lib/motion'
+import { useThemeId } from '../lib/theme'
+import { ElectricBorder } from './effects/ElectricBorder'
 import { useStore } from '../lib/store'
 import type { Tag, Video } from '../../../shared/api'
 import { DISCORD_LIMIT_BYTES, formatDuration, formatSize, stripExtension } from '../lib/format'
@@ -55,6 +57,8 @@ export const VideoCard = memo(function VideoCard({
   const ready = video.mediaStatus === 'ready' && !thumbFailed
   const frame = Math.min(SPRITE_FRAMES - 1, Math.floor(scrub * SPRITE_FRAMES))
   const feel = useFeel()
+  // Cyberpunk'ta kartın dışını kıvılcım sarar: üzerine gelince canlı, seçiliyken duruyor.
+  const electric = useThemeId() === 'cyber' && (hover || selected)
 
   return (
     <motion.div
@@ -100,6 +104,41 @@ export const VideoCard = memo(function VideoCard({
             : 'border-line'
       }`}
     >
+      {electric && (
+        <>
+          {/* İki ayrı hızda camgöbeği ve kırmızı ark: tek çizgi yerine çakışan kıvılcımlar */}
+          <ElectricBorder
+            className="eb-overlay z-[4]"
+            color="#22e5ff"
+            coreColor="#ecffff"
+            composite="lighter"
+            borderRadius={14}
+            borderOffset={40}
+            displacement={34}
+            chaos={0.2}
+            speed={1.25}
+            lineWidth={2.6}
+            glow={18}
+            showGlowLayers={false}
+            paused={!hover}
+          />
+          <ElectricBorder
+            className="eb-overlay z-[4]"
+            color="#ff2d55"
+            coreColor="#ffe3ea"
+            composite="lighter"
+            borderRadius={14}
+            borderOffset={40}
+            displacement={28}
+            chaos={0.24}
+            speed={1.85}
+            lineWidth={2.2}
+            glow={16}
+            showGlowLayers={false}
+            paused={!hover}
+          />
+        </>
+      )}
       <div
         className="relative aspect-[16/10] overflow-hidden bg-ink"
         onMouseMove={(event) => {
