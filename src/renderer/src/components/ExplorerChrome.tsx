@@ -154,7 +154,7 @@ export function StatusBar(): React.JSX.Element {
       style={{ fontFamily: 'var(--font-display, inherit)' }}
     >
       <Cell>{t('status.objects', { count: videos.length })}</Cell>
-      <Cell>{formatSize(bytes)}</Cell>
+      <Cell>{bytes === 0 ? '0 KB' : formatSize(bytes)}</Cell>
       {selection.length > 0 && <Cell>{t('status.selected', { count: selection.length })}</Cell>}
     </div>
   )

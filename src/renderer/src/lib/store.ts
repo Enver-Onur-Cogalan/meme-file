@@ -118,6 +118,7 @@ interface Actions {
 
 const EMPTY_STATS: LibraryStats = {
   total: 0,
+  bytes: 0,
   inbox: 0,
   favorites: 0,
   duplicates: 0,

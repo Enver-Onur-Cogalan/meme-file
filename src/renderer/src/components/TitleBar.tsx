@@ -61,13 +61,11 @@ export function TitleBar(): React.JSX.Element {
 /** Kütüphanenin canlı sayıları: dosya, boyut, Gelen Kutusu. */
 function StatusStrip(): React.JSX.Element {
   const stats = useStore((s) => s.stats)
-  const videos = useStore((s) => s.videos)
-  const bytes = videos.reduce((total, video) => total + video.size, 0)
   return (
     <div className="hidden font-mono text-[10.5px] tracking-[0.08em] text-accent/80 sm:flex sm:items-center sm:gap-3">
       <span>{stats.total} FILES</span>
       <span className="text-accent/40">{'//'}</span>
-      <span>{formatSize(bytes)}</span>
+      <span>{formatSize(stats.bytes)}</span>
       <span className="text-accent/40">{'//'}</span>
       <span>INBOX {stats.inbox}</span>
       <span className="text-accent/40">{'//'}</span>

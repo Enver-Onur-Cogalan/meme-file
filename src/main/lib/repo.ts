@@ -150,6 +150,7 @@ export function getStats(db: DatabaseSync): LibraryStats {
     .prepare(
       `SELECT
         count(*) AS total,
+        coalesce(sum(size), 0) AS bytes,
         coalesce(sum(status = 'inbox'), 0) AS inbox,
         coalesce(sum(favorite = 1), 0) AS favorites,
         coalesce(sum(media_status = 'pending'), 0) AS pendingMedia,

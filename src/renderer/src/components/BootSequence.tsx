@@ -14,14 +14,12 @@ export function BootSequence(): React.JSX.Element {
   const theme = useStore((s) => s.settings?.theme)
   const loaded = useStore((s) => s.loaded)
   const stats = useStore((s) => s.stats)
-  const videos = useStore((s) => s.videos)
   const [done, setDone] = useState(() => sessionStorage.getItem(SEEN_KEY) === '1')
   const [step, setStep] = useState(0)
 
-  const bytes = videos.reduce((total, video) => total + video.size, 0)
   const lines = [
     'NEON_PRISM_OS v' + (useStore.getState().appVersion || '0.0.0'),
-    `SCANNING LIBRARY… ${stats.total} FILES // ${formatSize(bytes)}`,
+    `SCANNING LIBRARY… ${stats.total} FILES // ${formatSize(stats.bytes)}`,
     `INBOX ${stats.inbox} // FAVORITES ${stats.favorites} // LINK OK`,
     'READY'
   ]

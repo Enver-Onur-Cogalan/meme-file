@@ -71,6 +71,8 @@ export interface VideoQuery {
 
 export interface LibraryStats {
   total: number
+  /** Kütüphanedeki videoların toplam boyutu */
+  bytes: number
   inbox: number
   favorites: number
   duplicates: number

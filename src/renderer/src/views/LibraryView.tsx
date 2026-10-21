@@ -21,6 +21,7 @@ import { TagSticker } from '../components/TagSticker'
 import { AnimatedNumber, Button, Kbd } from '../components/ui'
 import { spring } from '../lib/motion'
 import { play } from '../lib/sound'
+import { useThemeId } from '../lib/theme'
 import { VideoGrid } from '../components/VideoGrid'
 import { copyVideos, toggleFavorite } from '../lib/actions'
 import { folderName } from '../lib/format'
@@ -396,6 +397,51 @@ function EmptyState({
   text: string
   action?: React.ReactNode
 }): React.JSX.Element {
+  const theme = useThemeId()
+  // Her tema boşluğu kendi diliyle anlatır: terminal çıktısı, sistem uyarısı…
+  if (theme === 'cyber') {
+    return (
+      <div className="flex grow flex-col items-center justify-center gap-3 pb-16 font-mono">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0.35, 1, 0.35] }}
+          transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut' }}
+          className="text-[32px] font-bold tracking-[0.18em] text-accent"
+          style={{ textShadow: '0 0 18px var(--color-accent)' }}
+        >
+          {'// NO SIGNAL'}
+        </motion.div>
+        <div className="text-[13px] text-accent/70">{title}</div>
+        <div className="max-w-[46ch] text-center text-[12.5px] text-mute">{text}</div>
+        {action}
+      </div>
+    )
+  }
+  if (theme === 'classic') {
+    return (
+      <div className="flex grow items-center justify-center pb-16">
+        <motion.div
+          initial={{ scale: 0.94, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="w-[380px] bg-surf shadow-[inset_1px_1px_0_#ffffff,inset_-1px_-1px_0_#7b7b7b,2px_2px_0_#00000055]"
+        >
+          <div className="flex h-[22px] items-center bg-[linear-gradient(90deg,#008080,#35a3a3)] px-2 text-[11px] text-white">
+            <span style={{ fontFamily: 'var(--font-display, inherit)' }}>Meme File</span>
+          </div>
+          <div className="flex items-start gap-3 p-4">
+            <div className="flex size-9 shrink-0 items-center justify-center border-[1.5px] border-ink bg-accent text-ink">
+              <Icon size={20} strokeWidth={2.25} />
+            </div>
+            <div>
+              <div className="text-[13px] font-bold">{title}</div>
+              <div className="mt-1 text-[12px] text-mute">{text}</div>
+            </div>
+          </div>
+          {action && <div className="flex justify-end px-4 pb-4">{action}</div>}
+        </motion.div>
+      </div>
+    )
+  }
   return (
     <div className="flex grow flex-col items-center justify-center gap-5 pb-16">
       <motion.div
