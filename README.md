@@ -47,7 +47,7 @@ tagging layer on top of them.
 <td valign="top"><b>Stays fast</b><br/>Virtualized grid and SQLite full-text search; smooth 60 FPS scrolling as the library grows.</td>
 </tr>
 <tr>
-<td valign="top"><b>Four themes</b><br/>Sticker Wall, a yellow hologram Cyberpunk, a steel-plate Modern and a Windows 98 Old School, each with its own chips and motion.</td>
+<td valign="top"><b>Four themes with a soul</b><br/>Sticker Wall, a yellow hologram Cyberpunk, a steel-plate Modern and a Windows 98 Old School — each with its own typography, chips, motion and sound.</td>
 <td valign="top"><b>Drop it in</b><br/>Drag files onto the window or press <code>Ctrl+V</code>; the Inbox even suggests chips from the file name.</td>
 <td valign="top"><b>Meme text</b><br/>Add top and bottom captions to a clip, exactly as you see them in the preview.</td>
 </tr>
@@ -99,14 +99,16 @@ The estimated size updates live; the encoder picks bitrate, resolution and frame
 **Editing**
 
 - Trim, fit to 10 MB / 50 MB, or make a GIF; the result is copied to the clipboard, and new videos inherit the chips
-- Burn **meme text** onto a clip: top and bottom captions, drawn in the preview exactly as they come out
+- Burn **meme text** onto a clip: top and bottom captions in three sizes, drawn in the preview exactly as they come out
 - Select several videos and fit them all at once from the selection bar
 - Rename (the file on disk too) and move to the Recycle Bin; moved or renamed files keep their chips
 
 **App**
 
 - **Stats** screen: totals, the last 12 months, most sent videos, chip spread and records
-- Four themes with their own chips, backgrounds and motion
+- Four themes with their own chips, backgrounds, motion and sound
+- Interface sounds generated on the fly, one voice per theme — switch off in Settings
+- Text size for the whole interface (small / medium / large)
 - English and Turkish UI, following the system language
 - System tray, start with Windows, automatic updates from GitHub Releases, JSON backup & restore
 
@@ -124,7 +126,12 @@ The estimated size updates live; the encoder picks bitrate, resolution and frame
 
 ## Themes
 
-Themes are not just a palette swap: the shell, the card frames, the chip surface, the typeface and the motion profile all change together. Your chip colors stay in the database and are translated onto the theme's surface.
+Themes are not a palette swap: the shell, the card frames, the chip surface, the typeface, the motion profile and even the interface sounds change together. Your chip colors stay in the database and are translated onto the theme's surface.
+
+- **Sticker Wall** — lined notebook, bouncy springs, a paper corner that folds up on hover, paper-rustle sounds
+- **Cyberpunk** — boots like an OS (`NEON_PRISM_OS`), live status strip, CRT scanlines, Chakra Petch / Share Tech Mono, hologram chips whose labels tear into red and cyan on hover, cyan-and-red electric arcs crackling around the hovered card, a terminal-style player, alarm-red buttons
+- **Modern** — brushed steel plates, rivets on the name strip, a light sweeping across the card, calm slow motion
+- **Old School 98** — grey bevels, teal title bar, a real File/Edit/View/Help menu, a status bar (`17 objects · 20.0 MB`), classic dialog boxes and system beeps
 
 | **Sticker Wall** · warm dark, lined notebook                               | **Cyberpunk** · yellow hologram                                             |
 | -------------------------------------------------------------------------- | --------------------------------------------------------------------------- |

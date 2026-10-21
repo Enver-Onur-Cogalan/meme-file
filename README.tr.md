@@ -94,14 +94,16 @@ Tahmini boyut canlı güncellenir; kodlayıcı hedefe göre bit hızı, çözün
 **Düzenleme**
 
 - Kırp, 10 MB / 50 MB'a sığdır ya da GIF yap; sonuç panoya kopyalanır, yeni videolar chip'leri devralır
-- Klibe **meme yazısı** bas: üst ve alt yazı, önizlemede gördüğünle birebir aynı çıkar
+- Klibe **meme yazısı** bas: üç boyutta üst ve alt yazı, önizlemede gördüğünle birebir aynı çıkar
 - Birden fazla video seçip hepsini seçim çubuğundan tek seferde sığdır
 - Yeniden adlandırma (diskteki dosya da) ve Geri Dönüşüm Kutusu'na taşıma; taşınan ya da adı değişen dosyalar chip'lerini korur
 
 **Uygulama**
 
 - **İstatistik** ekranı: toplamlar, son 12 ay, en çok gönderilenler, chip dağılımı ve rekorlar
-- Kendi chip'i, arka planı ve hareketi olan dört tema
+- Kendi chip'i, arka planı, hareketi ve sesi olan dört tema
+- Anlık üretilen arayüz sesleri, her temanın kendi tınısı — ayarlardan kapatılabiliyor
+- Arayüz boyutu (küçük / orta / büyük)
 - Türkçe ve İngilizce arayüz, sistem diline göre
 - Sistem tepsisi, Windows ile başlatma, GitHub Releases'tan otomatik güncelleme, JSON yedekleme
 
@@ -119,7 +121,12 @@ Tahmini boyut canlı güncellenir; kodlayıcı hedefe göre bit hızı, çözün
 
 ## Temalar
 
-Tema sadece palet değiştirmiyor: kabuk, kart çerçevesi, chip yüzeyi, yazı tipi ve hareket profili birlikte değişiyor. Chip renkleri veritabanında olduğu gibi kalıyor, ekrana çizilirken temanın yüzeyine çevriliyor.
+Tema palet değiştirmekten ibaret değil: kabuk, kart çerçevesi, chip yüzeyi, yazı tipi, hareket profili ve arayüz sesleri birlikte değişiyor. Chip renkleri veritabanında olduğu gibi kalıyor, ekrana çizilirken temanın yüzeyine çevriliyor.
+
+- **Sticker Duvarı** — çizgili defter, zıplayan yaylar, karta gelince kıvrılan kâğıt köşesi, kâğıt hışırtısı sesleri
+- **Cyberpunk** — bir işletim sistemi gibi açılıyor (`NEON_PRISM_OS`), canlı durum şeridi, CRT tarama çizgileri, Chakra Petch / Share Tech Mono, üzerine gelince yazısı kırmızı-camgöbeği ayrışan hologram chip'ler, kartın etrafında çatırdayan camgöbeği-kırmızı elektrik arkı, terminal görünümlü oynatıcı, alarm gibi yanıp sönen düğmeler
+- **Modern** — fırçalanmış çelik plakalar, ad şeridinde perçinler, kartın üstünden geçen ışık, sakin ve yavaş hareket
+- **Old School 98** — gri kabartmalar, teal başlık çubuğu, gerçek Dosya/Düzen/Görünüm/Yardım menüsü, durum çubuğu (`17 nesne · 20.0 MB`), klasik uyarı pencereleri ve sistem bip'leri
 
 | **Sticker Duvarı** · sıcak koyu, çizgili defter                               | **Cyberpunk** · sarı hologram                                                |
 | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
