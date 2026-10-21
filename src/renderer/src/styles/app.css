@@ -285,10 +285,53 @@
     inset -1px -1px 0 #ffffff,
     inset 1px 1px 0 #7b7b7b;
 }
+/* İkincil düğmeler okunur kalsın: koyu panel, net çerçeve, parlak yazı. */
 [data-theme='cyber'] .btn:not(.btn-primary) {
-  border-color: #ffd23f;
-  color: #ffeaa0;
-  box-shadow: 0 0 10px #ffd23f33;
+  border-width: 1.5px;
+  border-color: #ffd23fcc;
+  background: #14100608;
+  background-color: #141006;
+  color: #ffe9a8;
+  text-shadow: 0 0 8px #ffd23f66;
+  box-shadow:
+    0 0 10px #ffd23f2e,
+    inset 0 0 12px #ffd23f14;
+}
+
+/* Üzerine gelince alarm verir gibi kırmızı yanıp söner. */
+@keyframes cyber-alert {
+  0%,
+  49% {
+    color: #ff5c7a;
+    border-color: #ff2d55;
+    text-shadow: 0 0 10px #ff2d5599;
+    box-shadow:
+      0 0 14px #ff2d5566,
+      inset 0 0 14px #ff2d551f;
+  }
+  50%,
+  100% {
+    color: #ffe3ea;
+    border-color: #ff8aa3;
+    text-shadow: 0 0 16px #ff2d55cc;
+    box-shadow:
+      0 0 24px #ff2d55a6,
+      inset 0 0 18px #ff2d5533;
+  }
+}
+
+[data-theme='cyber'] .btn:not(.btn-primary):hover {
+  color: #ff5c7a;
+  border-color: #ff2d55;
+  box-shadow:
+    0 0 16px #ff2d5580,
+    inset 0 0 14px #ff2d5526;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-theme='cyber'] .btn:not(.btn-primary):hover {
+    animation: cyber-alert 0.66s steps(1) infinite;
+  }
 }
 [data-theme='cyber'] .btn-primary {
   box-shadow:
