@@ -339,10 +339,11 @@
     inset -9px -9px 0 -8px #ffd23f;
 }
 [data-theme='cyber'] .card[data-selected] {
-  border-color: #fff0a8;
+  border-width: 1px;
+  border-color: #fff0a8cc;
   box-shadow:
-    0 0 22px #ffd23f80,
-    inset 0 0 24px #ffd23f26;
+    0 0 16px #ffd23f66,
+    inset 0 0 20px #ffd23f1f;
 }
 [data-theme='cyber'] .card > div:last-child {
   background: linear-gradient(180deg, #0f0d06cc, #07070599);
@@ -943,10 +944,10 @@ body {
 
 /* Üzerine gelince kartın kendi ışıması artmaz; sahneyi kıvılcıma bırakır. */
 [data-theme='cyber'] .card:hover {
-  border-color: #ffd23f;
+  border-color: #ffd23fa6;
   box-shadow:
-    0 0 10px #ffd23f33,
-    inset 0 0 18px #ffd23f14;
+    0 0 8px #ffd23f2e,
+    inset 0 0 16px #ffd23f12;
 }
 
 /* Kıvılcım kartın dışına taşabilsin: kapak ve alt şerit kendi köşelerini
