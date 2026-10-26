@@ -8,7 +8,7 @@ import {
   Volume2,
   VolumeX
 } from 'lucide-react'
-import { motion } from 'motion/react'
+import { motion, useMotionTemplate, useMotionValue, useSpring } from 'motion/react'
 import { memo, useState } from 'react'
 import { useFeel } from '../lib/motion'
 import { useThemeId } from '../lib/theme'
@@ -21,6 +21,9 @@ import { useT } from '../lib/i18n'
 
 const SPRITE_FRAMES = 10
 const MAX_CHIPS = 3
+/** Kâğıdın imleci takip ederken ki yumuşaklığı: çabuk yakalar, sektirmez. */
+const TILT_SPRING = { stiffness: 240, damping: 20, mass: 0.45 }
+const PAPER_TONES = 5
 
 export type CardAction = 'click' | 'open' | 'drag' | 'menu'
 
@@ -57,8 +60,35 @@ export const VideoCard = memo(function VideoCard({
   const ready = video.mediaStatus === 'ready' && !thumbFailed
   const frame = Math.min(SPRITE_FRAMES - 1, Math.floor(scrub * SPRITE_FRAMES))
   const feel = useFeel()
+  const theme = useThemeId()
   // Cyberpunk'ta kartın dışını kıvılcım sarar: üzerine gelince canlı, seçiliyken duruyor.
-  const electric = useThemeId() === 'cyber' && (hover || selected)
+  const electric = theme === 'cyber' && (hover || selected)
+
+  // Sticker Duvarı: kart artık düz bir dikdörtgen değil, duvara iğnelenmiş bir
+  // post-it. İmleç kâğıdın neresindeyse kâğıt o yöne eğilir (rotateX/rotateY),
+  // ışık da imlecin altında gezinir. Eğilme yalnız üzerine gelinen kartta
+  // hesaplandığı için binlerce kartta da bedava.
+  const paper = theme === 'sticker'
+  const leanX = useMotionValue(0)
+  const leanY = useMotionValue(0)
+  const tiltX = useSpring(leanX, TILT_SPRING)
+  const tiltY = useSpring(leanY, TILT_SPRING)
+  const lightX = useMotionValue(50)
+  const lightY = useMotionValue(50)
+  const sheen = useMotionTemplate`radial-gradient(150px 150px at ${lightX}% ${lightY}%, rgba(255, 244, 214, 0.2), rgba(255, 244, 214, 0.05) 46%, transparent 72%)`
+  // Her kâğıt id'sine göre birkaç derece yamuk asılı: elle yapıştırılmış hissi.
+  const lean = paper ? ((video.id * 7) % 9) / 2 - 2 : 0
+
+  const trackPaper = (event: React.MouseEvent<HTMLDivElement>): void => {
+    if (!paper) return
+    const rect = event.currentTarget.getBoundingClientRect()
+    const x = (event.clientX - rect.left) / rect.width
+    const y = (event.clientY - rect.top) / rect.height
+    leanY.set((x - 0.5) * 17)
+    leanX.set((0.5 - y) * 13)
+    lightX.set(x * 100)
+    lightY.set(y * 100)
+  }
 
   return (
     <motion.div
@@ -66,8 +96,10 @@ export const VideoCard = memo(function VideoCard({
       initial={entry ? feel.enter : false}
       animate={{
         opacity: 1,
-        y: hover ? feel.lift : 0,
-        rotate: peeling ? feel.rotate * 4 : hover ? feel.rotate : 0,
+        y: hover ? (paper ? feel.lift * 2 : feel.lift) : 0,
+        // Kâğıt duvardan öne doğru da kalkıyor: perspektifle birlikte gerçek derinlik.
+        z: paper && hover ? 26 : 0,
+        rotate: peeling ? feel.rotate * 4 : hover ? (paper ? lean * 0.35 : feel.rotate) : lean,
         scale: peeling ? 1.06 : 1
       }}
       exit={{ opacity: 0, scale: 0.85, transition: { duration: 0.15 } }}
@@ -83,7 +115,10 @@ export const VideoCard = memo(function VideoCard({
       onHoverEnd={() => {
         setHover(false)
         setScrub(0)
+        leanX.set(0)
+        leanY.set(0)
       }}
+      onMouseMove={trackPaper}
       onClick={(event) => onAction('click', video, event)}
       onDoubleClick={() => onAction('open', video)}
       onContextMenu={(event) => onAction('menu', video, event)}
@@ -94,8 +129,16 @@ export const VideoCard = memo(function VideoCard({
         setTimeout(() => setPeeling(false), 450)
         onAction('drag', video)
       }}
-      style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 260px' }}
+      style={{
+        // Post-it modunda boyama kısıtlaması kapalı: `content-visibility` kartı
+        // kendi kutusuna kırpıyor ve 3B katmanları düzleştiriyor, raptiye de
+        // kâğıdın üstüne çıkamıyordu.
+        contentVisibility: paper ? 'visible' : 'auto',
+        containIntrinsicSize: paper ? undefined : 'auto 260px',
+        ...(paper ? { rotateX: tiltX, rotateY: tiltY, transformPerspective: 760 } : {})
+      }}
       data-selected={selected || undefined}
+      data-paper={paper ? video.id % PAPER_TONES : undefined}
       className={`card relative flex cursor-grab flex-col overflow-hidden rounded-[14px] border-2 bg-surf active:cursor-grabbing ${
         selected
           ? 'border-accent shadow-[5px_6px_0_var(--color-ink)]'
@@ -298,6 +341,21 @@ export const VideoCard = memo(function VideoCard({
           </div>
         )}
       </div>
+
+      {paper && (
+        <>
+          {/* İmlecin altında gezinen ışık: kâğıdın eğildiği taraf parlar. */}
+          <motion.div
+            aria-hidden
+            className={`pointer-events-none absolute inset-0 z-[3] rounded-[inherit] transition-opacity duration-200 ${
+              hover ? 'opacity-100' : 'opacity-0'
+            }`}
+            style={{ backgroundImage: sheen }}
+          />
+          {/* Raptiye en sonda duruyor: CSS'teki `div:first-child` kuralı kapağa baksın. */}
+          <span aria-hidden className="paper-pin" />
+        </>
+      )}
     </motion.div>
   )
 })

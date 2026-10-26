@@ -985,6 +985,96 @@ body {
   opacity: 1;
 }
 
+/* Sticker Duvarı: kart bir post-it. Eğilme VideoCard'da (rotateX/rotateY);
+   burada kâğıdın kalınlığı, rengi, duvara düşen gölgesi ve raptiyesi var.
+   `overflow: visible` + `preserve-3d` olmadan raptiye kâğıdın üstüne çıkamaz. */
+[data-theme='sticker'] .card {
+  --paper: #f5c542;
+  --pin: #f2665a;
+  overflow: visible;
+  transform-style: preserve-3d;
+  background-color: color-mix(in srgb, var(--color-surf) 74%, var(--paper));
+  background-image: radial-gradient(130% 90% at 18% 0%, #ffffff12, transparent 58%);
+  box-shadow:
+    0 2px 2px -1px #00000073,
+    0 10px 18px -10px #000000b8,
+    0 20px 34px -22px #000000a6;
+  transition: box-shadow 0.22s ease;
+}
+
+[data-theme='sticker'] .card[data-paper='1'] {
+  --paper: #ee7fb4;
+  --pin: #5cc3e8;
+}
+
+[data-theme='sticker'] .card[data-paper='2'] {
+  --paper: #5cc3e8;
+  --pin: #7fd47f;
+}
+
+[data-theme='sticker'] .card[data-paper='3'] {
+  --paper: #7fd47f;
+  --pin: #f5c542;
+}
+
+[data-theme='sticker'] .card[data-paper='4'] {
+  --paper: #b69cf2;
+  --pin: #ee7fb4;
+}
+
+/* Kalkan kâğıdın gölgesi duvardan uzaklaşıp dağılır. */
+[data-theme='sticker'] .card:hover,
+[data-theme='sticker'] .card[data-selected] {
+  z-index: 6;
+  box-shadow:
+    0 3px 3px -1px #00000080,
+    0 22px 30px -14px #000000c4,
+    0 44px 64px -30px #000000ad;
+}
+
+/* Kapak artık kâğıdın kenarına dayanmıyor: post-it'in üstüne yapıştırılmış
+   bir fotoğraf gibi içeri alınıp çerçeveleniyor, böylece kâğıdın rengi görünüyor. */
+[data-theme='sticker'] .card > div:first-child {
+  margin: 9px 9px 0;
+  border: 2px solid #f4ecdc;
+  border-radius: 7px;
+  box-shadow: 0 3px 7px -3px #000000b3;
+}
+
+/* Raptiye: kâğıdın üst kenarından öne doğru çıkıntı yapan plastik başlık. */
+[data-theme='sticker'] .paper-pin {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  z-index: 7;
+  width: 19px;
+  height: 19px;
+  margin-left: -9.5px;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translateZ(26px);
+  background:
+    radial-gradient(circle at 34% 28%, #ffffffd9, transparent 44%),
+    radial-gradient(circle at 72% 80%, #0000005e, transparent 58%), var(--pin);
+  box-shadow:
+    0 1px 0 #ffffff40 inset,
+    0 -3px 5px #00000055 inset,
+    0 7px 9px -4px #000000b5;
+}
+
+/* Raptiyenin kâğıda bastığı yerdeki iğne gövdesi ve gölgesi. */
+[data-theme='sticker'] .paper-pin::after {
+  content: '';
+  position: absolute;
+  top: 11px;
+  left: 50%;
+  width: 16px;
+  height: 10px;
+  margin-left: -8px;
+  border-radius: 50%;
+  background: radial-gradient(60% 100% at 50% 0%, #00000070, transparent 72%);
+}
+
 /* Üzerine gelince kartın kendi ışıması artmaz; sahneyi kıvılcıma bırakır. */
 [data-theme='cyber'] .card:hover {
   border-color: #ffd23fa6;
