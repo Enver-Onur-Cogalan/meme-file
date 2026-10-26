@@ -1079,14 +1079,9 @@ body {
   background: radial-gradient(60% 100% at 50% 0%, #00000070, transparent 72%);
 }
 
-/* Seçili kâğıt ikinci bir raptiyeyle sabitleniyor, ikisi de vurgu renginde. */
+/* Seçili kâğıdın raptiyesi vurgu rengine dönüyor. */
 [data-theme='sticker'] .card[data-selected] .paper-pin {
   --pin: var(--color-accent);
-}
-
-[data-theme='sticker'] .paper-pin-second {
-  left: 78%;
-  translate: none;
 }
 
 /* Hiç chip'i olmayan kâğıdın alt kenarı yırtık duruyor: "buna henüz

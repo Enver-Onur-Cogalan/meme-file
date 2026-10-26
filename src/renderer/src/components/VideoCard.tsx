@@ -396,16 +396,6 @@ export const VideoCard = memo(function VideoCard({
             }}
             transition={{ type: 'spring', stiffness: 620, damping: 18 }}
           />
-          {/* Seçili kâğıt ikinci bir raptiyeyle sabitleniyor; ikisi de vurgu renginde. */}
-          {selected && (
-            <motion.span
-              aria-hidden
-              className="paper-pin paper-pin-second"
-              initial={{ scale: 0, y: -14 }}
-              animate={{ z: 26, scale: 1, y: 0 }}
-              transition={{ type: 'spring', stiffness: 560, damping: 17 }}
-            />
-          )}
         </>
       )}
     </motion.div>
