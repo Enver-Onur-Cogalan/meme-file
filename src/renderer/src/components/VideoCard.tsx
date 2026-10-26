@@ -11,7 +11,7 @@ import {
 import { motion, useMotionTemplate, useMotionValue, useSpring } from 'motion/react'
 import { memo, useState } from 'react'
 import { useFeel } from '../lib/motion'
-import { useThemeId } from '../lib/theme'
+import { useTagColor, useThemeId } from '../lib/theme'
 import { ElectricBorder } from './effects/ElectricBorder'
 import { useStore } from '../lib/store'
 import type { Tag, Video } from '../../../shared/api'
@@ -23,7 +23,7 @@ const SPRITE_FRAMES = 10
 const MAX_CHIPS = 3
 /** Kâğıdın imleci takip ederken ki yumuşaklığı: çabuk yakalar, sektirmez. */
 const TILT_SPRING = { stiffness: 240, damping: 20, mass: 0.45 }
-const PAPER_TONES = 5
+const PIN_TONES = 5
 
 export type CardAction = 'click' | 'open' | 'drag' | 'menu'
 
@@ -57,6 +57,7 @@ export const VideoCard = memo(function VideoCard({
   const videoTags = video.tagIds
     .map((id) => tags.find((tag) => tag.id === id))
     .filter((tag): tag is Tag => !!tag)
+  const tagColor = useTagColor()
   const ready = video.mediaStatus === 'ready' && !thumbFailed
   const frame = Math.min(SPRITE_FRAMES - 1, Math.floor(scrub * SPRITE_FRAMES))
   const feel = useFeel()
@@ -76,16 +77,17 @@ export const VideoCard = memo(function VideoCard({
   const lightX = useMotionValue(50)
   const lightY = useMotionValue(50)
   const sheen = useMotionTemplate`radial-gradient(150px 150px at ${lightX}% ${lightY}%, rgba(255, 244, 214, 0.2), rgba(255, 244, 214, 0.05) 46%, transparent 72%)`
-  // Her kâğıt id'sine göre birkaç derece yamuk asılı: elle yapıştırılmış hissi.
+  // Her kâğıt birkaç derece yamuk, raptiyesi de farklı açıda: elle asılmış hissi.
   const lean = paper ? ((video.id * 7) % 9) / 2 - 2 : 0
+  const pinShift = paper ? ((video.id * 11) % 13) - 6 : 0
 
   const trackPaper = (event: React.MouseEvent<HTMLDivElement>): void => {
     if (!paper) return
     const rect = event.currentTarget.getBoundingClientRect()
     const x = (event.clientX - rect.left) / rect.width
     const y = (event.clientY - rect.top) / rect.height
-    leanY.set((x - 0.5) * 17)
-    leanX.set((0.5 - y) * 13)
+    leanY.set((x - 0.5) * 12)
+    leanX.set((0.5 - y) * 9)
     lightX.set(x * 100)
     lightY.set(y * 100)
   }
@@ -135,10 +137,25 @@ export const VideoCard = memo(function VideoCard({
         // kâğıdın üstüne çıkamıyordu.
         contentVisibility: paper ? 'visible' : 'auto',
         containIntrinsicSize: paper ? undefined : 'auto 260px',
-        ...(paper ? { rotateX: tiltX, rotateY: tiltY, transformPerspective: 760 } : {})
+        ...(paper
+          ? {
+              rotateX: tiltX,
+              rotateY: tiltY,
+              transformPerspective: 760,
+              // Kâğıdın rengi ilk chip'ten geliyor: duvar renkten taranabiliyor.
+              // İkinci chip varsa kâğıt alt köşeye doğru o renge dönüyor; üçüncü
+              // ve sonrası renge karışmıyor, yoksa hepsi çamura dönüyor.
+              ['--paper' as string]: videoTags[0] ? tagColor(videoTags[0].color) : '#b9ad95',
+              ['--paper2' as string]: videoTags[1]
+                ? tagColor(videoTags[1].color)
+                : videoTags[0]
+                  ? tagColor(videoTags[0].color)
+                  : '#b9ad95'
+            }
+          : {})
       }}
       data-selected={selected || undefined}
-      data-paper={paper ? video.id % PAPER_TONES : undefined}
+      data-paper={paper ? video.id % PIN_TONES : undefined}
       className={`card relative flex cursor-grab flex-col overflow-hidden rounded-[14px] border-2 bg-surf active:cursor-grabbing ${
         selected
           ? 'border-accent shadow-[5px_6px_0_var(--color-ink)]'
@@ -353,7 +370,7 @@ export const VideoCard = memo(function VideoCard({
             style={{ backgroundImage: sheen }}
           />
           {/* Raptiye en sonda duruyor: CSS'teki `div:first-child` kuralı kapağa baksın. */}
-          <span aria-hidden className="paper-pin" />
+          <span aria-hidden className="paper-pin" style={{ translate: `${pinShift}px` }} />
         </>
       )}
     </motion.div>
