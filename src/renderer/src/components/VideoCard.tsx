@@ -383,7 +383,8 @@ export const VideoCard = memo(function VideoCard({
             </svg>
           )}
           {/* Raptiye en sonda duruyor: CSS'teki `div:first-child` kuralı kapağa baksın.
-              Kâğıt duvardan koparken raptiye yerinden fırlıyor. */}
+              Kâğıt duvardan koparken raptiye yerinden fırlıyor ve kâğıdın içinde
+              duran iğnesi ortaya çıkıyor. */}
           <motion.span
             aria-hidden
             className="paper-pin"
@@ -391,11 +392,37 @@ export const VideoCard = memo(function VideoCard({
             animate={{
               z: 26,
               y: peeling ? -34 : 0,
-              scale: peeling ? 1.25 : 1,
-              rotate: peeling ? 16 : 0
+              scale: peeling ? 1.2 : 1,
+              rotate: peeling ? 14 : 0
             }}
             transition={{ type: 'spring', stiffness: 620, damping: 18 }}
-          />
+          >
+            <svg viewBox="0 0 24 44" className="paper-pin-art">
+              {/* İğne kâğıdın içinde: duruyorken boyu sıfır, kalkınca uzuyor. */}
+              <motion.g
+                style={{ originX: 0.5, originY: 0 }}
+                animate={{ scaleY: peeling ? 1 : 0 }}
+                transition={{ type: 'spring', stiffness: 420, damping: 24 }}
+              >
+                <path d="M10.9 17 L12 41 L12 17 Z" fill="#efe9dd" />
+                <path d="M12 17 L12 41 L13.1 17 Z" fill="#8f8a7c" />
+              </motion.g>
+              {/* Başlığın altındaki boyun, sonra kubbe ve üstündeki ışık. */}
+              <ellipse cx="12" cy="17.2" rx="5.2" ry="2.5" fill="var(--pin)" />
+              <ellipse cx="12" cy="17.8" rx="5.2" ry="2.5" fill="#000" opacity="0.3" />
+              <circle cx="12" cy="10.5" r="8.4" fill="var(--pin)" />
+              <ellipse cx="12" cy="15.6" rx="6.6" ry="2.9" fill="#000" opacity="0.22" />
+              <ellipse
+                cx="9.3"
+                cy="7.2"
+                rx="3.4"
+                ry="2.5"
+                fill="#fff"
+                opacity="0.62"
+                transform="rotate(-24 9.3 7.2)"
+              />
+            </svg>
+          </motion.span>
         </>
       )}
     </motion.div>
