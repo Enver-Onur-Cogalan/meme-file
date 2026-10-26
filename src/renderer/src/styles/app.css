@@ -1057,7 +1057,6 @@ body {
   margin-left: -8.5px;
   border-radius: 50%;
   pointer-events: none;
-  transform: translateZ(26px);
   background:
     radial-gradient(circle at 34% 28%, #ffffffd9, transparent 44%),
     radial-gradient(circle at 72% 80%, #0000005e, transparent 58%), var(--pin);
@@ -1078,6 +1077,37 @@ body {
   margin-left: -7.5px;
   border-radius: 50%;
   background: radial-gradient(60% 100% at 50% 0%, #00000070, transparent 72%);
+}
+
+/* Seçili kâğıt ikinci bir raptiyeyle sabitleniyor, ikisi de vurgu renginde. */
+[data-theme='sticker'] .card[data-selected] .paper-pin {
+  --pin: var(--color-accent);
+}
+
+[data-theme='sticker'] .paper-pin-second {
+  left: 78%;
+  translate: none;
+}
+
+/* Hiç chip'i olmayan kâğıdın alt kenarı yırtık duruyor: "buna henüz
+   dokunulmadı" işareti. Üçgenler duvarın rengiyle kâğıdın üstüne basılıyor. */
+[data-theme='sticker'] .card[data-untagged] {
+  border-bottom-color: transparent;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+[data-theme='sticker'] .paper-tear {
+  position: absolute;
+  bottom: -2px;
+  left: -2px;
+  z-index: 4;
+  /* SVG yerleşik en-boy oranı taşıyor: genişlik açıkça verilmezse `right`
+     yok sayılıp şerit kartın yalnız bir kısmını kaplıyor. */
+  width: calc(100% + 4px);
+  height: 11px;
+  pointer-events: none;
+  fill: var(--color-bg);
 }
 
 /* Üzerine gelince kartın kendi ışıması artmaz; sahneyi kıvılcıma bırakır. */

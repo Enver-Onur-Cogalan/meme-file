@@ -128,7 +128,7 @@ The estimated size updates live; the encoder picks bitrate, resolution and frame
 
 Themes are not a palette swap: the shell, the card frames, the chip surface, the typeface, the motion profile and even the interface sounds change together. Your chip colors stay in the database and are translated onto the theme's surface.
 
-- **Sticker Wall** — lined notebook, 3D post-it cards pinned to the wall (paper that tilts toward the cursor, light sliding across it, its own colour per note), a paper corner that folds up on hover, paper-rustle sounds
+- **Sticker Wall** — lined notebook, 3D post-it cards pinned to the wall (paper that tilts toward the cursor, light sliding across it, its colour taken from the card's chips), paper that rips off the wall when you drag it, a second pin on selected notes, a torn edge on videos with no chips, paper-rustle sounds
 - **Cyberpunk** — boots like an OS (`NEON_PRISM_OS`), live status strip, CRT scanlines, Chakra Petch / Share Tech Mono, hologram chips whose labels tear into red and cyan on hover, cyan-and-red electric arcs crackling around the hovered card, a terminal-style player, alarm-red buttons
 - **Modern** — brushed steel plates, rivets on the name strip, a light sweeping across the card, calm slow motion
 - **Old School 98** — grey bevels, teal title bar, a real File/Edit/View/Help menu, a status bar (`17 objects · 20.0 MB`), classic dialog boxes and system beeps

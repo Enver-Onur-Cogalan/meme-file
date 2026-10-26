@@ -123,7 +123,7 @@ Tahmini boyut canlı güncellenir; kodlayıcı hedefe göre bit hızı, çözün
 
 Tema palet değiştirmekten ibaret değil: kabuk, kart çerçevesi, chip yüzeyi, yazı tipi, hareket profili ve arayüz sesleri birlikte değişiyor. Chip renkleri veritabanında olduğu gibi kalıyor, ekrana çizilirken temanın yüzeyine çevriliyor.
 
-- **Sticker Duvarı** — çizgili defter, duvara raptiyeyle asılmış 3B post-it kartlar (imlece göre eğilen kâğıt, üstünde gezinen ışık, her kâğıdın kendi rengi), karta gelince kıvrılan kâğıt köşesi, kâğıt hışırtısı sesleri
+- **Sticker Duvarı** — çizgili defter, duvara raptiyeyle asılmış 3B post-it kartlar (imlece göre eğilen kâğıt, üstünde gezinen ışık, rengi chip'lerinden gelen kâğıt), sürükleyince duvardan kopup raptiyesi fırlayan kâğıt, seçilince ikinci raptiyeyle sabitlenen kart, hiç chip'i olmayan videolarda yırtık kâğıt kenarı, kâğıt hışırtısı sesleri
 - **Cyberpunk** — bir işletim sistemi gibi açılıyor (`NEON_PRISM_OS`), canlı durum şeridi, CRT tarama çizgileri, Chakra Petch / Share Tech Mono, üzerine gelince yazısı kırmızı-camgöbeği ayrışan hologram chip'ler, kartın etrafında çatırdayan camgöbeği-kırmızı elektrik arkı, terminal görünümlü oynatıcı, alarm gibi yanıp sönen düğmeler
 - **Modern** — fırçalanmış çelik plakalar, ad şeridinde perçinler, kartın üstünden geçen ışık, sakin ve yavaş hareket
 - **Old School 98** — gri kabartmalar, teal başlık çubuğu, gerçek Dosya/Düzen/Görünüm/Yardım menüsü, durum çubuğu (`17 nesne · 20.0 MB`), klasik uyarı pencereleri ve sistem bip'leri

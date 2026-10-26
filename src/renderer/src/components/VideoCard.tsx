@@ -24,6 +24,11 @@ const MAX_CHIPS = 3
 /** Kâğıdın imleci takip ederken ki yumuşaklığı: çabuk yakalar, sektirmez. */
 const TILT_SPRING = { stiffness: 240, damping: 20, mass: 0.45 }
 const PIN_TONES = 5
+/** Elle yırtılmış kâğıt kenarı: düzensiz tepeler, duvar renginde boyanıyor. */
+const TEAR_PATH =
+  'M0,10 L0,3.4 L3.6,6.2 L8.1,1.6 L12.4,5.4 L17.2,2.1 L21,6.8 L25.9,3 L30.4,7.2 ' +
+  'L35.1,2.4 L39.3,5.8 L44.2,1.7 L48.6,6.1 L53.4,3.3 L57.2,7.4 L62.1,2.2 L66.4,5.2 ' +
+  'L71.2,2.9 L75.6,6.6 L80.3,2 L84.7,5.7 L89.2,2.6 L93.6,6.3 L97.1,3.1 L100,5.9 L100,10 Z'
 
 export type CardAction = 'click' | 'open' | 'drag' | 'menu'
 
@@ -99,8 +104,9 @@ export const VideoCard = memo(function VideoCard({
       animate={{
         opacity: 1,
         y: hover ? (paper ? feel.lift * 2 : feel.lift) : 0,
-        // Kâğıt duvardan öne doğru da kalkıyor: perspektifle birlikte gerçek derinlik.
-        z: paper && hover ? 26 : 0,
+        // Kâğıt duvardan öne doğru da kalkıyor: perspektifle birlikte gerçek
+        // derinlik. Sürüklerken duvardan iyice kopup öne geliyor.
+        z: paper ? (peeling ? 64 : hover ? 26 : 0) : 0,
         rotate: peeling ? feel.rotate * 4 : hover ? (paper ? lean * 0.35 : feel.rotate) : lean,
         scale: peeling ? 1.06 : 1
       }}
@@ -156,6 +162,7 @@ export const VideoCard = memo(function VideoCard({
       }}
       data-selected={selected || undefined}
       data-paper={paper ? video.id % PIN_TONES : undefined}
+      data-untagged={paper && videoTags.length === 0 ? '' : undefined}
       className={`card relative flex cursor-grab flex-col overflow-hidden rounded-[14px] border-2 bg-surf active:cursor-grabbing ${
         selected
           ? 'border-accent shadow-[5px_6px_0_var(--color-ink)]'
@@ -369,8 +376,36 @@ export const VideoCard = memo(function VideoCard({
             }`}
             style={{ backgroundImage: sheen }}
           />
-          {/* Raptiye en sonda duruyor: CSS'teki `div:first-child` kuralı kapağa baksın. */}
-          <span aria-hidden className="paper-pin" style={{ translate: `${pinShift}px` }} />
+          {/* Etiketsiz kâğıdın alt kenarı yırtık: "buna henüz dokunulmadı" işareti. */}
+          {videoTags.length === 0 && (
+            <svg aria-hidden className="paper-tear" viewBox="0 0 100 10" preserveAspectRatio="none">
+              <path d={TEAR_PATH} />
+            </svg>
+          )}
+          {/* Raptiye en sonda duruyor: CSS'teki `div:first-child` kuralı kapağa baksın.
+              Kâğıt duvardan koparken raptiye yerinden fırlıyor. */}
+          <motion.span
+            aria-hidden
+            className="paper-pin"
+            style={{ translate: `${pinShift}px` }}
+            animate={{
+              z: 26,
+              y: peeling ? -34 : 0,
+              scale: peeling ? 1.25 : 1,
+              rotate: peeling ? 16 : 0
+            }}
+            transition={{ type: 'spring', stiffness: 620, damping: 18 }}
+          />
+          {/* Seçili kâğıt ikinci bir raptiyeyle sabitleniyor; ikisi de vurgu renginde. */}
+          {selected && (
+            <motion.span
+              aria-hidden
+              className="paper-pin paper-pin-second"
+              initial={{ scale: 0, y: -14 }}
+              animate={{ z: 26, scale: 1, y: 0 }}
+              transition={{ type: 'spring', stiffness: 560, damping: 17 }}
+            />
+          )}
         </>
       )}
     </motion.div>
