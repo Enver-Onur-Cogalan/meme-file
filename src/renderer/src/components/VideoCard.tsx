@@ -23,7 +23,6 @@ const SPRITE_FRAMES = 10
 const MAX_CHIPS = 3
 /** Kâğıdın imleci takip ederken ki yumuşaklığı: çabuk yakalar, sektirmez. */
 const TILT_SPRING = { stiffness: 240, damping: 20, mass: 0.45 }
-const PIN_TONES = 5
 /** Elle yırtılmış kâğıt kenarı: düzensiz tepeler, duvar renginde boyanıyor. */
 const TEAR_PATH =
   'M0,10 L0,3.4 L3.6,6.2 L8.1,1.6 L12.4,5.4 L17.2,2.1 L21,6.8 L25.9,3 L30.4,7.2 ' +
@@ -161,7 +160,6 @@ export const VideoCard = memo(function VideoCard({
           : {})
       }}
       data-selected={selected || undefined}
-      data-paper={paper ? video.id % PIN_TONES : undefined}
       data-untagged={paper && videoTags.length === 0 ? '' : undefined}
       className={`card relative flex cursor-grab flex-col overflow-hidden rounded-[14px] border-2 bg-surf active:cursor-grabbing ${
         selected

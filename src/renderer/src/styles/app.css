@@ -991,7 +991,9 @@ body {
 [data-theme='sticker'] .card {
   /* --paper kartın ilk chip'inden geliyor (VideoCard); chip'i yoksa sade kâğıt. */
   --paper: #b9ad95;
-  --pin: #f2665a;
+  /* Raptiyeler tek renk: kâğıdın rengi zaten chip'ten geliyor, raptiyenin de
+     renk oynaması seçimi okunmaz hâle getiriyordu. */
+  --pin: #e4dac2;
   overflow: visible;
   transform-style: preserve-3d;
   background-color: color-mix(in srgb, var(--color-surf) 64%, var(--paper));
@@ -1009,22 +1011,6 @@ body {
     0 10px 18px -10px #000000b8,
     0 20px 34px -22px #000000a6;
   transition: box-shadow 0.22s ease;
-}
-
-[data-theme='sticker'] .card[data-paper='1'] {
-  --pin: #5cc3e8;
-}
-
-[data-theme='sticker'] .card[data-paper='2'] {
-  --pin: #7fd47f;
-}
-
-[data-theme='sticker'] .card[data-paper='3'] {
-  --pin: #f5c542;
-}
-
-[data-theme='sticker'] .card[data-paper='4'] {
-  --pin: #ee7fb4;
 }
 
 /* Kalkan kâğıdın gölgesi duvardan uzaklaşıp dağılır. */
@@ -1066,7 +1052,8 @@ body {
   filter: drop-shadow(0 5px 6px rgba(0, 0, 0, 0.6));
 }
 
-/* Seçili kâğıdın raptiyesi vurgu rengine dönüyor. */
+/* Seçili kâğıdın raptiyesi vurgu rengine dönüyor — başka hiçbir raptiye bu
+   renkte olmadığı için seçim tek bakışta okunuyor. */
 [data-theme='sticker'] .card[data-selected] .paper-pin {
   --pin: var(--color-accent);
 }
