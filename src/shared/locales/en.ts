@@ -97,6 +97,7 @@ export const en: Messages = {
   'library.random': 'Random',
   'library.searchPlaceholder': 'Which meme do you need?',
   'library.clearSearch': 'Clear search',
+  'library.scrollTop': 'Back to top',
   'library.and': 'AND',
   'library.or': 'OR',
   'library.tagModeHint': 'AND: has all chips · OR: has any chip',

@@ -17,6 +17,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { LibraryView as View, SortOrder, Video } from '../../../shared/api'
 import type { MenuState } from '../components/ContextMenu'
+import { ScrollTop } from '../components/ScrollTop'
 import { TagSticker } from '../components/TagSticker'
 import { AnimatedNumber, Button, Kbd } from '../components/ui'
 import { spring } from '../lib/motion'
@@ -284,6 +285,8 @@ export function LibraryView({ onAddFolder, onMenu, searchRef }: Props): React.JS
       ) : (
         <VideoGrid videos={videos} tags={tags} scrollRef={gridRef} onMenu={onMenu} />
       )}
+
+      <ScrollTop scrollRef={gridRef} />
 
       <AnimatePresence>
         {selection.length > 1 && (

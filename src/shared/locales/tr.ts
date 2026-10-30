@@ -86,6 +86,7 @@ export const tr = {
   'library.random': 'Rastgele',
   'library.searchPlaceholder': 'Hangi meme lazım?',
   'library.clearSearch': 'Aramayı temizle',
+  'library.scrollTop': 'Başa dön',
   'library.and': 'VE',
   'library.or': 'VEYA',
   'library.tagModeHint': 'VE: hepsini içeren · VEYA: herhangi birini içeren',
