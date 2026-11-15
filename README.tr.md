@@ -4,7 +4,7 @@
 
 # Meme File
 
-**Tepki videosu kütüphanen.<br/>Chip'lerle etiketle, saniyeler içinde bul, doğrudan Discord'a sürükle.**
+**Tepki videosu kütüphanen.<br/>Chip'lerle etiketle, saniyeler içinde bul, doğrudan sohbete sürükle.**
 
 [![Build](https://github.com/Enver-Onur-Cogalan/meme-file/actions/workflows/build.yml/badge.svg)](https://github.com/Enver-Onur-Cogalan/meme-file/actions/workflows/build.yml)
 [![Sürüm](https://img.shields.io/github/v/release/Enver-Onur-Cogalan/meme-file?color=f5c542&label=s%C3%BCr%C3%BCm)](https://github.com/Enver-Onur-Cogalan/meme-file/releases/latest)
@@ -38,11 +38,11 @@ etiket katmanı ekler.
 <table>
 <tr>
 <td width="33%" valign="top"><b>Saniyeler içinde bul</b><br/>Ada ya da chip'e göre ara, chip'leri VE/VEYA ile birleştir, üzerine gelerek klibi sar.</td>
-<td width="33%" valign="top"><b>Tek hareketle gönder</b><br/>Kartı Discord'a sürükle ya da <code>Ctrl+C</code> ile kopyalayıp yapıştır. Birden fazla videoyla da çalışır.</td>
+<td width="33%" valign="top"><b>Tek hareketle gönder</b><br/>Kartı sohbete sürükle ya da <code>Ctrl+C</code> ile kopyalayıp yapıştır. Birden fazla videoyla da çalışır.</td>
 <td width="33%" valign="top"><b>Her yerden çağır</b><br/><code>Ctrl+Shift+Space</code> ne yapıyorsan onun üstünde hızlı aramayı açar, oyunda bile.</td>
 </tr>
 <tr>
-<td valign="top"><b>Discord limitine sığar</b><br/>Klibi kırpıp 10 MB'ın altına indir ya da GIF yap; orijinale dokunulmaz.</td>
+<td valign="top"><b>10 MB sınırına sığar</b><br/>Klibi kırpıp 10 MB'ın altına indir ya da GIF yap; orijinale dokunulmaz.</td>
 <td valign="top"><b>Her şeyi oynatır</b><br/>HEVC, ProRes, AC-3 ses ve mkv dosyaları için arka planda uyumlu kopya hazırlanır.</td>
 <td valign="top"><b>Hızlı kalır</b><br/>Sanal liste ve SQLite tam metin arama; kütüphane büyüdükçe de akıcı 60 FPS kaydırma.</td>
 </tr>
@@ -54,7 +54,7 @@ etiket katmanı ekler.
 <tr>
 <td width="58%" valign="top">
 <img src="docs/demo/trim.gif" alt="Kırpma: önizleme tutamaçları takip ediyor" /><br/>
-<b>Kırp ve Discord'a sığdır</b> · önizleme tutamacın altındaki kareye atlar, sonra seçimi döngüde oynatır.
+<b>Kırp ve 10 MB'a sığdır</b> · önizleme tutamacın altındaki kareye atlar, sonra seçimi döngüde oynatır.
 Tahmini boyut canlı güncellenir; kodlayıcı hedefe göre bit hızı, çözünürlük ve kare hızını seçer.
 </td>
 <td width="42%" valign="top">
@@ -70,7 +70,7 @@ Tahmini boyut canlı güncellenir; kodlayıcı hedefe göre bit hızı, çözün
 
 - Klasör ekle (alt klasörler dahil); klasörler izlenir, yeni videolar rakam tuşlarıyla hızlı etiketleme için **Gelen Kutusu**'na düşer
 - Dosyaları pencereye sürükle ya da `Ctrl+V` ile yapıştır; kütüphane klasörüne kopyalanır
-- Kapaklar, fareyle sarılabilen önizleme, süre ve ses göstergesi, Discord'un 10 MB limitini aşanlara rozet
+- Kapaklar, fareyle sarılabilen önizleme, süre ve ses göstergesi, 10 MB'ı aşanlara rozet
 - Tarih, ad, boyut, süre ya da gönderim sayısına göre sıralama; favoriler, en çok gönderilenler, aynı videoları bulma
 - **Rastgele**, o an ne görüyorsan onun içinden bir video açar; filtrelere uyar ve son onu tekrarlamaz
 

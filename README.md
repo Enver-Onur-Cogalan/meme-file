@@ -4,7 +4,7 @@
 
 # Meme File
 
-**Your reaction video library.<br/>Tag it with chips, find it in a second, drag it straight into Discord.**
+**Your reaction video library.<br/>Tag it with chips, find it in a second, drag it straight into a chat.**
 
 [![Build](https://github.com/Enver-Onur-Cogalan/meme-file/actions/workflows/build.yml/badge.svg)](https://github.com/Enver-Onur-Cogalan/meme-file/actions/workflows/build.yml)
 [![Release](https://img.shields.io/github/v/release/Enver-Onur-Cogalan/meme-file?color=f5c542&label=release)](https://github.com/Enver-Onur-Cogalan/meme-file/releases/latest)
@@ -38,11 +38,11 @@ tagging layer on top of them.
 <table>
 <tr>
 <td width="33%" valign="top"><b>Find in seconds</b><br/>Search by name or chip, combine chips with AND/OR, scrub a clip by hovering over it.</td>
-<td width="33%" valign="top"><b>Send in one move</b><br/>Drag a card into Discord or press <code>Ctrl+C</code> and paste. Works for several videos at once.</td>
+<td width="33%" valign="top"><b>Send in one move</b><br/>Drag a card into a chat or press <code>Ctrl+C</code> and paste. Works for several videos at once.</td>
 <td width="33%" valign="top"><b>Summon from anywhere</b><br/><code>Ctrl+Shift+Space</code> opens a quick search over whatever you're doing, even in-game.</td>
 </tr>
 <tr>
-<td valign="top"><b>Fits Discord's limit</b><br/>Trim and shrink a clip under 10 MB (or export a GIF) without touching the original.</td>
+<td valign="top"><b>Fits the 10 MB limit</b><br/>Trim and shrink a clip under 10 MB (or export a GIF) without touching the original.</td>
 <td valign="top"><b>Plays everything</b><br/>HEVC, ProRes, AC-3 audio and mkv files get a compatible copy in the background.</td>
 <td valign="top"><b>Stays fast</b><br/>Virtualized grid and SQLite full-text search; smooth 60 FPS scrolling as the library grows.</td>
 </tr>
@@ -59,7 +59,7 @@ tagging layer on top of them.
 <tr>
 <td width="58%" valign="top">
 <img src="docs/demo/trim.gif" alt="Trimming: the preview follows the handles" /><br/>
-<b>Trim & fit for Discord</b> · the preview jumps to the exact frame under the handle, then loops the selection.
+<b>Trim & fit to 10 MB</b> · the preview jumps to the exact frame under the handle, then loops the selection.
 The estimated size updates live; the encoder picks bitrate, resolution and frame rate for the target.
 </td>
 <td width="42%" valign="top">
@@ -75,7 +75,7 @@ The estimated size updates live; the encoder picks bitrate, resolution and frame
 
 - Add folders (subfolders included); they're watched, and new videos land in the **Inbox** for quick tagging with the number keys
 - Drag files onto the window or paste them with `Ctrl+V` to copy them into your library folder
-- Thumbnails, hover-scrub previews, duration and sound indicators, a badge for files over Discord's 10 MB limit
+- Thumbnails, hover-scrub previews, duration and sound indicators, a badge for files over 10 MB
 - Sort by date, name, size, duration or send count; favorites, most sent, duplicate detection
 - **Random** opens something from whatever you are looking at right now, filters included, without repeating the last ten
 
