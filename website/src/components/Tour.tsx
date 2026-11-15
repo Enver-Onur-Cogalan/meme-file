@@ -83,7 +83,13 @@ export function Tour(): React.JSX.Element {
                   </div>
                 ) : (
                   <video
-                    ref={videoRef}
+                    // Çıkış animasyonundaki eski video kalkınca yeni videonun referansını silmesin.
+                    ref={(node) => {
+                      videoRef.current = node
+                      return () => {
+                        if (videoRef.current === node) videoRef.current = null
+                      }
+                    }}
                     src={media(`${active}.mp4`)}
                     poster={media(`${active}.jpg`)}
                     muted
