@@ -7,3 +7,4 @@ out
 # Tasarım tuvalinin derlenmiş hâli (kaynakları design/*.dc.html)
 design/*.html
 !design/*.dc.html
+.vercel

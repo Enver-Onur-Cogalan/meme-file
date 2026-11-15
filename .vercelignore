@@ -1,0 +1,5 @@
+# Vercel yalnızca tanıtım sitesini görsün; uygulama kaynağı yüklenmez.
+/*
+!/website
+/website/node_modules
+/website/dist
